@@ -2533,6 +2533,12 @@
     setAuthMode("login");
     setAppMode("auth");
     updateHeaderMeta();
+    const navs = document.querySelectorAll(".tc-nav");
+    if (navs.length > 1) {
+      navs.forEach((nav, idx) => {
+        if (idx > 0) nav.remove();
+      });
+    }
 
     $("#prevMonth")?.addEventListener("click", () => changeMonth(-1));
     $("#nextMonth")?.addEventListener("click", () => changeMonth(1));
