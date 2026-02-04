@@ -4,14 +4,11 @@
 
   const store = window.DataStore || (() => {
     const STORAGE = {
-      calendar: "tc_calendar_scores",
-      progress: "tc_progress",
-      quizzes: "tc_quizzes",
-      assignments: "tc_assignments",
-      settings: "tc_settings",
-      bank: "tc_question_bank",
-      subjects: "tc_subjects",
-      xp: "tc_xp"
+      activeClass: "tc_active_class",
+      classState: "tc_class_state",
+      teacherContent: "tc_teacher_content",
+      profile: "tc_profile",
+      classes: "tc_classes"
     };
     const safeParse = (raw, fallback) => {
       try {
@@ -22,24 +19,100 @@
     };
     const get = (key, fallback) => safeParse(localStorage.getItem(key), fallback);
     const set = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+    const defaultClassState = { calendar: {}, progress: {}, assignments: {}, settings: {}, xp: null };
+    const defaultTeacherContent = { bank: [], quizzes: [], subjects: {} };
+    let activeClass = get(STORAGE.activeClass, null);
+    let classState = get(STORAGE.classState, {});
+    let teacherContent = get(STORAGE.teacherContent, defaultTeacherContent);
+    let classes = get(STORAGE.classes, []);
+    let profile = get(STORAGE.profile, { id: "local-user", username: "Locale" });
+
+    const ensureClassState = (id) => {
+      if (!classState[id]) classState[id] = { ...defaultClassState };
+      return classState[id];
+    };
+    const ensureLocalClass = () => {
+      if (!classes.length) {
+        const local = { id: "local-class", name: "Classe locale", level: "", created_at: new Date().toISOString() };
+        classes = [local];
+        activeClass = local.id;
+        ensureClassState(local.id);
+        set(STORAGE.classes, classes);
+        set(STORAGE.activeClass, activeClass);
+      }
+    };
+    const authSession = { user: { id: "local-user" } };
     return {
       mode: "local-fallback",
-      getCalendarScores: () => get(STORAGE.calendar, {}),
-      setCalendarScores: (data) => set(STORAGE.calendar, data),
-      getProgressMap: () => get(STORAGE.progress, {}),
-      setProgressMap: (data) => set(STORAGE.progress, data),
-      getQuizzes: () => get(STORAGE.quizzes, []),
-      setQuizzes: (data) => set(STORAGE.quizzes, data),
-      getAssignments: () => get(STORAGE.assignments, {}),
-      setAssignments: (data) => set(STORAGE.assignments, data),
-      getSettings: () => get(STORAGE.settings, {}),
-      setSettings: (data) => set(STORAGE.settings, data),
-      getBank: () => get(STORAGE.bank, []),
-      setBank: (data) => set(STORAGE.bank, data),
-      getSubjects: () => get(STORAGE.subjects, {}),
-      setSubjects: (data) => set(STORAGE.subjects, data),
-      getXp: () => get(STORAGE.xp, null),
-      setXp: (data) => set(STORAGE.xp, data)
+      auth: {
+        signIn: async () => ({ data: { session: authSession }, error: null }),
+        signUp: async () => ({ data: { session: authSession }, error: null }),
+        signOut: async () => ({ error: null }),
+        getSession: async () => ({ data: { session: authSession }, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } })
+      },
+      getProfile: async () => profile,
+      listClasses: async () => {
+        ensureLocalClass();
+        return classes;
+      },
+      createClass: async ({ name, level }) => {
+        ensureLocalClass();
+        const next = { id: `local_${Date.now()}`, name, level: level || "", created_at: new Date().toISOString() };
+        classes = [next, ...classes];
+        set(STORAGE.classes, classes);
+        return { data: next, error: null };
+      },
+      loadTeacherContent: async () => teacherContent,
+      loadClassState: async (id) => {
+        ensureClassState(id);
+        return classState[id];
+      },
+      getActiveClassId: () => activeClass,
+      setActiveClass: (id) => {
+        activeClass = id;
+        set(STORAGE.activeClass, activeClass);
+      },
+      getCalendarScores: () => ensureClassState(activeClass).calendar,
+      setCalendarScores: (data) => {
+        ensureClassState(activeClass).calendar = data;
+        set(STORAGE.classState, classState);
+      },
+      getProgressMap: () => ensureClassState(activeClass).progress,
+      setProgressMap: (data) => {
+        ensureClassState(activeClass).progress = data;
+        set(STORAGE.classState, classState);
+      },
+      getAssignments: () => ensureClassState(activeClass).assignments,
+      setAssignments: (data) => {
+        ensureClassState(activeClass).assignments = data;
+        set(STORAGE.classState, classState);
+      },
+      getSettings: () => ensureClassState(activeClass).settings,
+      setSettings: (data) => {
+        ensureClassState(activeClass).settings = data;
+        set(STORAGE.classState, classState);
+      },
+      getXp: () => ensureClassState(activeClass).xp,
+      setXp: (data) => {
+        ensureClassState(activeClass).xp = data;
+        set(STORAGE.classState, classState);
+      },
+      getBank: () => teacherContent.bank,
+      setBank: (data) => {
+        teacherContent = { ...teacherContent, bank: data };
+        set(STORAGE.teacherContent, teacherContent);
+      },
+      getQuizzes: () => teacherContent.quizzes,
+      setQuizzes: (data) => {
+        teacherContent = { ...teacherContent, quizzes: data };
+        set(STORAGE.teacherContent, teacherContent);
+      },
+      getSubjects: () => teacherContent.subjects,
+      setSubjects: (data) => {
+        teacherContent = { ...teacherContent, subjects: data };
+        set(STORAGE.teacherContent, teacherContent);
+      }
     };
   })();
 
@@ -140,7 +213,12 @@
     nextStepTimeoutId: null,
     sessionXp: 0,
     wheelCategories: [],
-    xpTransferKey: null
+    xpTransferKey: null,
+    user: null,
+    profile: null,
+    classes: [],
+    activeClass: null,
+    authMode: "login"
   };
 
   const weekdays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
@@ -232,7 +310,58 @@
     if (pill) pill.textContent = `Total: ${formatClock(seconds)}`;
   };
 
+  const setAppMode = (mode) => {
+    document.body.dataset.appMode = mode;
+  };
+
+  const setAuthMode = (mode) => {
+    state.authMode = mode;
+    document.querySelectorAll("[data-auth-panel]").forEach((panel) => {
+      panel.classList.toggle("active", panel.dataset.authPanel === mode);
+    });
+    document.querySelectorAll("[data-auth-tab]").forEach((tab) => {
+      tab.classList.toggle("active", tab.dataset.authTab === mode);
+    });
+    setAuthMessage("");
+  };
+
+  const setAuthMessage = (text) => {
+    const message = $("#authMessage");
+    if (message) message.textContent = text || "";
+  };
+
+  const setClassMessage = (text) => {
+    const message = $("#classMessage");
+    if (message) message.textContent = text || "";
+  };
+
+  const updateHeaderMeta = () => {
+    const userLabel = $("#activeUserLabel");
+    const classLabel = $("#activeClassLabel");
+    const switchBtn = $("#switchClassBtn");
+    const logoutBtn = $("#logoutBtn");
+
+    if (userLabel) {
+      userLabel.textContent = state.profile?.username
+        ? `Compte: ${state.profile.username}`
+        : "";
+    }
+    if (classLabel) {
+      if (state.activeClass) {
+        classLabel.textContent = state.activeClass.level
+          ? `${state.activeClass.name} · ${state.activeClass.level}`
+          : state.activeClass.name;
+      } else {
+        classLabel.textContent = "";
+      }
+    }
+    const showActions = Boolean(state.user);
+    if (switchBtn) switchBtn.style.display = showActions ? "inline-flex" : "none";
+    if (logoutBtn) logoutBtn.style.display = showActions ? "inline-flex" : "none";
+  };
+
   const refreshAll = () => {
+    if (!state.activeClass) return;
     refreshWheel();
     renderCalendar();
     renderDayPanel();
@@ -595,10 +724,27 @@
   };
 
   const showScreen = (name) => {
+    let target = name;
+    if (["calendar", "game", "teacher"].includes(target) && !state.activeClass) {
+      target = state.user ? "classes" : "auth";
+    }
     $$(".screen").forEach((screen) => {
-      screen.classList.toggle("active", screen.dataset.screen === name);
+      screen.classList.toggle("active", screen.dataset.screen === target);
     });
-    if (name === "calendar") {
+    if (target === "auth") {
+      setAppMode("auth");
+      stopAllTimers();
+      clearNextStep();
+      return;
+    }
+    if (target === "classes") {
+      setAppMode("classes");
+      stopAllTimers();
+      clearNextStep();
+      return;
+    }
+    setAppMode("app");
+    if (target === "calendar") {
       setNavActive("calendar");
       stopAllTimers();
       clearNextStep();
@@ -606,10 +752,10 @@
       renderCalendar();
       renderDayPanel();
     }
-    if (name === "game") {
+    if (target === "game") {
       setNavActive("calendar");
     }
-    if (name === "teacher") {
+    if (target === "teacher") {
       stopAllTimers();
       clearNextStep();
     }
@@ -789,6 +935,175 @@
     } else {
       dayQuizInfo.textContent = "Aucun quiz attribue: mode categories aleatoires.";
     }
+  };
+
+  const renderClassList = () => {
+    const list = $("#classList");
+    if (!list) return;
+    list.innerHTML = "";
+    if (!state.classes.length) {
+      list.innerHTML = "<div class=\"note\">Aucune classe pour le moment.</div>";
+      return;
+    }
+    state.classes.forEach((entry) => {
+      const item = document.createElement("div");
+      item.className = "class-item";
+      const level = entry.level ? `<div class="class-meta">Niveau: ${entry.level}</div>` : "";
+      item.innerHTML = `
+        <div>
+          <strong>${entry.name}</strong>
+          ${level}
+        </div>
+        <button class="secondary" type="button" data-action="open-class" data-id="${entry.id}">Ouvrir</button>
+      `;
+      list.appendChild(item);
+    });
+  };
+
+  const loadClasses = async () => {
+    const data = await store.listClasses?.();
+    state.classes = Array.isArray(data) ? data : [];
+    renderClassList();
+  };
+
+  const openClass = async (classId) => {
+    if (!classId) return;
+    const match = state.classes.find((item) => item.id === classId);
+    state.activeClass = match || { id: classId, name: "Classe" };
+    store.setActiveClass?.(classId);
+    await store.loadClassState?.(classId);
+    const today = new Date();
+    state.month = new Date(today.getFullYear(), today.getMonth(), 1);
+    state.selectedDate = dateKey(today);
+    state.sessionXp = 0;
+    state.xpTransferKey = null;
+    updateHeaderMeta();
+    refreshAll();
+    showScreen("calendar");
+  };
+
+  const handleLogin = async () => {
+    const username = $("#loginUsername")?.value.trim();
+    const password = $("#loginPassword")?.value;
+    if (!username || !password) {
+      setAuthMessage("Entre un nom d'utilisateur et un mot de passe.");
+      return;
+    }
+    setAuthMessage("Connexion...");
+    const { data, error } = await store.auth.signIn(username, password);
+    if (error) {
+      setAuthMessage("Impossible de se connecter. Verifie les identifiants.");
+      return;
+    }
+    const user = data?.user || data?.session?.user;
+    await handleSignedIn(user, username);
+  };
+
+  const handleSignup = async () => {
+    const username = $("#signupUsername")?.value.trim();
+    const password = $("#signupPassword")?.value;
+    if (!username || !password) {
+      setAuthMessage("Entre un nom d'utilisateur et un mot de passe.");
+      return;
+    }
+    setAuthMessage("Creation du compte...");
+    const { data, error } = await store.auth.signUp(username, password);
+    if (error) {
+      setAuthMessage("Impossible de creer le compte. Essaie un autre nom.");
+      return;
+    }
+    const user = data?.user || data?.session?.user;
+    if (!user) {
+      setAuthMessage("Compte cree. Active la confirmation email dans Supabase si besoin.");
+      return;
+    }
+    await handleSignedIn(user, username);
+  };
+
+  const handleLogout = async () => {
+    await store.auth.signOut();
+    state.user = null;
+    state.profile = null;
+    state.classes = [];
+    state.activeClass = null;
+    updateHeaderMeta();
+    setAuthMode("login");
+    showScreen("auth");
+  };
+
+  const handleCreateClass = async () => {
+    const name = $("#classNameInput")?.value.trim();
+    const level = $("#classLevelInput")?.value.trim();
+    if (!name) {
+      setClassMessage("Ajoute un nom de classe.");
+      return;
+    }
+    setClassMessage("Creation...");
+    const { data, error } = await store.createClass({ name, level });
+    if (error) {
+      setClassMessage("Impossible de creer la classe.");
+      return;
+    }
+    $("#classNameInput").value = "";
+    $("#classLevelInput").value = "";
+    setClassMessage("Classe creee.");
+    state.classes = [data, ...state.classes];
+    renderClassList();
+    await openClass(data.id);
+  };
+
+  const handleSignedIn = async (user, fallbackUsername) => {
+    if (!user) return;
+    setAuthMessage("");
+    state.user = user;
+    const profile = await store.getProfile?.(fallbackUsername);
+    state.profile = profile || (fallbackUsername ? { username: fallbackUsername } : null);
+    updateHeaderMeta();
+    await store.loadTeacherContent?.();
+    await loadClasses();
+    const preferred = store.getActiveClassId?.();
+    if (preferred && state.classes.some((item) => item.id === preferred)) {
+      await openClass(preferred);
+      return;
+    }
+    if (state.classes.length === 1) {
+      await openClass(state.classes[0].id);
+      return;
+    }
+    showScreen("classes");
+  };
+
+  const bootstrapAuth = async () => {
+    const session = await store.auth.getSession();
+    const user = session?.data?.session?.user;
+    if (user) {
+      await handleSignedIn(user);
+      return;
+    }
+    setAuthMode("login");
+    showScreen("auth");
+  };
+
+  let authListenerReady = false;
+  const attachAuthListener = () => {
+    if (authListenerReady || !store.auth?.onAuthStateChange) return;
+    authListenerReady = true;
+    store.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        state.user = null;
+        state.profile = null;
+        state.classes = [];
+        state.activeClass = null;
+        updateHeaderMeta();
+        setAuthMode("login");
+        showScreen("auth");
+        return;
+      }
+      if (session?.user) {
+        if (state.user?.id === session.user.id) return;
+        handleSignedIn(session.user);
+      }
+    });
   };
 
   const renderXpPanels = (sessionGain = 0) => {
@@ -2176,9 +2491,9 @@
     const today = new Date();
     state.month = new Date(today.getFullYear(), today.getMonth(), 1);
     state.selectedDate = dateKey(today);
-
-    setNavActive("calendar");
-    refreshAll();
+    setAuthMode("login");
+    setAppMode("auth");
+    updateHeaderMeta();
 
     $("#prevMonth")?.addEventListener("click", () => changeMonth(-1));
     $("#nextMonth")?.addEventListener("click", () => changeMonth(1));
@@ -2186,6 +2501,14 @@
     $("#finishBack")?.addEventListener("click", () => showScreen("calendar"));
     $("#spinBtn")?.addEventListener("click", handleSpin);
     $("#openTeacher")?.addEventListener("click", () => {
+      if (!state.user) {
+        showScreen("auth");
+        return;
+      }
+      if (!state.activeClass) {
+        showScreen("classes");
+        return;
+      }
       setTeacherMessage("");
       renderBankList();
       refreshSubjectSelects();
@@ -2208,6 +2531,14 @@
       btn.addEventListener("click", () => {
         const target = btn.dataset.nav;
         if (!target) return;
+        if (!state.user) {
+          showScreen("auth");
+          return;
+        }
+        if (!state.activeClass) {
+          showScreen("classes");
+          return;
+        }
         if (target === "calendar") {
           showScreen("calendar");
           return;
@@ -2215,6 +2546,29 @@
         showScreen("teacher");
         setTeacherTab(target);
       });
+    });
+    document.querySelectorAll("[data-auth-tab]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const mode = btn.dataset.authTab;
+        if (mode) setAuthMode(mode);
+      });
+    });
+    $("#loginBtn")?.addEventListener("click", handleLogin);
+    $("#signupBtn")?.addEventListener("click", handleSignup);
+    $("#switchClassBtn")?.addEventListener("click", async () => {
+      await loadClasses();
+      showScreen("classes");
+    });
+    $("#logoutBtn")?.addEventListener("click", handleLogout);
+    $("#createClassBtn")?.addEventListener("click", handleCreateClass);
+    $("#classList")?.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const action = target.dataset.action || target.closest("[data-action]")?.dataset.action;
+      const id = target.dataset.id || target.closest("[data-id]")?.dataset.id;
+      if (action === "open-class" && id) {
+        openClass(id);
+      }
     });
     $("#backToCalendarFromTeacher")?.addEventListener("click", () => showScreen("calendar"));
     $("#addBankQuestionBtn")?.addEventListener("click", handleAddBankQuestion);
@@ -2463,15 +2817,19 @@
   };
 
   init();
-
-  if (store?.ready?.then) {
-    store.ready.then(() => {
-      refreshAll();
-    });
-  }
+  attachAuthListener();
+  const boot = async () => {
+    if (store?.ready?.then) {
+      await store.ready;
+    }
+    await bootstrapAuth();
+  };
+  boot();
   if (typeof store?.onSync === "function") {
     store.onSync(() => {
-      refreshAll();
+      if (state.activeClass) {
+        refreshAll();
+      }
     });
   }
 })();

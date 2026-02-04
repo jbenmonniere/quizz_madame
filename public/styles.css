@@ -156,6 +156,42 @@ h1, h2, h3, h4 {
   border: 2px solid rgba(169, 216, 255, 0.7);
 }
 
+.tc-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.tc-user {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.tc-class-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.tc-class {
+  font-family: var(--font-display);
+  font-size: 12px;
+  background: #fff3f3;
+  border-radius: 999px;
+  padding: 6px 10px;
+  border: 2px solid rgba(255, 80, 80, 0.4);
+}
+
+.ghost.small {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
 .tc-app {
   position: relative;
   z-index: 1;
@@ -169,6 +205,72 @@ h1, h2, h3, h4 {
 
 .screen.active {
   display: block;
+}
+
+body[data-app-mode="auth"] .tc-nav,
+body[data-app-mode="classes"] .tc-nav {
+  display: none;
+}
+
+body[data-app-mode="auth"] .tc-class-actions,
+body[data-app-mode="auth"] .tc-date {
+  display: none;
+}
+
+.auth-layout {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+}
+
+.auth-card {
+  width: min(420px, 92vw);
+  display: grid;
+  gap: 14px;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.auth-panel {
+  display: none;
+  gap: 12px;
+}
+
+.auth-panel.active {
+  display: grid;
+}
+
+.class-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.1fr) minmax(260px, 0.9fr);
+  gap: 24px;
+}
+
+.class-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.class-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #f7f5ff;
+  border: 2px solid rgba(201, 188, 255, 0.5);
+}
+
+.class-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
 }
 
 @keyframes fadeUp {
@@ -1031,6 +1133,10 @@ button:focus-visible {
   margin-bottom: 12px;
 }
 
+.class-card h3 {
+  margin-bottom: 12px;
+}
+
 .stats-card {
   grid-column: span 2;
 }
@@ -1742,6 +1848,7 @@ button:focus-visible {
 
 @media (max-width: 960px) {
   .calendar-layout,
+  .class-layout,
   .game-grid,
   .teacher-grid {
     grid-template-columns: 1fr;
@@ -1751,6 +1858,11 @@ button:focus-visible {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+
+  .tc-header-right {
+    align-items: flex-start;
+    width: 100%;
   }
 
   .wheel-wrap {

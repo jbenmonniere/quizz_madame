@@ -14,7 +14,15 @@ const APP_HTML = `
       <div class="tc-subtitle">5 tours par jour · note sur 5</div>
     </div>
   </button>
-  <div class="tc-date" id="activeDateLabel"></div>
+  <div class="tc-header-right">
+    <div class="tc-user" id="activeUserLabel"></div>
+    <div class="tc-date" id="activeDateLabel"></div>
+    <div class="tc-class-actions">
+      <div class="tc-class" id="activeClassLabel"></div>
+      <button class="ghost small" id="switchClassBtn" type="button">Mes classes</button>
+      <button class="ghost small" id="logoutBtn" type="button">Deconnexion</button>
+    </div>
+  </div>
 </header>
 <nav class="tc-nav" aria-label="Navigation">
   <button class="tab-btn nav-tab active" data-nav="calendar" type="button">Calendrier</button>
@@ -24,7 +32,63 @@ const APP_HTML = `
 </nav>
 
 <main class="tc-app">
-  <section class="screen active" data-screen="calendar">
+  <section class="screen active" data-screen="auth">
+    <div class="auth-layout">
+      <div class="card auth-card">
+        <div class="auth-tabs">
+          <button class="tab-btn active" data-auth-tab="login" type="button">Connexion</button>
+          <button class="tab-btn" data-auth-tab="signup" type="button">Creer un compte</button>
+        </div>
+        <div class="auth-panel active" data-auth-panel="login">
+          <div class="form-row">
+            <label>Nom d'utilisateur</label>
+            <input id="loginUsername" autocomplete="username" />
+          </div>
+          <div class="form-row">
+            <label>Mot de passe</label>
+            <input type="password" id="loginPassword" autocomplete="current-password" />
+          </div>
+          <button class="primary" id="loginBtn" type="button">Se connecter</button>
+        </div>
+        <div class="auth-panel" data-auth-panel="signup">
+          <div class="form-row">
+            <label>Nom d'utilisateur</label>
+            <input id="signupUsername" autocomplete="username" />
+          </div>
+          <div class="form-row">
+            <label>Mot de passe</label>
+            <input type="password" id="signupPassword" autocomplete="new-password" />
+          </div>
+          <button class="primary" id="signupBtn" type="button">Creer le compte</button>
+        </div>
+        <div class="note" id="authMessage"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" data-screen="classes">
+    <div class="class-layout">
+      <div class="card class-card">
+        <h3>Mes classes</h3>
+        <div class="class-list" id="classList"></div>
+        <div class="note" id="classMessage"></div>
+      </div>
+      <div class="card class-card">
+        <h3>Creer une classe</h3>
+        <div class="form-row">
+          <label>Nom de la classe</label>
+          <input id="classNameInput" placeholder="Ex: 5e B" />
+        </div>
+        <div class="form-row">
+          <label>Niveau (optionnel)</label>
+          <input id="classLevelInput" placeholder="Ex: 5e" />
+        </div>
+        <button class="primary" id="createClassBtn" type="button">Creer la classe</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" data-screen="calendar">
     <div class="calendar-layout">
       <div class="card calendar-card">
         <div class="calendar-top">
