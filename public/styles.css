@@ -1044,6 +1044,36 @@ button:focus-visible {
   z-index: 40;
 }
 
+.xp-transfer-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 60;
+}
+
+.xp-orb {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff2f2, #ff2a2a 65%, #b40000 100%);
+  box-shadow: 0 10px 18px rgba(160, 16, 16, 0.28);
+}
+
+.xp-confetti {
+  position: absolute;
+  width: 10px;
+  height: 6px;
+  border-radius: 4px;
+  background: #ff3b3b;
+  box-shadow: 0 6px 12px rgba(130, 10, 10, 0.2);
+}
+
+.xp-balloon.pulse {
+  animation: xpBalloonPulse 0.6s var(--ease-pop);
+}
+
 .confetti {
   position: absolute;
   top: -10vh;
@@ -1058,6 +1088,12 @@ button:focus-visible {
   100% {
     transform: translate3d(var(--drift, 0px), 110vh, 0) rotate(var(--spin, 360deg));
   }
+}
+
+@keyframes xpBalloonPulse {
+  0% { transform: scale(var(--xp-inflate, 0.8)); }
+  55% { transform: scale(calc(var(--xp-inflate, 0.8) + 0.1)); }
+  100% { transform: scale(var(--xp-inflate, 0.8)); }
 }
 
 .question-list,

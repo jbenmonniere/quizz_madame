@@ -139,7 +139,8 @@
     waitingNext: false,
     nextStepTimeoutId: null,
     sessionXp: 0,
-    wheelCategories: []
+    wheelCategories: [],
+    xpTransferKey: null
   };
 
   const weekdays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
@@ -394,6 +395,91 @@
     setTimeout(() => {
       layer.innerHTML = "";
     }, 3200);
+  };
+
+  const getVisibleXpBalloon = () => {
+    const panels = $$("[data-xp-panel]");
+    if (!panels.length) return null;
+    let panel = panels.find((item) => item.closest(".finish-banner")?.classList.contains("show"));
+    if (!panel) {
+      panel = panels.find((item) => item.offsetParent !== null) || panels[0];
+    }
+    return panel ? panel.querySelector(".xp-balloon") : null;
+  };
+
+  const launchXpTransfer = () => {
+    const source = $("#activeDateLabel") || $("#dayTitle");
+    const target = getVisibleXpBalloon();
+    const layer = $("#xpTransferLayer");
+    if (!source || !target || !layer) return;
+
+    const startRect = source.getBoundingClientRect();
+    const endRect = target.getBoundingClientRect();
+    const startX = startRect.left + startRect.width / 2;
+    const startY = startRect.top + startRect.height / 2;
+    const endX = endRect.left + endRect.width / 2;
+    const endY = endRect.top + endRect.height / 2;
+
+    const pieces = [];
+    const orb = document.createElement("div");
+    orb.className = "xp-orb";
+    orb.style.left = `${startX}px`;
+    orb.style.top = `${startY}px`;
+    layer.appendChild(orb);
+    pieces.push({ el: orb, size: 1.1 });
+
+    const confettiCount = 16;
+    for (let i = 0; i < confettiCount; i += 1) {
+      const piece = document.createElement("div");
+      piece.className = "xp-confetti";
+      const size = 6 + Math.random() * 8;
+      piece.style.width = `${size}px`;
+      piece.style.height = `${Math.max(4, size * 0.6)}px`;
+      piece.style.background =
+        Math.random() > 0.5 ? "#ff3b3b" : "#ff6a6a";
+      piece.style.left = `${startX}px`;
+      piece.style.top = `${startY}px`;
+      layer.appendChild(piece);
+      pieces.push({ el: piece, size: 0.8 + Math.random() * 0.4 });
+    }
+
+    pieces.forEach((item, idx) => {
+      const { el, size } = item;
+      const driftX = (Math.random() * 180 - 90);
+      const driftY = -(80 + Math.random() * 120);
+      const midX = (startX + endX) / 2 + driftX;
+      const midY = Math.min(startY, endY) + driftY;
+      const duration = 900 + Math.random() * 300;
+      const delay = idx === 0 ? 0 : Math.random() * 120;
+      const rotate = Math.random() * 360;
+      const anim = el.animate(
+        [
+          { transform: `translate(-50%, -50%) scale(${size})`, opacity: 1 },
+          {
+            transform: `translate(${midX - startX}px, ${midY - startY}px) rotate(${rotate}deg) scale(${size * 0.9})`,
+            opacity: 0.9
+          },
+          {
+            transform: `translate(${endX - startX}px, ${endY - startY}px) rotate(${rotate * 1.8}deg) scale(${size * 0.6})`,
+            opacity: 0
+          }
+        ],
+        {
+          duration,
+          delay,
+          easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+          fill: "forwards"
+        }
+      );
+      anim.onfinish = () => {
+        el.remove();
+      };
+    });
+
+    target.classList.remove("pulse");
+    void target.offsetWidth;
+    target.classList.add("pulse");
+    setTimeout(() => target.classList.remove("pulse"), 700);
   };
 
   const playWrongX = () => {
@@ -1804,6 +1890,10 @@
     if (progress.spinsDone >= MAX_ROUNDS) {
       if (finishScore) finishScore.textContent = `Note finale: ${progress.correct}/${MAX_ROUNDS}`;
       if (finishBanner) finishBanner.classList.add("show");
+      if (state.xpTransferKey !== state.selectedDate) {
+        state.xpTransferKey = state.selectedDate;
+        setTimeout(() => launchXpTransfer(), 120);
+      }
       if (wheelNote) wheelNote.textContent = "Defi termine !";
       spinBtn?.setAttribute("disabled", "disabled");
     } else {
@@ -2049,6 +2139,7 @@
     state.currentQuestion = null;
     state.currentCategory = null;
     state.sessionXp = 0;
+    state.xpTransferKey = null;
     clearNextStep();
     ensureWheelReady();
     showScreen("game");

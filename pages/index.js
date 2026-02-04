@@ -493,6 +493,7 @@ const APP_HTML = `
 </div>
 
 <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+<div class="xp-transfer-layer" id="xpTransferLayer" aria-hidden="true"></div>
 `;
 
 export default function Home() {
