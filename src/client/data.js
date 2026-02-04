@@ -271,6 +271,16 @@ const createClass = async (payload) => {
   if (!name) return { data: null, error: { message: "Nom de classe obligatoire." } };
   const level = payload?.level?.trim() || null;
   if (!supabase || !currentUserId) {
+    if (supabase && !currentUserId) {
+      try {
+        const { data } = await supabase.auth.getSession();
+        currentUserId = data?.session?.user?.id || null;
+      } catch (err) {
+        // ignore
+      }
+    }
+  }
+  if (!supabase || !currentUserId) {
     const local = {
       id: `local_${Date.now()}`,
       name,

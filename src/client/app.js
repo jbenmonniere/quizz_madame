@@ -1080,7 +1080,7 @@
     setClassMessage("Creation...");
     const { data, error } = await store.createClass({ name, level });
     if (error) {
-      setClassMessage("Impossible de creer la classe.");
+      setClassMessage(error.message || "Impossible de creer la classe.");
       return;
     }
     $("#classNameInput").value = "";
