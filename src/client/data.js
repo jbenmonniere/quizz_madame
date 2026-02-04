@@ -364,14 +364,22 @@ const DataStore = {
         localEnsureDefaults();
         return { data: { session: { user: { id: currentUserId } } }, error: null };
       }
-      const email = usernameToEmail(username);
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { username: username.trim() }
-        }
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
       });
+      if (!response.ok) {
+        let payload = {};
+        try {
+          payload = await response.json();
+        } catch (err) {
+          // ignore parse error
+        }
+        return { data: null, error: { message: payload.message || "Erreur d'inscription." } };
+      }
+      const email = usernameToEmail(username);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       currentUserId = data?.user?.id || data?.session?.user?.id || null;
       return { data, error };
     },

@@ -41,7 +41,7 @@ const APP_HTML = `
         </div>
         <div class="auth-panel active" data-auth-panel="login">
           <div class="form-row">
-            <label>Nom d'utilisateur</label>
+            <label>Nom d'utilisateur (pas d'email)</label>
             <input id="loginUsername" autocomplete="username" />
           </div>
           <div class="form-row">
@@ -52,7 +52,7 @@ const APP_HTML = `
         </div>
         <div class="auth-panel" data-auth-panel="signup">
           <div class="form-row">
-            <label>Nom d'utilisateur</label>
+            <label>Nom d'utilisateur (pas d'email)</label>
             <input id="signupUsername" autocomplete="username" />
           </div>
           <div class="form-row">

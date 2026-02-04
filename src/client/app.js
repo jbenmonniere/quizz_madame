@@ -347,10 +347,19 @@
     if (/password/i.test(message) && /6|characters|length/i.test(message)) {
       return "Mot de passe trop court (minimum 6 caracteres).";
     }
+    if (/rate limit exceeded/i.test(message)) {
+      return "Trop d'essais en peu de temps. Attends un moment puis reessaie.";
+    }
     if (/email.*not confirmed/i.test(message)) {
       return "Compte cree. Confirme l'email dans Supabase ou desactive la confirmation.";
     }
     return message;
+  };
+
+  const isValidUsername = (value) => {
+    if (!value) return false;
+    if (value.includes("@")) return false;
+    return /^[a-zA-Z0-9._-]{3,}$/u.test(value);
   };
 
   const updateHeaderMeta = () => {
@@ -1007,6 +1016,10 @@
       setAuthMessage("Entre un nom d'utilisateur et un mot de passe.");
       return;
     }
+    if (!isValidUsername(username)) {
+      setAuthMessage("Nom d'utilisateur invalide (pas d'email, min 3 caracteres).");
+      return;
+    }
     setAuthMessage("Connexion...");
     const { data, error } = await store.auth.signIn(username, password);
     if (error) {
@@ -1026,6 +1039,10 @@
     const password = $("#signupPassword")?.value;
     if (!username || !password) {
       setAuthMessage("Entre un nom d'utilisateur et un mot de passe.");
+      return;
+    }
+    if (!isValidUsername(username)) {
+      setAuthMessage("Nom d'utilisateur invalide (pas d'email, min 3 caracteres).");
       return;
     }
     setAuthMessage("Creation du compte...");
