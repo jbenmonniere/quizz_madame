@@ -335,6 +335,24 @@
     if (message) message.textContent = text || "";
   };
 
+  const formatAuthError = (error) => {
+    if (!error) return "Une erreur est survenue.";
+    const message = error.message || String(error);
+    if (/already registered|User already registered/i.test(message)) {
+      return "Ce nom existe deja. Essaie de te connecter.";
+    }
+    if (/invalid email/i.test(message)) {
+      return "Nom d'utilisateur invalide. Utilise des lettres ou chiffres.";
+    }
+    if (/password/i.test(message) && /6|characters|length/i.test(message)) {
+      return "Mot de passe trop court (minimum 6 caracteres).";
+    }
+    if (/email.*not confirmed/i.test(message)) {
+      return "Compte cree. Confirme l'email dans Supabase ou desactive la confirmation.";
+    }
+    return message;
+  };
+
   const updateHeaderMeta = () => {
     const userLabel = $("#activeUserLabel");
     const classLabel = $("#activeClassLabel");
@@ -992,10 +1010,14 @@
     setAuthMessage("Connexion...");
     const { data, error } = await store.auth.signIn(username, password);
     if (error) {
-      setAuthMessage("Impossible de se connecter. Verifie les identifiants.");
+      setAuthMessage(formatAuthError(error));
       return;
     }
     const user = data?.user || data?.session?.user;
+    if (!user) {
+      setAuthMessage("Connexion impossible. Verifie la confirmation email dans Supabase.");
+      return;
+    }
     await handleSignedIn(user, username);
   };
 
@@ -1009,12 +1031,12 @@
     setAuthMessage("Creation du compte...");
     const { data, error } = await store.auth.signUp(username, password);
     if (error) {
-      setAuthMessage("Impossible de creer le compte. Essaie un autre nom.");
+      setAuthMessage(formatAuthError(error));
       return;
     }
     const user = data?.user || data?.session?.user;
     if (!user) {
-      setAuthMessage("Compte cree. Active la confirmation email dans Supabase si besoin.");
+      setAuthMessage("Compte cree. Confirme l'email dans Supabase ou desactive la confirmation.");
       return;
     }
     await handleSignedIn(user, username);

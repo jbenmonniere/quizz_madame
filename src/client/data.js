@@ -95,7 +95,7 @@ let currentUserId = null;
 
 const normalizeUsername = (value = "") => value.trim().toLowerCase();
 const sanitizeUsername = (value = "") => normalizeUsername(value).replace(/[^a-z0-9._-]/g, "");
-const usernameToEmail = (value = "") => `${sanitizeUsername(value) || "enseignante"}@quiz.local`;
+const usernameToEmail = (value = "") => `${sanitizeUsername(value) || "enseignante"}@quizz-madame.app`;
 
 const ensureClassState = (classId) => {
   if (!classId) return normalizeClassState();
