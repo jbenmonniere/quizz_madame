@@ -687,8 +687,14 @@
 
     panels.forEach((panel) => {
       panel.style.setProperty("--xp-progress", `${progress}%`);
-      panel.querySelector("[data-xp-text]")?.textContent = `${xp.current} EXP / ${xp.max} EXP`;
-      panel.querySelector("[data-xp-level]")?.textContent = `Niveau ${xp.level}`;
+      const textEl = panel.querySelector("[data-xp-text]");
+      if (textEl) {
+        textEl.textContent = `${xp.current} EXP / ${xp.max} EXP`;
+      }
+      const levelEl = panel.querySelector("[data-xp-level]");
+      if (levelEl) {
+        levelEl.textContent = `Niveau ${xp.level}`;
+      }
       const gainEl = panel.querySelector("[data-xp-gain]");
       if (gainEl) {
         gainEl.textContent = `${gainValue >= 0 ? "+" : ""}${gainValue} EXP`;
