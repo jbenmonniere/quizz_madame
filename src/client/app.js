@@ -755,6 +755,7 @@
     if (["calendar", "game", "teacher"].includes(target) && !state.activeClass) {
       target = state.user ? "classes" : "auth";
     }
+    document.body.dataset.screen = target;
     $$(".screen").forEach((screen) => {
       screen.classList.toggle("active", screen.dataset.screen === target);
     });

@@ -212,6 +212,10 @@ body[data-app-mode="classes"] .tc-nav {
   display: none;
 }
 
+body[data-screen="teacher"] .tc-nav {
+  display: none;
+}
+
 body[data-app-mode="auth"] .tc-class-actions,
 body[data-app-mode="auth"] .tc-date {
   display: none;
