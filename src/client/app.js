@@ -187,6 +187,33 @@
     }
   };
 
+  const computeXpGain = (question) => {
+    const base = 70 + Math.floor(Math.random() * 31);
+    const rawStars = Number.isFinite(question?.difficulty) ? question.difficulty : Number(question?.difficulty);
+    const stars = Number.isFinite(rawStars) ? rawStars : 0;
+    const multiplier = 1 + stars / 10;
+    return Math.round(base * multiplier);
+  };
+
+  const awardXp = (amount) => {
+    if (!amount) return getXpState();
+    const xp = getXpState();
+    let level = xp.level;
+    let current = xp.current + amount;
+    let total = xp.total + amount;
+    let max = xp.max;
+
+    while (current >= max) {
+      current -= max;
+      level += 1;
+      max = XP_BASE + (level - 1) * XP_STEP;
+    }
+
+    const next = { level, current, total };
+    setXpState(next);
+    return { ...next, max };
+  };
+
   const formatClock = (totalSeconds) => {
     const safe = Math.max(0, Number(totalSeconds) || 0);
     const minutes = String(Math.floor(safe / 60)).padStart(2, "0");
@@ -1895,6 +1922,10 @@
     const feedback = $("#answerFeedback");
     if (index === correctIndex) {
       progress.correct += 1;
+      const gained = computeXpGain(state.currentQuestion);
+      state.sessionXp += gained;
+      awardXp(gained);
+      renderXpPanels(state.sessionXp);
       if (feedback) {
         feedback.textContent = "Bonne reponse !";
         feedback.className = "answer-feedback good";
@@ -2017,12 +2048,14 @@
     state.awaitingAnswer = false;
     state.currentQuestion = null;
     state.currentCategory = null;
+    state.sessionXp = 0;
     clearNextStep();
     ensureWheelReady();
     showScreen("game");
     resetQuestionUI();
     renderProgressDots();
     updateGameUI();
+    renderXpPanels(state.sessionXp);
     const spinBtn = $("#spinBtn");
     if (spinBtn) spinBtn.disabled = false;
     const settings = getSettings();
