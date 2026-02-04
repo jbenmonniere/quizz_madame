@@ -682,11 +682,13 @@
     const panels = $$("[data-xp-panel]");
     if (!panels.length) return;
     const xp = getXpState();
-    const progress = xp.max ? Math.round((xp.current / xp.max) * 100) : 0;
+    const ratio = xp.max ? xp.current / xp.max : 0;
+    const clamped = Math.max(0, Math.min(1, ratio));
+    const inflate = 0.75 + clamped * 0.45;
     const gainValue = Number(sessionGain) || 0;
 
     panels.forEach((panel) => {
-      panel.style.setProperty("--xp-progress", `${progress}%`);
+      panel.style.setProperty("--xp-inflate", inflate.toFixed(2));
       const textEl = panel.querySelector("[data-xp-text]");
       if (textEl) {
         textEl.textContent = `${xp.current} EXP / ${xp.max} EXP`;
