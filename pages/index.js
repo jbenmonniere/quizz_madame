@@ -36,15 +36,29 @@ const APP_HTML = `
         <div class="calendar-grid" id="calendarGrid"></div>
       </div>
 
-      <div class="card day-panel">
-        <div class="day-title" id="dayTitle"></div>
-        <div class="day-status" id="dayStatus"></div>
-        <div class="day-quiz-info" id="dayQuizInfo"></div>
-        <div class="day-score" id="dayScore"></div>
-        <div class="day-instructions">
-          La classe tourne la roue 5 fois et repond a 5 questions. La note reste sur le calendrier.
+      <div class="calendar-side">
+        <div class="card day-panel">
+          <div class="day-title" id="dayTitle"></div>
+          <div class="day-status" id="dayStatus"></div>
+          <div class="day-quiz-info" id="dayQuizInfo"></div>
+          <div class="day-score" id="dayScore"></div>
+          <div class="day-instructions">
+            La classe tourne la roue 5 fois et repond a 5 questions. La note reste sur le calendrier.
+          </div>
+          <div class="day-note">Astuce : cliquez sur un autre jour pour lancer un nouveau defi.</div>
         </div>
-        <div class="day-note">Astuce : cliquez sur un autre jour pour lancer un nouveau defi.</div>
+
+        <div class="card xp-panel" data-xp-panel>
+          <div class="xp-title">Progression EXP</div>
+          <div class="xp-balloon">
+            <div class="xp-fill" data-xp-fill></div>
+            <div class="xp-text" data-xp-text>0 EXP / 200 EXP</div>
+          </div>
+          <div class="xp-meta">
+            <div class="xp-level" data-xp-level>Niveau 1</div>
+            <div class="xp-gain" data-xp-gain>+0 EXP</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -87,13 +101,15 @@ const APP_HTML = `
         <div class="finish-title">Journee terminee !</div>
         <div class="finish-score" id="finishScore">Note finale: 0/5</div>
       </div>
-      <div class="xp-panel" id="xpPanel">
-        <div class="xp-balloon" id="xpBalloon">
-          <div class="xp-text" id="xpText">0 EXP / 200 EXP</div>
+      <div class="xp-panel xp-panel-compact" data-xp-panel>
+        <div class="xp-title">Progression EXP</div>
+        <div class="xp-balloon">
+          <div class="xp-fill" data-xp-fill></div>
+          <div class="xp-text" data-xp-text>0 EXP / 200 EXP</div>
         </div>
         <div class="xp-meta">
-          <div class="xp-level" id="xpLevel">Niveau 1</div>
-          <div class="xp-gain" id="xpGain">+0 EXP</div>
+          <div class="xp-level" data-xp-level>Niveau 1</div>
+          <div class="xp-gain" data-xp-gain>+0 EXP</div>
         </div>
       </div>
       <button class="primary" id="finishBack">Retour au calendrier</button>

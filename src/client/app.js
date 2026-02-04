@@ -208,6 +208,7 @@
     refreshWheel();
     renderCalendar();
     renderDayPanel();
+    renderXpPanels();
     updateHeader();
     renderProgressDots();
     renderBankList();
@@ -675,6 +676,24 @@
     } else {
       dayQuizInfo.textContent = "Aucun quiz attribue: mode categories aleatoires.";
     }
+  };
+
+  const renderXpPanels = (sessionGain = 0) => {
+    const panels = $$("[data-xp-panel]");
+    if (!panels.length) return;
+    const xp = getXpState();
+    const progress = xp.max ? Math.round((xp.current / xp.max) * 100) : 0;
+    const gainValue = Number(sessionGain) || 0;
+
+    panels.forEach((panel) => {
+      panel.style.setProperty("--xp-progress", `${progress}%`);
+      panel.querySelector("[data-xp-text]")?.textContent = `${xp.current} EXP / ${xp.max} EXP`;
+      panel.querySelector("[data-xp-level]")?.textContent = `Niveau ${xp.level}`;
+      const gainEl = panel.querySelector("[data-xp-gain]");
+      if (gainEl) {
+        gainEl.textContent = `${gainValue >= 0 ? "+" : ""}${gainValue} EXP`;
+      }
+    });
   };
 
   const getIsoWeekInfo = (date) => {
