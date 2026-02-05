@@ -1650,6 +1650,94 @@ button:focus-visible {
   display: flex;
 }
 
+.levelup-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 140;
+}
+
+.levelup-modal.active {
+  display: flex;
+}
+
+.levelup-backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 205, 90, 0.2), rgba(40, 12, 80, 0.7));
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.25s ease;
+}
+
+.levelup-card {
+  position: relative;
+  width: min(520px, 92vw);
+  padding: 28px 26px 24px;
+  border-radius: 28px;
+  background: radial-gradient(circle at 50% 0%, #ffefb6 0%, #ffc34d 55%, #ff9d2e 100%);
+  border: 4px solid rgba(255, 213, 107, 0.9);
+  box-shadow: 0 24px 60px rgba(71, 25, 112, 0.35), 0 0 40px rgba(255, 186, 73, 0.55);
+  text-align: center;
+  z-index: 1;
+  animation: levelPop 0.45s var(--ease-pop);
+  overflow: hidden;
+}
+
+.levelup-glow {
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.7), rgba(255, 206, 88, 0.1) 60%, transparent 70%);
+  opacity: 0.7;
+  animation: levelGlow 2.4s ease-in-out infinite;
+}
+
+.levelup-crown {
+  position: relative;
+  font-size: 54px;
+  color: #7a2cff;
+  text-shadow: 0 10px 20px rgba(92, 14, 182, 0.4);
+  margin-bottom: 6px;
+}
+
+.levelup-title {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: #6b2b00;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.levelup-level {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: 38px;
+  color: #7a2cff;
+  margin: 10px 0 6px;
+  text-shadow: 0 6px 12px rgba(122, 44, 255, 0.25);
+}
+
+.levelup-sub {
+  position: relative;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b2b00;
+  margin-bottom: 16px;
+}
+
+@keyframes levelPop {
+  0% { transform: translateY(20px) scale(0.92); opacity: 0; }
+  60% { transform: translateY(-4px) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes levelGlow {
+  0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.6; }
+  50% { transform: rotate(6deg) scale(1.05); opacity: 0.95; }
+}
+
 .modal-backdrop {
   position: absolute;
   inset: 0;

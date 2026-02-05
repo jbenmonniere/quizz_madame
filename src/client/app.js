@@ -281,16 +281,39 @@
     let current = xp.current + amount;
     let total = xp.total + amount;
     let max = xp.max;
+    let leveledUp = false;
 
     while (current >= max) {
       current -= max;
       level += 1;
       max = XP_BASE + (level - 1) * XP_STEP;
+      leveledUp = true;
     }
 
     const next = { level, current, total };
     setXpState(next);
+    if (leveledUp) {
+      showLevelUp(level);
+    }
     return { ...next, max };
+  };
+
+  const showLevelUp = (level) => {
+    const modal = $("#levelUpModal");
+    const value = $("#levelUpValue");
+    if (value) value.textContent = `Niveau ${level}`;
+    if (modal) {
+      modal.classList.add("active");
+      modal.setAttribute("aria-hidden", "false");
+    }
+  };
+
+  const hideLevelUp = () => {
+    const modal = $("#levelUpModal");
+    if (modal) {
+      modal.classList.remove("active");
+      modal.setAttribute("aria-hidden", "true");
+    }
   };
 
   const formatClock = (totalSeconds) => {
@@ -2858,10 +2881,20 @@
       }
     });
 
+    $("#levelUpClose")?.addEventListener("click", hideLevelUp);
+    $("#levelUpModal")?.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (target.dataset.levelupClose !== undefined) {
+        hideLevelUp();
+      }
+    });
+
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         closeEditModal();
         closeSubjectModal();
+        hideLevelUp();
       }
     });
 

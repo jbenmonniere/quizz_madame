@@ -565,6 +565,17 @@ const APP_HTML = `
 
 <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 <div class="xp-transfer-layer" id="xpTransferLayer" aria-hidden="true"></div>
+<div class="levelup-modal" id="levelUpModal" aria-hidden="true">
+  <div class="levelup-backdrop" data-levelup-close></div>
+  <div class="levelup-card" role="dialog" aria-modal="true" aria-labelledby="levelUpTitle">
+    <div class="levelup-glow"></div>
+    <div class="levelup-crown">★</div>
+    <div class="levelup-title" id="levelUpTitle">Niveau supérieur</div>
+    <div class="levelup-level" id="levelUpValue">Niveau 1</div>
+    <div class="levelup-sub">Bravo ! Tu passes au niveau suivant.</div>
+    <button class="primary" type="button" id="levelUpClose">Continuer</button>
+  </div>
+</div>
 `;
 
 export default function Home() {
