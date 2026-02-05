@@ -1106,6 +1106,7 @@
     const profile = await store.getProfile?.(fallbackUsername);
     state.profile = profile || (fallbackUsername ? { username: fallbackUsername } : null);
     updateHeaderMeta();
+    updateHeaderMeta();
     await store.loadTeacherContent?.();
     await loadClasses();
     const preferred = store.getActiveClassId?.();
