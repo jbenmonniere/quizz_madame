@@ -30,6 +30,7 @@ const APP_HTML = `
   <button class="tab-btn nav-tab" data-nav="quizz" type="button">Quizz</button>
   <button class="tab-btn nav-tab" data-nav="questions" type="button">Questions</button>
   <button class="tab-btn nav-tab" data-nav="ai" type="button">IA</button>
+  <button class="tab-btn nav-tab" data-nav="stats" type="button">Statistiques</button>
   <button class="tab-btn nav-tab" data-nav="rewards" type="button">Récompenses</button>
 </nav>
 
@@ -209,6 +210,7 @@ const APP_HTML = `
         <button class="tab-btn" data-teacher-tab="quizz" type="button">Quizz</button>
         <button class="tab-btn" data-teacher-tab="questions" type="button">Questions</button>
         <button class="tab-btn" data-teacher-tab="ai" type="button">IA</button>
+        <button class="tab-btn" data-teacher-tab="stats" type="button">Statistiques</button>
         <button class="tab-btn" data-teacher-tab="rewards" type="button">Récompenses</button>
       </div>
     </div>
@@ -598,6 +600,173 @@ const APP_HTML = `
         </div>
       </div>
     </div>
+
+    <div class="teacher-section" data-teacher-panel="stats">
+      <div class="stats-layout">
+        <div class="card stats-filters" id="statsFilters">
+          <h3>Filtres</h3>
+          <div class="stats-filter-grid">
+            <div class="form-row">
+              <label>Portée</label>
+              <div class="select" data-select="statsScopeSelect">
+                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="select-value placeholder" data-placeholder="Choisir">Choisir</span>
+                  <span class="select-caret">▾</span>
+                </button>
+                <div class="select-menu" role="listbox"></div>
+                <input type="hidden" id="statsScopeSelect" value="class" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Période</label>
+              <div class="select" data-select="statsPeriodSelect">
+                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="select-value placeholder" data-placeholder="Choisir">Choisir</span>
+                  <span class="select-caret">▾</span>
+                </button>
+                <div class="select-menu" role="listbox"></div>
+                <input type="hidden" id="statsPeriodSelect" value="last7" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Matière</label>
+              <div class="select" data-select="statsSubjectSelect">
+                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="select-value placeholder" data-placeholder="Toutes les matières">Toutes les matières</span>
+                  <span class="select-caret">▾</span>
+                </button>
+                <div class="select-menu" role="listbox"></div>
+                <input type="hidden" id="statsSubjectSelect" value="all" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Mode</label>
+              <div class="select" data-select="statsModeSelect">
+                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="select-value placeholder" data-placeholder="Tous">Tous</span>
+                  <span class="select-caret">▾</span>
+                </button>
+                <div class="select-menu" role="listbox"></div>
+                <input type="hidden" id="statsModeSelect" value="all" />
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-filter-grid" id="statsGroupRow" style="display:none;">
+            <div class="form-row">
+              <label>Groupe</label>
+              <div class="select" data-select="statsGroupSelect">
+                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="select-value placeholder" data-placeholder="Choisir un groupe">Choisir un groupe</span>
+                  <span class="select-caret">▾</span>
+                </button>
+                <div class="select-menu" role="listbox"></div>
+                <input type="hidden" id="statsGroupSelect" value="" />
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-filter-grid" id="statsStudentRow" style="display:none;">
+            <div class="form-row">
+              <label>Élève</label>
+              <div class="select" data-select="statsStudentSelect">
+                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="select-value placeholder" data-placeholder="Choisir un élève">Choisir un élève</span>
+                  <span class="select-caret">▾</span>
+                </button>
+                <div class="select-menu" role="listbox"></div>
+                <input type="hidden" id="statsStudentSelect" value="" />
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-filter-grid" id="statsCustomRow" style="display:none;">
+            <div class="form-row">
+              <label>Début</label>
+              <input type="date" id="statsCustomStart" />
+            </div>
+            <div class="form-row">
+              <label>Fin</label>
+              <input type="date" id="statsCustomEnd" />
+            </div>
+          </div>
+
+          <div class="stats-level-range">
+            <label>Plage de niveaux</label>
+            <div class="stats-level-controls">
+              <input type="range" id="statsLevelMin" min="1" max="100" value="1" />
+              <input type="range" id="statsLevelMax" min="1" max="100" value="100" />
+              <div class="stats-level-label" id="statsLevelLabel">Niveaux 1 - 100</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-kpis" id="statsKpiRow"></div>
+
+        <div class="card stats-card">
+          <div class="stats-card-header">
+            <h3>Forces vs faiblesses</h3>
+            <div class="stats-toggle">
+              <button class="tab-btn small active" data-stats-toggle="accuracy" type="button">Réussite</button>
+              <button class="tab-btn small" data-stats-toggle="weighted" type="button">Score pondéré</button>
+            </div>
+          </div>
+          <div class="stats-radar-wrap">
+            <svg id="statsRadarChart"></svg>
+          </div>
+          <div class="stats-radar-summary">
+            <div>
+              <h4>Top 3 forces</h4>
+              <ul id="statsTopStrengths"></ul>
+            </div>
+            <div>
+              <h4>Top 3 à travailler</h4>
+              <ul id="statsTopWeaknesses"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-trends">
+          <div class="card stats-card">
+            <h3>Réussite dans le temps</h3>
+            <svg id="statsAccuracyTrend"></svg>
+          </div>
+          <div class="card stats-card">
+            <h3>Niveau moyen</h3>
+            <svg id="statsLevelTrend"></svg>
+          </div>
+          <div class="card stats-card">
+            <h3>Temps moyen par question</h3>
+            <svg id="statsTimeTrend"></svg>
+          </div>
+        </div>
+
+        <div class="card stats-card stats-insights">
+          <h3>Diagnostic pédagogique</h3>
+          <div class="stats-insight-grid">
+            <div class="stats-insight">
+              <h4>Forces</h4>
+              <ul id="statsStrengthList"></ul>
+              <button class="ghost small" type="button">Lancer révision ciblée</button>
+            </div>
+            <div class="stats-insight">
+              <h4>À renforcer</h4>
+              <ul id="statsWeakList"></ul>
+              <button class="ghost small" type="button">Générer mini-quiz</button>
+            </div>
+            <div class="stats-insight">
+              <h4>Notions fragiles</h4>
+              <ul id="statsCommonMistakes"></ul>
+              <button class="ghost small" type="button">Recommander activité</button>
+            </div>
+            <div class="stats-insight">
+              <h4>Questions difficiles</h4>
+              <ul id="statsHardQuestions"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -692,6 +861,27 @@ const APP_HTML = `
     </div>
     <div class="modal-actions">
       <button class="primary" id="aiConfirmOk" type="button">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="statsDetailModal" aria-hidden="true">
+  <div class="modal-backdrop" data-stats-detail="close"></div>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="statsDetailTitle">Détail</h3>
+    </div>
+    <div class="modal-section">
+      <div class="note" id="statsDetailFormula"></div>
+      <div class="stats-detail-value" id="statsDetailValue"></div>
+      <div class="note" id="statsDetailTrend"></div>
+    </div>
+    <div class="modal-section">
+      <h4>Ventilation par matière</h4>
+      <ul id="statsDetailBreakdown"></ul>
+    </div>
+    <div class="modal-actions">
+      <button class="primary" id="statsDetailOk" type="button">OK</button>
     </div>
   </div>
 </div>

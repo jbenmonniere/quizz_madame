@@ -13,7 +13,8 @@ const DEFAULT_CLASS_STATE = {
   progress: {},
   assignments: {},
   settings: {},
-  xp: null
+  xp: null,
+  attempts: []
 };
 
 const DEFAULT_TEACHER_CONTENT = {
@@ -48,7 +49,8 @@ const normalizeClassState = (data = {}) => ({
   progress: data.progress ?? DEFAULT_CLASS_STATE.progress,
   assignments: data.assignments ?? DEFAULT_CLASS_STATE.assignments,
   settings: data.settings ?? DEFAULT_CLASS_STATE.settings,
-  xp: data.xp ?? DEFAULT_CLASS_STATE.xp
+  xp: data.xp ?? DEFAULT_CLASS_STATE.xp,
+  attempts: Array.isArray(data.attempts) ? data.attempts : DEFAULT_CLASS_STATE.attempts
 });
 
 const normalizeTeacherContent = (data = {}) => ({
@@ -527,6 +529,11 @@ const DataStore = {
   setXp: (data) => {
     const current = getClassState();
     setClassState({ ...current, xp: data });
+  },
+  getAttempts: () => getClassState().attempts || [],
+  setAttempts: (data) => {
+    const current = getClassState();
+    setClassState({ ...current, attempts: Array.isArray(data) ? data : [] });
   },
   getBank: () => getTeacherContent().bank,
   setBank: (data) => {

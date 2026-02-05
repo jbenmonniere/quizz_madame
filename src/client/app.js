@@ -19,7 +19,7 @@
     };
     const get = (key, fallback) => safeParse(localStorage.getItem(key), fallback);
     const set = (key, value) => localStorage.setItem(key, JSON.stringify(value));
-    const defaultClassState = { calendar: {}, progress: {}, assignments: {}, settings: {}, xp: null };
+    const defaultClassState = { calendar: {}, progress: {}, assignments: {}, settings: {}, xp: null, attempts: [] };
     const defaultTeacherContent = { bank: [], quizzes: [], subjects: {}, rewards: null };
     let activeClass = get(STORAGE.activeClass, null);
     let classState = get(STORAGE.classState, {});
@@ -29,6 +29,7 @@
 
     const ensureClassState = (id) => {
       if (!classState[id]) classState[id] = { ...defaultClassState };
+      if (!Array.isArray(classState[id].attempts)) classState[id].attempts = [];
       return classState[id];
     };
     const ensureLocalClass = () => {
@@ -117,6 +118,11 @@
         ensureClassState(activeClass).xp = data;
         set(STORAGE.classState, classState);
       },
+      getAttempts: () => ensureClassState(activeClass).attempts || [],
+      setAttempts: (data) => {
+        ensureClassState(activeClass).attempts = Array.isArray(data) ? data : [];
+        set(STORAGE.classState, classState);
+      },
       getBank: () => teacherContent.bank,
       setBank: (data) => {
         teacherContent = { ...teacherContent, bank: data };
@@ -149,8 +155,55 @@
     questionTime: 30,
     totalTime: MAX_ROUNDS * 30
   };
+  const STATS_FILTER_STORAGE = "tc_stats_filters";
+  const DEFAULT_STATS_FILTERS = {
+    scope: "class",
+    period: "last7",
+    subject: "all",
+    levelMin: 1,
+    levelMax: 100,
+    mode: "all",
+    customStart: "",
+    customEnd: "",
+    groupId: "",
+    studentId: ""
+  };
+  const MIN_ATTEMPTS = 5;
+  const AT_RISK_THRESHOLD = 60;
 
   const uid = (prefix = "id") => `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
+
+  const safeParseJson = (value, fallback) => {
+    try {
+      return value ? JSON.parse(value) : fallback;
+    } catch (err) {
+      return fallback;
+    }
+  };
+
+  const loadStatsFilters = () => {
+    if (typeof window === "undefined" || !window.localStorage) {
+      return { ...DEFAULT_STATS_FILTERS };
+    }
+    const stored = safeParseJson(localStorage.getItem(STATS_FILTER_STORAGE), {});
+    const merged = { ...DEFAULT_STATS_FILTERS, ...stored };
+    merged.levelMin = Math.max(1, Number(merged.levelMin) || 1);
+    merged.levelMax = Math.min(100, Number(merged.levelMax) || 100);
+    if (merged.levelMin > merged.levelMax) merged.levelMin = merged.levelMax;
+    return merged;
+  };
+
+  const saveStatsFilters = (filters) => {
+    if (typeof window === "undefined" || !window.localStorage) return;
+    localStorage.setItem(STATS_FILTER_STORAGE, JSON.stringify(filters));
+  };
+
+  const formatDateInput = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
 
   const wheelPalette = [
     "#b9f3d1",
@@ -286,6 +339,8 @@
     awaitingAnswer: false,
     currentCategory: null,
     currentQuestion: null,
+    currentMode: null,
+    questionStartTime: null,
     questionTimerId: null,
     globalTimerId: null,
     questionDeadline: null,
@@ -305,6 +360,9 @@
     authMode: "login",
     selectedRewardLevel: 1,
     rewardsFilter: "all",
+    statsFilters: loadStatsFilters(),
+    statsSnapshot: null,
+    statsRadarMode: "accuracy",
     aiQuestions: [],
     aiBusy: false
   };
@@ -335,6 +393,34 @@
   const setSettings = (data) => store.setSettings(data);
   const getBank = () => store.getBank();
   const setBank = (data) => store.setBank(data);
+  const getAttempts = () => (typeof store.getAttempts === "function" ? store.getAttempts() : []);
+  const setAttempts = (data) => {
+    if (typeof store.setAttempts === "function") {
+      store.setAttempts(data);
+    }
+  };
+
+  const recordAttempt = ({ question, isCorrect, timeMs, mode }) => {
+    if (!question) return;
+    const attempts = getAttempts();
+    const questionText = question.text || question.question || "";
+    attempts.push({
+      attemptId: uid("att"),
+      studentId: "class",
+      groupId: state.activeClass || "class",
+      timestamp: new Date().toISOString(),
+      questionId: question.id || question._id || questionText.slice(0, 80),
+      questionText,
+      subject: question.subject || state.currentCategory?.name || "Sans matière",
+      theme: question.subtheme || "General",
+      level: getXpState().level,
+      isCorrect: Boolean(isCorrect),
+      timeToAnswerMs: Math.max(0, Number(timeMs) || 0),
+      mode: mode || state.currentMode || "challenge",
+      difficulty: Number.isFinite(question.difficulty) ? question.difficulty : 0
+    });
+    setAttempts(attempts);
+  };
   const getXpState = () => {
     const stored = store.getXp?.();
     const safe = stored && typeof stored === "object" ? stored : {};
@@ -644,6 +730,8 @@
     renderWeeklyStats();
     renderSettings();
     renderRewardsPanel();
+    renderStatsFilters();
+    renderStats();
     initQuestionTooltip();
   };
 
@@ -678,6 +766,10 @@
       renderAiSubjectSelect();
       renderAiSubthemeSelect();
       renderAiResults();
+    }
+    if (name === "stats") {
+      renderStatsFilters();
+      renderStats();
     }
   };
 
@@ -2335,6 +2427,7 @@
     renderQuizBankSubthemeFilter();
     renderAiSubjectSelect();
     renderAiSubthemeSelect();
+    renderStatsFilters();
     refreshWheel();
   };
 
@@ -2533,6 +2626,696 @@
 
   const hideAiConfirm = () => {
     const modal = $("#aiConfirmModal");
+    if (!modal) return;
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+  };
+
+  const setStatsFilters = (updates = {}) => {
+    const next = { ...state.statsFilters, ...updates };
+    next.levelMin = Math.max(1, Number(next.levelMin) || 1);
+    next.levelMax = Math.min(100, Number(next.levelMax) || 100);
+    if (next.levelMin > next.levelMax) next.levelMin = next.levelMax;
+    state.statsFilters = next;
+    saveStatsFilters(state.statsFilters);
+    renderStatsFilters();
+    renderStats();
+  };
+
+  const getPeriodRange = (filters) => {
+    const now = new Date();
+    const startOfDay = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    if (filters.period === "today") {
+      return { start: startOfDay(now), end: now };
+    }
+    if (filters.period === "last7") {
+      const start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      return { start, end: now };
+    }
+    if (filters.period === "last30") {
+      const start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      return { start, end: now };
+    }
+    if (filters.period === "custom") {
+      const start = filters.customStart ? new Date(`${filters.customStart}T00:00:00`) : new Date(0);
+      const end = filters.customEnd ? new Date(`${filters.customEnd}T23:59:59`) : now;
+      end.setHours(23, 59, 59, 999);
+      return { start, end };
+    }
+    return { start: new Date(0), end: now };
+  };
+
+  const filterAttempts = (attempts, filters) => {
+    const range = getPeriodRange(filters);
+    return attempts.filter((a) => {
+      const time = new Date(a.timestamp).getTime();
+      if (time < range.start.getTime() || time > range.end.getTime()) return false;
+      if (filters.scope === "group" && filters.groupId && a.groupId !== filters.groupId) return false;
+      if (filters.scope === "student" && filters.studentId && a.studentId !== filters.studentId) return false;
+      if (filters.subject !== "all" && a.subject !== filters.subject) return false;
+      if (filters.mode !== "all" && a.mode !== filters.mode) return false;
+      const level = Number(a.level) || 0;
+      if (level < filters.levelMin || level > filters.levelMax) return false;
+      return true;
+    });
+  };
+
+  const computeKpis = (attempts, fallbackLevel) => {
+    const total = attempts.length;
+    const correct = attempts.filter((a) => a.isCorrect).length;
+    const accuracy = total ? (correct / total) * 100 : 0;
+    const timeSum = attempts.reduce((sum, a) => sum + (Number(a.timeToAnswerMs) || 0), 0);
+    const avgTime = total ? timeSum / total / 1000 : 0;
+    const levelSum = attempts.reduce((sum, a) => sum + (Number(a.level) || 0), 0);
+    const avgLevel = total ? levelSum / total : fallbackLevel;
+
+    const sessionsByStudent = new Map();
+    attempts.forEach((a) => {
+      const student = a.studentId || "class";
+      const day = String(a.timestamp || "").slice(0, 10);
+      if (!sessionsByStudent.has(student)) sessionsByStudent.set(student, new Set());
+      sessionsByStudent.get(student).add(day);
+    });
+    const studentCount = sessionsByStudent.size || 1;
+    let totalSessions = 0;
+    sessionsByStudent.forEach((set) => {
+      totalSessions += set.size;
+    });
+    const engagement = totalSessions / studentCount;
+
+    const themeStats = {};
+    attempts.forEach((a) => {
+      const theme = a.theme || "General";
+      if (!themeStats[theme]) themeStats[theme] = { attempts: 0, correct: 0 };
+      themeStats[theme].attempts += 1;
+      if (a.isCorrect) themeStats[theme].correct += 1;
+    });
+    const atRiskSkills = Object.values(themeStats).filter((s) => {
+      if (s.attempts < MIN_ATTEMPTS) return false;
+      return (s.correct / s.attempts) * 100 < AT_RISK_THRESHOLD;
+    }).length;
+
+    return {
+      overallAccuracy: accuracy,
+      questionsAnswered: total,
+      avgTimePerQuestion: avgTime,
+      avgLevel,
+      engagement,
+      atRiskSkills
+    };
+  };
+
+  const buildSubjectStats = (attempts) => {
+    const map = {};
+    attempts.forEach((a) => {
+      const subject = a.subject || "Sans matière";
+      if (!map[subject]) {
+        map[subject] = { subject, attempts: 0, correct: 0, weightedCorrect: 0, weightedTotal: 0 };
+      }
+      const weight = Number(a.difficulty) > 0 ? Number(a.difficulty) : 1;
+      map[subject].attempts += 1;
+      map[subject].weightedTotal += weight;
+      if (a.isCorrect) {
+        map[subject].correct += 1;
+        map[subject].weightedCorrect += weight;
+      }
+    });
+    return Object.values(map).map((item) => ({
+      ...item,
+      accuracy: item.attempts ? (item.correct / item.attempts) * 100 : 0,
+      weightedAccuracy: item.weightedTotal ? (item.weightedCorrect / item.weightedTotal) * 100 : 0
+    }));
+  };
+
+  const buildThemeStats = (attempts) => {
+    const map = {};
+    attempts.forEach((a) => {
+      const theme = a.theme || "General";
+      if (!map[theme]) map[theme] = { theme, attempts: 0, correct: 0 };
+      map[theme].attempts += 1;
+      if (a.isCorrect) map[theme].correct += 1;
+    });
+    return Object.values(map).map((item) => ({
+      ...item,
+      accuracy: item.attempts ? (item.correct / item.attempts) * 100 : 0
+    }));
+  };
+
+  const buildQuestionStats = (attempts) => {
+    const map = {};
+    attempts.forEach((a) => {
+      const id = a.questionId || a.questionText || "question";
+      if (!map[id]) {
+        map[id] = {
+          questionId: id,
+          text: a.questionText || id,
+          attempts: 0,
+          correct: 0
+        };
+      }
+      map[id].attempts += 1;
+      if (a.isCorrect) map[id].correct += 1;
+    });
+    return Object.values(map).map((item) => ({
+      ...item,
+      accuracy: item.attempts ? (item.correct / item.attempts) * 100 : 0
+    }));
+  };
+
+  const getPreviousRange = (filters) => {
+    const current = getPeriodRange(filters);
+    const duration = Math.max(current.end.getTime() - current.start.getTime(), 24 * 60 * 60 * 1000);
+    return {
+      start: new Date(current.start.getTime() - duration),
+      end: new Date(current.start.getTime())
+    };
+  };
+
+  const buildTimeSeries = (attempts, filters, metric) => {
+    const range = getPeriodRange(filters);
+    const period = filters.period;
+    const bucketMap = new Map();
+    const toKey = (date) => {
+      if (period === "today") return `${date.getHours()}:00`;
+      if (period === "last30") {
+        const week = getWeekNumber(date);
+        return `S${String(week).padStart(2, "0")}`;
+      }
+      return `${date.getMonth() + 1}/${date.getDate()}`;
+    };
+
+    attempts.forEach((a) => {
+      const date = new Date(a.timestamp);
+      if (date < range.start || date > range.end) return;
+      const key = toKey(date);
+      if (!bucketMap.has(key)) {
+        let order = date.getTime();
+        if (period === "today") {
+          const hourStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours());
+          order = hourStart.getTime();
+        } else if (period === "last30") {
+          const dayNr = (date.getDay() + 6) % 7;
+          const weekStart = new Date(date.getFullYear(), date.getMonth(), date.getDate() - dayNr);
+          order = weekStart.getTime();
+        } else {
+          const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+          order = dayStart.getTime();
+        }
+        bucketMap.set(key, { key, order, total: 0, correct: 0, timeSum: 0, levelSum: 0, count: 0 });
+      }
+      const bucket = bucketMap.get(key);
+      bucket.total += 1;
+      if (a.isCorrect) bucket.correct += 1;
+      bucket.timeSum += Number(a.timeToAnswerMs) || 0;
+      bucket.levelSum += Number(a.level) || 0;
+      bucket.count += 1;
+    });
+
+    const entries = Array.from(bucketMap.values());
+    entries.sort((a, b) => a.order - b.order);
+    return entries.map((entry) => {
+      let value = 0;
+      if (metric === "accuracy") {
+        value = entry.total ? (entry.correct / entry.total) * 100 : 0;
+      } else if (metric === "level") {
+        value = entry.count ? entry.levelSum / entry.count : 0;
+      } else if (metric === "time") {
+        value = entry.count ? entry.timeSum / entry.count / 1000 : 0;
+      }
+      return { label: entry.key, value };
+    });
+  };
+
+  const getWeekNumber = (date) => {
+    const target = new Date(date.valueOf());
+    const dayNr = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    const firstThursday = new Date(target.getFullYear(), 0, 4);
+    const diff = target - firstThursday;
+    return 1 + Math.round(diff / (7 * 24 * 60 * 60 * 1000));
+  };
+
+  const renderStatsFilters = () => {
+    const filters = state.statsFilters;
+    const scopeInput = $("#statsScopeSelect");
+    const periodInput = $("#statsPeriodSelect");
+    const subjectInput = $("#statsSubjectSelect");
+    const modeInput = $("#statsModeSelect");
+    const groupInput = $("#statsGroupSelect");
+    const studentInput = $("#statsStudentSelect");
+    if (scopeInput) scopeInput.value = filters.scope;
+    if (periodInput) periodInput.value = filters.period;
+    if (subjectInput) subjectInput.value = filters.subject;
+    if (modeInput) modeInput.value = filters.mode;
+    if (groupInput) groupInput.value = filters.groupId || "";
+    if (studentInput) studentInput.value = filters.studentId || "";
+    updateSelectOptions("statsScopeSelect", [
+      { value: "class", label: "Classe" },
+      { value: "group", label: "Groupe" },
+      { value: "student", label: "Élève" }
+    ]);
+    updateSelectOptions("statsPeriodSelect", [
+      { value: "today", label: "Aujourd'hui" },
+      { value: "last7", label: "7 derniers jours" },
+      { value: "last30", label: "30 derniers jours" },
+      { value: "custom", label: "Personnalisé" }
+    ]);
+    updateSelectOptions("statsModeSelect", [
+      { value: "all", label: "Tous" },
+      { value: "quiz", label: "Quiz" },
+      { value: "revision", label: "Révision" },
+      { value: "challenge", label: "Défi" }
+    ]);
+    updateSelectOptions("statsSubjectSelect", getSubjectList(), {
+      includeAll: true,
+      allLabel: "Toutes les matières"
+    });
+
+    const groupOptions = (state.classes || []).map((cls) => ({ value: cls.id, label: cls.name }));
+    updateSelectOptions("statsGroupSelect", groupOptions, {
+      includeAll: false,
+      defaultValue: state.activeClass || ""
+    });
+    const studentIds = Array.from(new Set(getAttempts().map((a) => a.studentId || "class")));
+    const studentOptions = studentIds.map((id) => ({ value: id, label: id === "class" ? "Élève (classe)" : id }));
+    updateSelectOptions("statsStudentSelect", studentOptions, {
+      includeAll: false,
+      defaultValue: studentOptions[0]?.value || ""
+    });
+
+    if (filters.scope === "group" && !filters.groupId && groupOptions[0]) {
+      state.statsFilters.groupId = groupOptions[0].value;
+      saveStatsFilters(state.statsFilters);
+    }
+    if (filters.scope === "student" && !filters.studentId && studentOptions[0]) {
+      state.statsFilters.studentId = studentOptions[0].value;
+      saveStatsFilters(state.statsFilters);
+    }
+
+    const customRow = $("#statsCustomRow");
+    if (customRow) {
+      customRow.style.display = filters.period === "custom" ? "grid" : "none";
+    }
+    const groupRow = $("#statsGroupRow");
+    if (groupRow) {
+      groupRow.style.display = filters.scope === "group" ? "grid" : "none";
+    }
+    const studentRow = $("#statsStudentRow");
+    if (studentRow) {
+      studentRow.style.display = filters.scope === "student" ? "grid" : "none";
+    }
+
+    const levelMin = $("#statsLevelMin");
+    const levelMax = $("#statsLevelMax");
+    const levelLabel = $("#statsLevelLabel");
+    if (levelMin) levelMin.value = String(filters.levelMin);
+    if (levelMax) levelMax.value = String(filters.levelMax);
+    if (levelLabel) levelLabel.textContent = `Niveaux ${filters.levelMin} - ${filters.levelMax}`;
+
+    const startInput = $("#statsCustomStart");
+    const endInput = $("#statsCustomEnd");
+    if (startInput) startInput.value = filters.customStart || "";
+    if (endInput) endInput.value = filters.customEnd || "";
+  };
+
+  const renderKpiCards = (stats, prevStats) => {
+    const wrap = $("#statsKpiRow");
+    if (!wrap) return;
+    const formatPct = (value) => `${Math.round(value)}%`;
+    const formatNum = (value) => `${Math.round(value)}`;
+    const formatTime = (value) => `${Math.round(value)} s`;
+    const kpis = [
+      {
+        id: "overallAccuracy",
+        label: "Réussite globale",
+        icon: "🎯",
+        value: formatPct(stats.overallAccuracy),
+        trend: stats.overallAccuracy - prevStats.overallAccuracy
+      },
+      {
+        id: "questionsAnswered",
+        label: "Questions tentées",
+        icon: "🧩",
+        value: formatNum(stats.questionsAnswered),
+        trend: stats.questionsAnswered - prevStats.questionsAnswered
+      },
+      {
+        id: "avgTimePerQuestion",
+        label: "Temps moyen",
+        icon: "⏱️",
+        value: formatTime(stats.avgTimePerQuestion),
+        trend: stats.avgTimePerQuestion - prevStats.avgTimePerQuestion
+      },
+      {
+        id: "avgLevel",
+        label: "Niveau moyen",
+        icon: "⭐",
+        value: formatNum(stats.avgLevel),
+        trend: stats.avgLevel - prevStats.avgLevel
+      },
+      {
+        id: "engagement",
+        label: "Sessions / élève",
+        icon: "📅",
+        value: formatNum(stats.engagement),
+        trend: stats.engagement - prevStats.engagement
+      },
+      {
+        id: "atRiskSkills",
+        label: "Notions à renforcer",
+        icon: "🔎",
+        value: formatNum(stats.atRiskSkills),
+        trend: stats.atRiskSkills - prevStats.atRiskSkills
+      }
+    ];
+    wrap.innerHTML = kpis
+      .map((kpi) => {
+        const trendValue = kpi.trend;
+        const trendLabel = Number.isFinite(trendValue)
+          ? `${trendValue >= 0 ? "+" : ""}${trendValue.toFixed(1)}`
+          : "—";
+        return `
+          <button class="kpi-card" data-kpi="${kpi.id}" type="button">
+            <div class="kpi-icon">${kpi.icon}</div>
+            <div>
+              <div class="kpi-label">${kpi.label}</div>
+              <div class="kpi-value">${kpi.value}</div>
+            </div>
+            <div class="kpi-trend">${trendLabel}</div>
+          </button>
+        `;
+      })
+      .join("");
+  };
+
+  const renderRadarChart = (subjectStats, mode = "accuracy") => {
+    const svg = $("#statsRadarChart");
+    if (!svg) return;
+    svg.innerHTML = "";
+    if (!subjectStats.length) {
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", "50%");
+      text.setAttribute("y", "50%");
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("fill", "#7a6f92");
+      text.setAttribute("font-size", "12");
+      text.textContent = "Pas assez de données";
+      svg.setAttribute("viewBox", "0 0 320 320");
+      svg.appendChild(text);
+      return;
+    }
+    const maxAxes = 6;
+    const sorted = [...subjectStats].sort((a, b) => b.attempts - a.attempts);
+    const axes = sorted.slice(0, maxAxes);
+    const rest = sorted.slice(maxAxes);
+    if (rest.length) {
+      const totals = rest.reduce(
+        (acc, item) => {
+          acc.attempts += item.attempts;
+          acc.correct += item.correct;
+          acc.weightedCorrect += item.weightedCorrect;
+          acc.weightedTotal += item.weightedTotal;
+          return acc;
+        },
+        { attempts: 0, correct: 0, weightedCorrect: 0, weightedTotal: 0 }
+      );
+      axes.push({
+        subject: "Autres",
+        attempts: totals.attempts,
+        correct: totals.correct,
+        weightedCorrect: totals.weightedCorrect,
+        weightedTotal: totals.weightedTotal,
+        accuracy: totals.attempts ? (totals.correct / totals.attempts) * 100 : 0,
+        weightedAccuracy: totals.weightedTotal ? (totals.weightedCorrect / totals.weightedTotal) * 100 : 0
+      });
+    }
+    const n = axes.length || 1;
+    const size = 320;
+    const center = size / 2;
+    const radius = 120;
+    svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+
+    const ringCount = 4;
+    for (let r = 1; r <= ringCount; r += 1) {
+      const ring = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      ring.setAttribute("cx", center);
+      ring.setAttribute("cy", center);
+      ring.setAttribute("r", String((radius / ringCount) * r));
+      ring.setAttribute("fill", "none");
+      ring.setAttribute("stroke", "rgba(180, 180, 200, 0.3)");
+      svg.appendChild(ring);
+    }
+
+    const points = [];
+    axes.forEach((item, idx) => {
+      const angle = ((Math.PI * 2) / n) * idx - Math.PI / 2;
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", center);
+      line.setAttribute("y1", center);
+      line.setAttribute("x2", String(center + radius * Math.cos(angle)));
+      line.setAttribute("y2", String(center + radius * Math.sin(angle)));
+      line.setAttribute("stroke", "rgba(180, 180, 200, 0.3)");
+      svg.appendChild(line);
+
+      const value = mode === "weighted" ? item.weightedAccuracy : item.accuracy;
+      const pct = item.attempts < MIN_ATTEMPTS ? 0 : value / 100;
+      const x = center + radius * pct * Math.cos(angle);
+      const y = center + radius * pct * Math.sin(angle);
+      points.push({ x, y });
+
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("x", String(center + (radius + 16) * Math.cos(angle)));
+      label.setAttribute("y", String(center + (radius + 16) * Math.sin(angle)));
+      label.setAttribute("text-anchor", "middle");
+      label.setAttribute("font-size", "11");
+      label.setAttribute("fill", item.attempts < MIN_ATTEMPTS ? "rgba(120,120,140,0.6)" : "#3b3156");
+      label.textContent = item.subject;
+      svg.appendChild(label);
+
+      const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      dot.setAttribute("cx", String(x));
+      dot.setAttribute("cy", String(y));
+      dot.setAttribute("r", "4");
+      dot.setAttribute("fill", "#ff8fbf");
+      const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      title.textContent = `${item.subject} – ${Math.round(value)}% (${item.attempts} questions)`;
+      dot.appendChild(title);
+      svg.appendChild(dot);
+    });
+
+    const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    polygon.setAttribute("points", points.map((p) => `${p.x},${p.y}`).join(" "));
+    polygon.setAttribute("fill", "rgba(255, 143, 191, 0.35)");
+    polygon.setAttribute("stroke", "#ff8fbf");
+    polygon.setAttribute("stroke-width", "2");
+    svg.appendChild(polygon);
+  };
+
+  const renderLineChart = (id, series, config = {}) => {
+    const svg = document.getElementById(id);
+    if (!svg) return;
+    svg.innerHTML = "";
+    if (!series.length) {
+      svg.setAttribute("viewBox", "0 0 320 140");
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", "50%");
+      text.setAttribute("y", "50%");
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("fill", "#7a6f92");
+      text.setAttribute("font-size", "12");
+      text.textContent = "Pas de données";
+      svg.appendChild(text);
+      return;
+    }
+    const width = 320;
+    const height = 140;
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    const padding = 20;
+    const values = series.map((p) => p.value);
+    const max = Math.max(...values, config.max || 0, 1);
+    const min = Math.min(...values, config.min || 0, 0);
+    const span = max - min || 1;
+    const step = series.length > 1 ? (width - padding * 2) / (series.length - 1) : 0;
+
+    const points = series.map((point, idx) => {
+      const x = padding + idx * step;
+      const y = height - padding - ((point.value - min) / span) * (height - padding * 2);
+      return { x, y };
+    });
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const d = points
+      .map((p, idx) => `${idx === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+      .join(" ");
+    path.setAttribute("d", d);
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", "#7b63ff");
+    path.setAttribute("stroke-width", "2");
+    svg.appendChild(path);
+
+    points.forEach((p, idx) => {
+      const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      dot.setAttribute("cx", String(p.x));
+      dot.setAttribute("cy", String(p.y));
+      dot.setAttribute("r", "3");
+      dot.setAttribute("fill", "#7b63ff");
+      const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+      title.textContent = `${series[idx].label}: ${series[idx].value.toFixed(1)}`;
+      dot.appendChild(title);
+      svg.appendChild(dot);
+    });
+  };
+
+  const renderInsights = (subjectStats, themeStats, questionStats) => {
+    const strengths = subjectStats
+      .filter((s) => s.attempts >= MIN_ATTEMPTS)
+      .sort((a, b) => b.accuracy - a.accuracy)
+      .slice(0, 3);
+    const weaknesses = subjectStats
+      .filter((s) => s.attempts >= MIN_ATTEMPTS)
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 3);
+    const commonMistakes = themeStats
+      .filter((s) => s.attempts >= MIN_ATTEMPTS)
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 3);
+    const hardQuestions = questionStats
+      .filter((q) => q.attempts >= MIN_ATTEMPTS)
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 5);
+
+    const renderList = (id, items, format) => {
+      const container = document.getElementById(id);
+      if (!container) return;
+      container.innerHTML = items.length
+        ? items.map(format).join("")
+        : "<li>Aucune donnée</li>";
+    };
+
+    renderList("statsStrengthList", strengths, (s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)</li>`);
+    renderList("statsWeakList", weaknesses, (s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)</li>`);
+    renderList("statsCommonMistakes", commonMistakes, (s) => `<li>${s.theme} (${Math.round(s.accuracy)}%)</li>`);
+    renderList("statsHardQuestions", hardQuestions, (q) => `<li>${q.text} (${Math.round(q.accuracy)}%)</li>`);
+  };
+
+  const renderStats = () => {
+    const filters = state.statsFilters;
+    document.querySelectorAll("[data-stats-toggle]").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.statsToggle === (state.statsRadarMode || "accuracy"));
+    });
+    const attempts = filterAttempts(getAttempts(), filters);
+    const subjectStats = buildSubjectStats(attempts);
+    const themeStats = buildThemeStats(attempts);
+    const questionStats = buildQuestionStats(attempts);
+
+    const prevRange = getPreviousRange(filters);
+    const prevFilters = {
+      ...filters,
+      period: "custom",
+      customStart: formatDateInput(prevRange.start),
+      customEnd: formatDateInput(prevRange.end)
+    };
+    const prevAttempts = filterAttempts(getAttempts(), prevFilters);
+
+    const currentStats = computeKpis(attempts, getXpState().level);
+    const prevStats = computeKpis(prevAttempts, getXpState().level);
+    state.statsSnapshot = { currentStats, prevStats, subjectStats, themeStats, questionStats };
+
+    renderKpiCards(currentStats, prevStats);
+    renderRadarChart(subjectStats, state.statsRadarMode || "accuracy");
+    renderLineChart("statsAccuracyTrend", buildTimeSeries(attempts, filters, "accuracy"), { min: 0, max: 100 });
+    renderLineChart("statsLevelTrend", buildTimeSeries(attempts, filters, "level"));
+    renderLineChart("statsTimeTrend", buildTimeSeries(attempts, filters, "time"));
+    renderInsights(subjectStats, themeStats, questionStats);
+
+    const topStrengths = subjectStats
+      .filter((s) => s.attempts >= MIN_ATTEMPTS)
+      .sort((a, b) => b.accuracy - a.accuracy)
+      .slice(0, 3);
+    const topWeaknesses = subjectStats
+      .filter((s) => s.attempts >= MIN_ATTEMPTS)
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 3);
+    const strengthEl = $("#statsTopStrengths");
+    const weakEl = $("#statsTopWeaknesses");
+    if (strengthEl) {
+      strengthEl.innerHTML = topStrengths.length
+        ? topStrengths.map((s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)</li>`).join("")
+        : "<li>Aucune donnée</li>";
+    }
+    if (weakEl) {
+      weakEl.innerHTML = topWeaknesses.length
+        ? topWeaknesses.map((s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)</li>`).join("")
+        : "<li>Aucune donnée</li>";
+    }
+  };
+
+  const openStatsDetail = (kpiId) => {
+    const modal = $("#statsDetailModal");
+    if (!modal || !state.statsSnapshot) return;
+    const { currentStats, prevStats, subjectStats } = state.statsSnapshot;
+    const defs = {
+      overallAccuracy: {
+        label: "Réussite globale",
+        formula: "Bonnes réponses / Réponses × 100"
+      },
+      questionsAnswered: {
+        label: "Questions tentées",
+        formula: "Nombre total de réponses"
+      },
+      avgTimePerQuestion: {
+        label: "Temps moyen",
+        formula: "Somme des temps / Nombre de réponses"
+      },
+      avgLevel: {
+        label: "Niveau moyen",
+        formula: "Moyenne des niveaux atteints"
+      },
+      engagement: {
+        label: "Sessions / élève",
+        formula: "Sessions uniques / Nombre d'élèves"
+      },
+      atRiskSkills: {
+        label: "Notions à renforcer",
+        formula: `Notions < ${AT_RISK_THRESHOLD}% avec min ${MIN_ATTEMPTS} questions`
+      }
+    };
+    const def = defs[kpiId];
+    const title = $("#statsDetailTitle");
+    const value = $("#statsDetailValue");
+    const formula = $("#statsDetailFormula");
+    const trend = $("#statsDetailTrend");
+    if (title) title.textContent = def?.label || "Détail";
+    if (formula) formula.textContent = def?.formula || "";
+    if (value) {
+      const val = currentStats[kpiId];
+      if (!Number.isFinite(val)) {
+        value.textContent = "—";
+      } else if (kpiId === "overallAccuracy") {
+        value.textContent = `${Math.round(val)}%`;
+      } else if (kpiId === "avgTimePerQuestion") {
+        value.textContent = `${Math.round(val)} s`;
+      } else {
+        value.textContent = `${Math.round(val)}`;
+      }
+    }
+    if (trend) {
+      const delta = currentStats[kpiId] - prevStats[kpiId];
+      trend.textContent = `Tendance: ${delta >= 0 ? "+" : ""}${delta.toFixed(1)} vs période précédente`;
+    }
+    const breakdown = $("#statsDetailBreakdown");
+    if (breakdown) {
+      const items = subjectStats.filter((s) => s.attempts > 0);
+      breakdown.innerHTML = items.length
+        ? items.map((s) => `<li>${s.subject}: ${Math.round(s.accuracy)}%</li>`).join("")
+        : "<li>Aucune donnée</li>";
+    }
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+  };
+
+  const closeStatsDetail = () => {
+    const modal = $("#statsDetailModal");
     if (!modal) return;
     modal.classList.remove("active");
     modal.setAttribute("aria-hidden", "true");
@@ -2904,6 +3687,8 @@
     const text = $("#questionText");
     const choices = $("#choiceList");
     const feedback = $("#answerFeedback");
+    state.questionStartTime = null;
+    state.currentMode = null;
     if (category) {
       category.textContent = "Catégorie";
       category.style.background = "";
@@ -3039,6 +3824,8 @@
 
     state.currentCategory = category;
     state.currentQuestion = question;
+    state.currentMode = assignedQuiz ? "quiz" : "challenge";
+    state.questionStartTime = Date.now();
     state.awaitingAnswer = true;
 
     const categoryLabel = $("#questionCategory");
@@ -3079,6 +3866,9 @@
     const progress = getProgress(state.selectedDate);
     if (!progress) return;
     stopQuestionTimer();
+    const answeredAt = Date.now();
+    const timeMs = state.questionStartTime ? answeredAt - state.questionStartTime : 0;
+    state.questionStartTime = null;
 
     const correctIndex = state.currentQuestion.answer;
     const choices = $$(".choice-btn");
@@ -3090,7 +3880,8 @@
     });
 
     const feedback = $("#answerFeedback");
-    if (index === correctIndex) {
+    const isCorrect = index === correctIndex;
+    if (isCorrect) {
       progress.correct += 1;
       const gained = computeXpGain(state.currentQuestion);
       state.sessionXp += gained;
@@ -3110,6 +3901,13 @@
       feedback.className = "answer-feedback bad";
       playWrongX();
     }
+
+    recordAttempt({
+      question: state.currentQuestion,
+      isCorrect,
+      timeMs,
+      mode: state.currentMode
+    });
 
     progress.spinsDone += 1;
     setProgress(state.selectedDate, progress);
@@ -3138,6 +3936,16 @@
     stopQuestionTimer();
     clearNextStep();
     state.awaitingAnswer = false;
+    if (state.currentQuestion) {
+      const timeMs = state.questionStartTime ? Date.now() - state.questionStartTime : 0;
+      recordAttempt({
+        question: state.currentQuestion,
+        isCorrect: false,
+        timeMs,
+        mode: state.currentMode
+      });
+      state.questionStartTime = null;
+    }
 
     const choices = $$(".choice-btn");
     const correctIndex = state.currentQuestion?.answer;
@@ -3689,6 +4497,78 @@
       }
     });
 
+    $("#statsScopeSelect")?.addEventListener("change", (event) => {
+      const value = event.target.value || "class";
+      const updates = { scope: value };
+      if (value === "group" && !state.statsFilters.groupId) {
+        updates.groupId = state.activeClass || "";
+      }
+      if (value === "student" && !state.statsFilters.studentId) {
+        const firstStudent = Array.from(new Set(getAttempts().map((a) => a.studentId || "class")))[0] || "class";
+        updates.studentId = firstStudent;
+      }
+      setStatsFilters(updates);
+    });
+    $("#statsPeriodSelect")?.addEventListener("change", (event) => {
+      setStatsFilters({ period: event.target.value || "last7" });
+    });
+    $("#statsSubjectSelect")?.addEventListener("change", (event) => {
+      setStatsFilters({ subject: event.target.value || "all" });
+    });
+    $("#statsModeSelect")?.addEventListener("change", (event) => {
+      setStatsFilters({ mode: event.target.value || "all" });
+    });
+    $("#statsGroupSelect")?.addEventListener("change", (event) => {
+      setStatsFilters({ groupId: event.target.value || "" });
+    });
+    $("#statsStudentSelect")?.addEventListener("change", (event) => {
+      setStatsFilters({ studentId: event.target.value || "" });
+    });
+    $("#statsCustomStart")?.addEventListener("change", (event) => {
+      setStatsFilters({ customStart: event.target.value || "" });
+    });
+    $("#statsCustomEnd")?.addEventListener("change", (event) => {
+      setStatsFilters({ customEnd: event.target.value || "" });
+    });
+    $("#statsLevelMin")?.addEventListener("input", (event) => {
+      const min = Number(event.target.value) || 1;
+      const max = Math.max(min, state.statsFilters.levelMax);
+      setStatsFilters({ levelMin: min, levelMax: max });
+    });
+    $("#statsLevelMax")?.addEventListener("input", (event) => {
+      const max = Number(event.target.value) || 100;
+      const min = Math.min(max, state.statsFilters.levelMin);
+      setStatsFilters({ levelMin: min, levelMax: max });
+    });
+
+    $("#statsKpiRow")?.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const card = target.closest("[data-kpi]");
+      if (!card) return;
+      openStatsDetail(card.dataset.kpi);
+    });
+
+    document.querySelectorAll("[data-stats-toggle]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const mode = btn.dataset.statsToggle;
+        if (!mode) return;
+        state.statsRadarMode = mode;
+        document.querySelectorAll("[data-stats-toggle]").forEach((item) => {
+          item.classList.toggle("active", item.dataset.statsToggle === mode);
+        });
+        renderStats();
+      });
+    });
+    $("#statsDetailOk")?.addEventListener("click", closeStatsDetail);
+    $("#statsDetailModal")?.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (target.dataset.statsDetail !== undefined || target.classList.contains("modal-backdrop")) {
+        closeStatsDetail();
+      }
+    });
+
     $("#levelUpClose")?.addEventListener("click", hideLevelUp);
     $("#levelUpModal")?.addEventListener("click", (event) => {
       const target = event.target;
@@ -3704,6 +4584,7 @@
         closeSubjectModal();
         hideLevelUp();
         hideAiConfirm();
+        closeStatsDetail();
       }
     });
 
