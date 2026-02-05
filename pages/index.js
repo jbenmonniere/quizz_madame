@@ -29,6 +29,7 @@ const APP_HTML = `
   <button class="tab-btn nav-tab" data-nav="builder" type="button">Portail enseignante</button>
   <button class="tab-btn nav-tab" data-nav="quizz" type="button">Quizz</button>
   <button class="tab-btn nav-tab" data-nav="questions" type="button">Questions</button>
+  <button class="tab-btn nav-tab" data-nav="ai" type="button">IA</button>
   <button class="tab-btn nav-tab" data-nav="rewards" type="button">Récompenses</button>
 </nav>
 
@@ -207,6 +208,7 @@ const APP_HTML = `
         <button class="tab-btn active" data-teacher-tab="builder" type="button">Portail enseignante</button>
         <button class="tab-btn" data-teacher-tab="quizz" type="button">Quizz</button>
         <button class="tab-btn" data-teacher-tab="questions" type="button">Questions</button>
+        <button class="tab-btn" data-teacher-tab="ai" type="button">IA</button>
         <button class="tab-btn" data-teacher-tab="rewards" type="button">Récompenses</button>
       </div>
     </div>
@@ -548,6 +550,52 @@ const APP_HTML = `
         </div>
         <div class="note">Utilise "Modifier" pour corriger, la poubelle pour supprimer.</div>
         <div class="question-list compact" id="bankList"></div>
+      </div>
+    </div>
+
+    <div class="teacher-section" data-teacher-panel="ai">
+      <div class="ai-layout">
+        <div class="card teacher-card ai-card">
+          <h3>Générateur IA</h3>
+          <div class="form-row">
+            <label>Matière</label>
+            <div class="select" data-select="aiSubjectSelect">
+              <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span class="select-value placeholder" data-placeholder="Choisir une matière">Choisir une matière</span>
+                <span class="select-caret">▾</span>
+              </button>
+              <div class="select-menu" role="listbox"></div>
+              <input type="hidden" id="aiSubjectSelect" value="" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Sous-thème</label>
+            <div class="select" data-select="aiSubthemeSelect">
+              <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span class="select-value placeholder" data-placeholder="Choisir un sous-thème">Choisir un sous-thème</span>
+                <span class="select-caret">▾</span>
+              </button>
+              <div class="select-menu" role="listbox"></div>
+              <input type="hidden" id="aiSubthemeSelect" value="" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Décris ce que tu as vu en classe</label>
+            <textarea id="aiPromptInput" placeholder="Ex: Nous avons vu les fractions simples et les parts d’un tout."></textarea>
+          </div>
+          <button class="secondary" id="aiGenerateBtn" type="button">Générer 10 questions</button>
+          <div class="note" id="aiMessage"></div>
+        </div>
+
+        <div class="card teacher-card ai-card">
+          <h3>Propositions</h3>
+          <div class="ai-actions">
+            <button class="ghost small" id="aiSelectAll" type="button">Tout sélectionner</button>
+            <button class="ghost small" id="aiSelectNone" type="button">Tout désélectionner</button>
+          </div>
+          <div class="ai-list" id="aiResults"></div>
+          <button class="primary" id="aiAddBtn" type="button">Ajouter à la banque</button>
+        </div>
       </div>
     </div>
   </section>

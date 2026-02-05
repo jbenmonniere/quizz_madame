@@ -304,7 +304,9 @@
     editingClassId: null,
     authMode: "login",
     selectedRewardLevel: 1,
-    rewardsFilter: "all"
+    rewardsFilter: "all",
+    aiQuestions: [],
+    aiBusy: false
   };
 
   const weekdays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
@@ -671,6 +673,11 @@
     }
     if (name === "rewards") {
       renderRewardsPanel();
+    }
+    if (name === "ai") {
+      renderAiSubjectSelect();
+      renderAiSubthemeSelect();
+      renderAiResults();
     }
   };
 
@@ -2213,6 +2220,78 @@
     });
   };
 
+  const setAiMessage = (message) => {
+    const node = $("#aiMessage");
+    if (!node) return;
+    node.textContent = message || "";
+  };
+
+  const renderAiSubjectSelect = () => {
+    const subjectSelect = $("#aiSubjectSelect");
+    if (!subjectSelect) return;
+    const subjects = getSubjectList();
+    updateSelectOptions("aiSubjectSelect", subjects, {
+      includeAll: false,
+      defaultValue: ""
+    });
+  };
+
+  const renderAiSubthemeSelect = () => {
+    const subject = $("#aiSubjectSelect")?.value || "";
+    const subthemeSelect = $("#aiSubthemeSelect");
+    if (!subthemeSelect) return;
+    const subthemes = subject ? getSubthemesForSubject(subject) : [];
+    updateSelectOptions("aiSubthemeSelect", subthemes, {
+      includeAll: false,
+      defaultValue: ""
+    });
+  };
+
+  const renderAiResults = () => {
+    const list = $("#aiResults");
+    if (!list) return;
+    list.innerHTML = "";
+    if (!state.aiQuestions.length) {
+      const empty = document.createElement("div");
+      empty.className = "note";
+      empty.textContent = "Aucune question pour le moment.";
+      list.appendChild(empty);
+      return;
+    }
+    state.aiQuestions.forEach((item, idx) => {
+      const wrap = document.createElement("div");
+      wrap.className = "ai-item";
+      const letter = (i) => String.fromCharCode(65 + i);
+      const label = document.createElement("label");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.dataset.aiIndex = String(idx);
+      checkbox.checked = Boolean(item.selected);
+      const questionSpan = document.createElement("span");
+      questionSpan.textContent = item.question;
+      label.appendChild(checkbox);
+      label.appendChild(questionSpan);
+
+      const choices = document.createElement("ol");
+      choices.className = "ai-choices";
+      item.choices.forEach((choice, choiceIdx) => {
+        const li = document.createElement("li");
+        if (choiceIdx === item.answer) li.classList.add("correct");
+        const prefix = document.createElement("span");
+        prefix.textContent = `${letter(choiceIdx)}.`;
+        const text = document.createElement("span");
+        text.textContent = choice;
+        li.appendChild(prefix);
+        li.appendChild(text);
+        choices.appendChild(li);
+      });
+
+      wrap.appendChild(label);
+      wrap.appendChild(choices);
+      list.appendChild(wrap);
+    });
+  };
+
   const renderEditSubjectSelect = () => {
     const subjectSelect = $("#editSubjectSelect");
     if (!subjectSelect) return;
@@ -2254,6 +2333,8 @@
     renderAddSubthemeSubjectSelect();
     renderQuizBankSubjectFilter();
     renderQuizBankSubthemeFilter();
+    renderAiSubjectSelect();
+    renderAiSubthemeSelect();
     refreshWheel();
   };
 
@@ -2303,6 +2384,121 @@
     $("#newSubthemeInput").value = "";
     refreshSubjectSelects();
     setSubjectModalMessage("Sous-thème ajouté.");
+  };
+
+  const ensureSubjectInStore = (subject, subtheme) => {
+    if (!subject || !subtheme) return;
+    const map = getSubjectsMap();
+    if (map[subject]?.includes(subtheme)) return;
+    const custom = getStoredSubjects();
+    if (!custom[subject]) custom[subject] = [];
+    if (!custom[subject].includes(subtheme)) {
+      custom[subject].push(subtheme);
+      store.setSubjects(custom);
+    }
+  };
+
+  const setAiLoading = (isLoading) => {
+    state.aiBusy = isLoading;
+    const generateBtn = $("#aiGenerateBtn");
+    const addBtn = $("#aiAddBtn");
+    if (generateBtn) generateBtn.disabled = isLoading;
+    if (addBtn) addBtn.disabled = isLoading;
+  };
+
+  const normalizeAiQuestion = (raw) => {
+    const question = String(raw?.question || "").trim();
+    const choices = Array.isArray(raw?.choices)
+      ? raw.choices.map((c) => String(c || "").trim()).filter(Boolean)
+      : [];
+    const answerIndex = Number(raw?.answerIndex);
+    if (!question || choices.length !== 4) return null;
+    if (!Number.isInteger(answerIndex) || answerIndex < 0 || answerIndex > 3) return null;
+    return {
+      question,
+      choices,
+      answer: answerIndex,
+      selected: true
+    };
+  };
+
+  const handleAiGenerate = async () => {
+    const subject = $("#aiSubjectSelect")?.value.trim() || "";
+    const subtheme = $("#aiSubthemeSelect")?.value.trim() || "";
+    const prompt = $("#aiPromptInput")?.value.trim() || "";
+    if (!subject || !subtheme || !prompt) {
+      setAiMessage("Choisis une matière, un sous-thème et saisis une description.");
+      return;
+    }
+    setAiLoading(true);
+    setAiMessage("Génération en cours...");
+    try {
+      const res = await fetch("/api/ai/generate-questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, subject, subtheme, count: 10 })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.message || "Impossible de générer les questions.");
+      }
+      const incoming = Array.isArray(data?.questions) ? data.questions : [];
+      const normalized = incoming.map(normalizeAiQuestion).filter(Boolean);
+      if (!normalized.length) {
+        state.aiQuestions = [];
+        renderAiResults();
+        setAiMessage("Aucune question valide générée.");
+        return;
+      }
+      state.aiQuestions = normalized;
+      renderAiResults();
+      setAiMessage(`${normalized.length} questions générées.`);
+    } catch (err) {
+      setAiMessage(err?.message || "Erreur lors de la génération.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleAiAddToBank = () => {
+    if (!state.aiQuestions.length) {
+      setAiMessage("Génère des questions avant d'ajouter.");
+      return;
+    }
+    const subject = $("#aiSubjectSelect")?.value.trim() || "";
+    const subtheme = $("#aiSubthemeSelect")?.value.trim() || "";
+    if (!subject || !subtheme) {
+      setAiMessage("Choisis une matière et un sous-thème.");
+      return;
+    }
+    const selected = state.aiQuestions.filter((q) => q.selected);
+    if (!selected.length) {
+      setAiMessage("Sélectionne au moins une question.");
+      return;
+    }
+    ensureSubjectInStore(subject, subtheme);
+    const bank = getBank();
+    const createdAt = new Date().toISOString();
+    selected.forEach((q) => {
+      bank.unshift({
+        id: uid("ai"),
+        subject,
+        subtheme,
+        question: q.question,
+        text: q.question,
+        choices: q.choices,
+        answer: q.answer,
+        difficulty: 0,
+        createdAt
+      });
+    });
+    setBank(bank);
+    refreshSubjectSelects();
+    renderBankList();
+    renderQuizBankList();
+    renderQuizBankSubjectFilter();
+    renderQuizBankSubthemeFilter();
+    setAiMessage(`${selected.length} questions ajoutées à la banque.`);
   };
 
   const openSubjectModal = () => {
@@ -3370,6 +3566,24 @@
     $("#openSubjectModalBtn")?.addEventListener("click", openSubjectModal);
     $("#createSubjectBtn")?.addEventListener("click", handleCreateSubject);
     $("#addSubthemeBtn")?.addEventListener("click", handleAddSubtheme);
+    $("#aiGenerateBtn")?.addEventListener("click", handleAiGenerate);
+    $("#aiAddBtn")?.addEventListener("click", handleAiAddToBank);
+    $("#aiSelectAll")?.addEventListener("click", () => {
+      state.aiQuestions = state.aiQuestions.map((q) => ({ ...q, selected: true }));
+      renderAiResults();
+    });
+    $("#aiSelectNone")?.addEventListener("click", () => {
+      state.aiQuestions = state.aiQuestions.map((q) => ({ ...q, selected: false }));
+      renderAiResults();
+    });
+    $("#aiResults")?.addEventListener("change", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLInputElement)) return;
+      const idx = Number(target.dataset.aiIndex);
+      if (!Number.isFinite(idx) || !state.aiQuestions[idx]) return;
+      state.aiQuestions[idx] = { ...state.aiQuestions[idx], selected: target.checked };
+    });
+    $("#aiSubjectSelect")?.addEventListener("change", renderAiSubthemeSelect);
 
     $("#quizList")?.addEventListener("click", (event) => {
       const target = event.target;
