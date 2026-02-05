@@ -1,4 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
+import fs from "fs";
+import path from "path";
+
+const CULTURE_GENERALE_BANK = JSON.parse(
+  fs.readFileSync(path.join(process.cwd(), "data", "culture_generale_5e_bank.json"), "utf8")
+);
+const CULTURE_GENERALE_SUBJECTS = {
+  "Culture générale": ["5e primaire"]
+};
 
 const normalizeUsername = (value = "") => value.trim().toLowerCase();
 const sanitizeUsername = (value = "") => normalizeUsername(value).replace(/[^a-z0-9._-]/g, "");
@@ -50,6 +59,19 @@ export default async function handler(req, res) {
   await admin.from("teacher_profiles").upsert(
     { id: data.user.id, username: normalized },
     { onConflict: "id" }
+  );
+
+  await admin.from("teacher_content").upsert(
+    {
+      user_id: data.user.id,
+      data: {
+        bank: CULTURE_GENERALE_BANK,
+        quizzes: [],
+        subjects: CULTURE_GENERALE_SUBJECTS,
+        rewards: null
+      }
+    },
+    { onConflict: "user_id" }
   );
 
   return res.status(200).json({ ok: true });
