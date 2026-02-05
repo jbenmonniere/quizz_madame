@@ -75,7 +75,7 @@ const APP_HTML = `
         <div class="note" id="classMessage"></div>
       </div>
       <div class="card class-card">
-        <h3>Creer une classe</h3>
+        <h3 id="classFormTitle">Creer une classe</h3>
         <div class="form-row">
           <label>Nom de la classe</label>
           <input id="classNameInput" placeholder="Ex: 5e B" />
@@ -93,7 +93,10 @@ const APP_HTML = `
             <option value="6ème année">6ème année</option>
           </select>
         </div>
-        <button class="primary" id="createClassBtn" type="button">Creer la classe</button>
+        <div class="class-form-actions">
+          <button class="primary" id="createClassBtn" type="button">Creer la classe</button>
+          <button class="ghost hidden" id="cancelEditClassBtn" type="button">Annuler</button>
+        </div>
       </div>
     </div>
   </section>

@@ -63,6 +63,25 @@
         set(STORAGE.classes, classes);
         return { data: next, error: null };
       },
+      updateClass: async ({ id, name, level }) => {
+        ensureLocalClass();
+        const existing = classes.find((item) => item.id === id);
+        if (!existing) return { data: null, error: { message: "Classe introuvable." } };
+        const updated = { ...existing, name, level: level || "" };
+        classes = classes.map((item) => (item.id === id ? updated : item));
+        set(STORAGE.classes, classes);
+        return { data: updated, error: null };
+      },
+      deleteClass: async (id) => {
+        ensureLocalClass();
+        classes = classes.filter((item) => item.id !== id);
+        if (classState[id]) delete classState[id];
+        if (activeClass === id) activeClass = classes[0]?.id || null;
+        set(STORAGE.classes, classes);
+        set(STORAGE.classState, classState);
+        set(STORAGE.activeClass, activeClass);
+        return { error: null };
+      },
       loadTeacherContent: async () => teacherContent,
       loadClassState: async (id) => {
         ensureClassState(id);
@@ -225,6 +244,7 @@
     profile: null,
     classes: [],
     activeClass: null,
+    editingClassId: null,
     authMode: "login",
     selectedRewardLevel: 1,
     rewardsFilter: "all"
@@ -1277,6 +1297,29 @@
     renderRewardsEditor();
   };
 
+  const setClassFormMode = (mode, entry) => {
+    const titleEl = $("#classFormTitle");
+    const saveBtn = $("#createClassBtn");
+    const cancelBtn = $("#cancelEditClassBtn");
+    const nameInput = $("#classNameInput");
+    const levelInput = $("#classLevelInput");
+    if (mode === "edit" && entry) {
+      state.editingClassId = entry.id;
+      if (titleEl) titleEl.textContent = "Modifier la classe";
+      if (saveBtn) saveBtn.textContent = "Enregistrer";
+      if (cancelBtn) cancelBtn.classList.remove("hidden");
+      if (nameInput) nameInput.value = entry.name || "";
+      if (levelInput) levelInput.value = entry.level || "";
+      return;
+    }
+    state.editingClassId = null;
+    if (titleEl) titleEl.textContent = "Creer une classe";
+    if (saveBtn) saveBtn.textContent = "Creer la classe";
+    if (cancelBtn) cancelBtn.classList.add("hidden");
+    if (nameInput) nameInput.value = "";
+    if (levelInput) levelInput.value = "";
+  };
+
   const renderClassList = () => {
     const list = $("#classList");
     if (!list) return;
@@ -1288,13 +1331,18 @@
     state.classes.forEach((entry) => {
       const item = document.createElement("div");
       item.className = "class-item";
+      if (state.activeClass?.id === entry.id) item.classList.add("active");
       const level = entry.level ? `<div class="class-meta">Niveau: ${entry.level}</div>` : "";
       item.innerHTML = `
         <div>
           <strong>${entry.name}</strong>
           ${level}
         </div>
-        <button class="secondary" type="button" data-action="open-class" data-id="${entry.id}">Ouvrir</button>
+        <div class="class-actions">
+          <button class="secondary" type="button" data-action="open-class" data-id="${entry.id}">Ouvrir</button>
+          <button class="ghost" type="button" data-action="edit-class" data-id="${entry.id}">Modifier</button>
+          <button class="ghost danger" type="button" data-action="delete-class" data-id="${entry.id}">Supprimer</button>
+        </div>
       `;
       list.appendChild(item);
     });
@@ -1303,6 +1351,7 @@
   const loadClasses = async () => {
     const data = await store.listClasses?.();
     state.classes = Array.isArray(data) ? data : [];
+    setClassFormMode("create");
     renderClassList();
   };
 
@@ -1391,18 +1440,65 @@
       setClassMessage("Ajoute un nom de classe.");
       return;
     }
+    if (state.editingClassId) {
+      setClassMessage("Mise a jour...");
+      const { data, error } = await store.updateClass?.({ id: state.editingClassId, name, level });
+      if (error) {
+        setClassMessage(error.message || "Impossible de modifier la classe.");
+        return;
+      }
+      state.classes = state.classes.map((item) => (item.id === data.id ? data : item));
+      if (state.activeClass?.id === data.id) {
+        state.activeClass = data;
+        updateHeaderMeta();
+      }
+      setClassMessage("Classe mise a jour.");
+      setClassFormMode("create");
+      renderClassList();
+      return;
+    }
     setClassMessage("Creation...");
     const { data, error } = await store.createClass({ name, level });
     if (error) {
       setClassMessage(error.message || "Impossible de creer la classe.");
       return;
     }
-    $("#classNameInput").value = "";
-    $("#classLevelInput").value = "";
+    setClassFormMode("create");
     setClassMessage("Classe creee.");
     state.classes = [data, ...state.classes];
     renderClassList();
     await openClass(data.id);
+  };
+
+  const handleEditClass = (classId) => {
+    const entry = state.classes.find((item) => item.id === classId);
+    if (!entry) return;
+    setClassFormMode("edit", entry);
+  };
+
+  const handleDeleteClass = async (classId) => {
+    const entry = state.classes.find((item) => item.id === classId);
+    if (!entry) return;
+    const confirmed = window.confirm(`Supprimer la classe "${entry.name}" ?`);
+    if (!confirmed) return;
+    setClassMessage("Suppression...");
+    const { error } = await store.deleteClass?.(classId);
+    if (error) {
+      setClassMessage(error.message || "Impossible de supprimer la classe.");
+      return;
+    }
+    state.classes = state.classes.filter((item) => item.id !== classId);
+    if (state.activeClass?.id === classId) {
+      state.activeClass = null;
+      store.setActiveClass?.(null);
+      updateHeaderMeta();
+    }
+    if (state.editingClassId === classId) {
+      setClassFormMode("create");
+    }
+    setClassMessage("Classe supprimee.");
+    renderClassList();
+    showScreen("classes");
   };
 
   const handleSignedIn = async (user, fallbackUsername) => {
@@ -2982,6 +3078,7 @@
     });
     $("#logoutBtn")?.addEventListener("click", handleLogout);
     $("#createClassBtn")?.addEventListener("click", handleCreateClass);
+    $("#cancelEditClassBtn")?.addEventListener("click", () => setClassFormMode("create"));
     $("#classList")?.addEventListener("click", (event) => {
       const target = event.target;
       if (!(target instanceof Element)) return;
@@ -2989,6 +3086,12 @@
       const id = target.dataset.id || target.closest("[data-id]")?.dataset.id;
       if (action === "open-class" && id) {
         openClass(id);
+      }
+      if (action === "edit-class" && id) {
+        handleEditClass(id);
+      }
+      if (action === "delete-class" && id) {
+        handleDeleteClass(id);
       }
     });
     $("#backToCalendarFromTeacher")?.addEventListener("click", () => showScreen("calendar"));

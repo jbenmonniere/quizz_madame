@@ -271,10 +271,46 @@ body[data-app-mode="auth"] .tc-date {
   border: 2px solid rgba(201, 188, 255, 0.5);
 }
 
+.class-item.active {
+  background: #fff4fb;
+  border-color: rgba(255, 182, 213, 0.7);
+}
+
+.class-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.class-actions .secondary,
+.class-actions .ghost {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.class-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ghost.danger {
+  border-color: rgba(255, 120, 120, 0.7);
+  color: #b03a3a;
+}
+
 .class-meta {
   font-size: 12px;
   color: var(--muted);
   margin-top: 2px;
+}
+
+.hidden {
+  display: none !important;
 }
 
 @keyframes fadeUp {

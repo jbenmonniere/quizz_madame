@@ -305,6 +305,64 @@ const createClass = async (payload) => {
   return { data, error: null };
 };
 
+const updateClass = async (payload) => {
+  const id = payload?.id;
+  const name = payload?.name?.trim();
+  if (!id) return { data: null, error: { message: "Classe introuvable." } };
+  if (!name) return { data: null, error: { message: "Nom de classe obligatoire." } };
+  const level = payload?.level?.trim() || null;
+  if (!supabase || !currentUserId) {
+    const existing = (cache.classes || []).find((item) => item.id === id);
+    if (!existing) return { data: null, error: { message: "Classe introuvable." } };
+    const updated = { ...existing, name, level };
+    cache.classes = (cache.classes || []).map((item) => (item.id === id ? updated : item));
+    persistLocal();
+    return { data: updated, error: null };
+  }
+  const { data, error } = await supabase
+    .from("classes")
+    .update({ name, level })
+    .eq("id", id)
+    .eq("teacher_id", currentUserId)
+    .select("id, name, level, created_at")
+    .single();
+  if (error) return { data: null, error };
+  cache.classes = (cache.classes || []).map((item) => (item.id === id ? data : item));
+  persistLocal();
+  return { data, error: null };
+};
+
+const deleteClass = async (classId) => {
+  if (!classId) return { error: { message: "Classe introuvable." } };
+  if (!supabase || !currentUserId) {
+    cache.classes = (cache.classes || []).filter((item) => item.id !== classId);
+    if (cache.classState && cache.classState[classId]) delete cache.classState[classId];
+    if (cache.activeClass === classId) cache.activeClass = null;
+    persistLocal();
+    return { error: null };
+  }
+  try {
+    await supabase
+      .from("class_state")
+      .delete()
+      .eq("class_id", classId)
+      .eq("teacher_id", currentUserId);
+  } catch (err) {
+    console.warn("[DataStore] class_state delete failed:", err);
+  }
+  const { error } = await supabase
+    .from("classes")
+    .delete()
+    .eq("id", classId)
+    .eq("teacher_id", currentUserId);
+  if (error) return { error };
+  cache.classes = (cache.classes || []).filter((item) => item.id !== classId);
+  if (cache.classState && cache.classState[classId]) delete cache.classState[classId];
+  if (cache.activeClass === classId) cache.activeClass = null;
+  persistLocal();
+  return { error: null };
+};
+
 const setActiveClass = (classId) => {
   cache.activeClass = classId || null;
   writeLocal(STORAGE.activeClass, cache.activeClass);
@@ -439,6 +497,8 @@ const DataStore = {
     return listClasses();
   },
   createClass: async (payload) => createClass(payload),
+  updateClass: async (payload) => updateClass(payload),
+  deleteClass: async (classId) => deleteClass(classId),
   loadTeacherContent: async () => fetchTeacherContent(),
   loadClassState: async (classId) => fetchClassState(classId),
   getActiveClassId: () => cache.activeClass,
