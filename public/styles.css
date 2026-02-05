@@ -1033,16 +1033,27 @@ textarea:focus {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 96px;
+  width: 48px;
   text-align: center;
   transform: translate(-50%, -50%) rotate(calc(var(--i) * 60deg)) translateY(calc(var(--label-radius) * -1)) rotate(calc(var(--i) * -60deg));
   transform-origin: center;
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: 16px;
   color: #3b3156;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
   letter-spacing: 0.3px;
   pointer-events: none;
+}
+
+.wheel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  font-size: 22px;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  filter: drop-shadow(0 2px 4px rgba(59, 49, 86, 0.15));
 }
 
 .spin-btn {

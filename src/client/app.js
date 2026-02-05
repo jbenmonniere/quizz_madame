@@ -1052,6 +1052,14 @@
     }
   };
 
+  const SUBJECT_ICONS = {
+    "Mathématiques": "🧮",
+    "CCQ (Culture et citoyenneté québécoise)": "⚜️",
+    "Sciences": "🔬",
+    "Français": "✍️",
+    "Culture générale": "🌍"
+  };
+
   const buildWheelLabels = () => {
     const labels = $("#wheelLabels");
     if (!labels) return;
@@ -1064,7 +1072,9 @@
       label.className = "wheel-label";
       const angle = -90 + idx * segment;
       label.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(var(--label-radius) * -1)) rotate(${-angle}deg)`;
-      label.textContent = cat.name;
+      const icon = SUBJECT_ICONS[cat.name] || "📘";
+      label.innerHTML = `<span class="wheel-icon" aria-hidden="true">${icon}</span>`;
+      label.setAttribute("aria-label", cat.name);
       labels.appendChild(label);
     });
   };
