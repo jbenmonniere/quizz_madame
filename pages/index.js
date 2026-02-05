@@ -29,6 +29,7 @@ const APP_HTML = `
   <button class="tab-btn nav-tab" data-nav="builder" type="button">Portail enseignante</button>
   <button class="tab-btn nav-tab" data-nav="quizz" type="button">Quizz</button>
   <button class="tab-btn nav-tab" data-nav="questions" type="button">Questions</button>
+  <button class="tab-btn nav-tab" data-nav="rewards" type="button">Recompenses</button>
 </nav>
 
 <main class="tc-app">
