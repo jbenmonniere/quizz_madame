@@ -686,6 +686,10 @@ textarea:focus {
   text-align: center;
   color: #3b3156;
   max-width: 90%;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+  padding: 2px 6px;
+  border-radius: 999px;
 }
 
 .xp-balloon::after {
@@ -797,6 +801,9 @@ textarea:focus {
   color: #5a3a00;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
   letter-spacing: 0.3px;
+  white-space: nowrap;
+  padding: 0 10px;
+  font-variant-numeric: tabular-nums;
 }
 
 .xp-level {
@@ -813,10 +820,25 @@ textarea:focus {
   border: 2px solid rgba(255, 80, 80, 0.6);
   background: rgba(255, 255, 255, 0.9);
   box-shadow: var(--shadow-soft);
+  min-width: 240px;
+  max-width: 320px;
 }
 
 .xp-panel-compact .xp-balloon {
-  --xp-balloon-size: 90px;
+  --xp-balloon-size: 96px;
+}
+
+.xp-panel-compact .xp-bar {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.xp-panel-compact .xp-text {
+  font-size: 12px;
+}
+
+.xp-panel-compact .xp-bar-text {
+  font-size: 13px;
 }
 
 .xp-panel-calendar {
@@ -1482,7 +1504,31 @@ button:focus-visible {
 }
 
 .xp-balloon.pulse {
-  animation: xpBalloonPulse 0.6s var(--ease-pop);
+  animation: xpFloat 5s ease-in-out infinite, xpBalloonPulse 0.6s var(--ease-pop);
+}
+
+.xp-balloon.explode {
+  animation: xpFloat 5s ease-in-out infinite, xpExplode 0.7s var(--ease-pop);
+}
+
+.xp-impact {
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.6);
+  animation: xpImpact 0.6s ease-out;
+  pointer-events: none;
+}
+
+.xp-burst {
+  position: absolute;
+  inset: -35%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 120, 120, 0.45) 45%, rgba(255, 0, 0, 0) 70%);
+  animation: xpBurst 0.75s ease-out;
+  pointer-events: none;
+  mix-blend-mode: screen;
 }
 
 .confetti {
@@ -1505,6 +1551,25 @@ button:focus-visible {
   0% { transform: scale(var(--xp-inflate, 0.8)); }
   55% { transform: scale(calc(var(--xp-inflate, 0.8) + 0.1)); }
   100% { transform: scale(var(--xp-inflate, 0.8)); }
+}
+
+@keyframes xpExplode {
+  0% { transform: scale(var(--xp-inflate, 0.8)); opacity: 1; }
+  40% { transform: scale(calc(var(--xp-inflate, 0.8) + 0.14)); opacity: 1; }
+  70% { transform: scale(calc(var(--xp-inflate, 0.8) - 0.25)); opacity: 0.2; }
+  100% { transform: scale(var(--xp-inflate, 0.8)); opacity: 1; }
+}
+
+@keyframes xpImpact {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  70% { transform: scale(1.1); opacity: 0.35; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+@keyframes xpBurst {
+  0% { transform: scale(0.2); opacity: 0.9; }
+  60% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.4); opacity: 0; }
 }
 
 @keyframes xpFloat {

@@ -219,6 +219,8 @@
     sessionXp: 0,
     wheelCategories: [],
     xpTransferKey: null,
+    pendingLevelUp: null,
+    selectedDatePoint: null,
     user: null,
     profile: null,
     classes: [],
@@ -330,6 +332,41 @@
     return Math.round(base * multiplier);
   };
 
+  const shouldDeferLevelUp = () => {
+    if (document.body.dataset.screen !== "game") return false;
+    const progress = getProgress(state.selectedDate);
+    if (!progress) return false;
+    return progress.spinsDone < MAX_ROUNDS;
+  };
+
+  const triggerBalloonImpact = (balloon) => {
+    if (!balloon) return;
+    balloon.classList.remove("pulse");
+    void balloon.offsetWidth;
+    balloon.classList.add("pulse");
+    const impact = document.createElement("div");
+    impact.className = "xp-impact";
+    balloon.appendChild(impact);
+    setTimeout(() => impact.remove(), 600);
+  };
+
+  const triggerBalloonExplosion = (balloon) => {
+    if (!balloon) return;
+    balloon.classList.remove("explode");
+    void balloon.offsetWidth;
+    balloon.classList.add("explode");
+    const burst = document.createElement("div");
+    burst.className = "xp-burst";
+    balloon.appendChild(burst);
+    setTimeout(() => burst.remove(), 800);
+  };
+
+  const triggerLevelUpSequence = (level) => {
+    const balloon = getVisibleXpBalloon();
+    triggerBalloonExplosion(balloon);
+    setTimeout(() => showLevelUp(level), 650);
+  };
+
   const awardXp = (amount) => {
     if (!amount) return getXpState();
     const xp = getXpState();
@@ -349,7 +386,11 @@
     const next = { level, current, total };
     setXpState(next);
     if (leveledUp) {
-      showLevelUp(level);
+      if (shouldDeferLevelUp()) {
+        state.pendingLevelUp = Math.max(state.pendingLevelUp || 0, level);
+      } else {
+        triggerLevelUpSequence(level);
+      }
     }
     return { ...next, max };
   };
@@ -675,16 +716,35 @@
     return panel ? panel.querySelector(".xp-balloon") : null;
   };
 
-  const launchXpTransfer = () => {
-    const source = $("#activeDateLabel") || $("#dayTitle");
+  const getXpTransferSource = () => {
+    const selectedDay = document.querySelector(".day.selected");
+    if (selectedDay) {
+      const rect = selectedDay.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) return selectedDay;
+    }
+    const dayTitle = $("#dayTitle");
+    if (dayTitle && dayTitle.getBoundingClientRect().width > 0) return dayTitle;
+    return $("#activeDateLabel") || $("#dayTitle");
+  };
+
+  const launchXpTransfer = ({ duration = 3500, onComplete, startPoint } = {}) => {
+    const fallback = startPoint || state.selectedDatePoint;
+    const source = fallback ? null : getXpTransferSource();
     const target = getVisibleXpBalloon();
     const layer = $("#xpTransferLayer");
-    if (!source || !target || !layer) return;
+    const startRect = source ? source.getBoundingClientRect() : null;
+    if (!target || !layer || (!startRect && !fallback)) {
+      if (typeof onComplete === "function") onComplete();
+      return;
+    }
 
-    const startRect = source.getBoundingClientRect();
     const endRect = target.getBoundingClientRect();
-    const startX = startRect.left + startRect.width / 2;
-    const startY = startRect.top + startRect.height / 2;
+    const startX = startRect && startRect.width && startRect.height
+      ? startRect.left + startRect.width / 2
+      : (fallback?.x ?? endRect.left);
+    const startY = startRect && startRect.width && startRect.height
+      ? startRect.top + startRect.height / 2
+      : (fallback?.y ?? endRect.top);
     const endX = endRect.left + endRect.width / 2;
     const endY = endRect.top + endRect.height / 2;
 
@@ -711,14 +771,20 @@
       pieces.push({ el: piece, size: 0.8 + Math.random() * 0.4 });
     }
 
-    pieces.forEach((item, idx) => {
+    let completed = 0;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      if (typeof onComplete === "function") onComplete();
+    };
+
+    pieces.forEach((item) => {
       const { el, size } = item;
       const driftX = (Math.random() * 180 - 90);
       const driftY = -(80 + Math.random() * 120);
       const midX = (startX + endX) / 2 + driftX;
       const midY = Math.min(startY, endY) + driftY;
-      const duration = 900 + Math.random() * 300;
-      const delay = idx === 0 ? 0 : Math.random() * 120;
       const rotate = Math.random() * 360;
       const anim = el.animate(
         [
@@ -734,20 +800,19 @@
         ],
         {
           duration,
-          delay,
+          delay: 0,
           easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
           fill: "forwards"
         }
       );
       anim.onfinish = () => {
         el.remove();
+        completed += 1;
+        if (completed === pieces.length) finish();
       };
     });
 
-    target.classList.remove("pulse");
-    void target.offsetWidth;
-    target.classList.add("pulse");
-    setTimeout(() => target.classList.remove("pulse"), 700);
+    setTimeout(finish, duration + 80);
   };
 
   const playWrongX = () => {
@@ -1024,6 +1089,15 @@
     const monthLabel = $("#monthLabel");
     if (monthLabel) {
       monthLabel.textContent = month.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+    }
+
+    const selected = document.querySelector(".day.selected");
+    if (selected) {
+      const rect = selected.getBoundingClientRect();
+      state.selectedDatePoint = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
     }
   };
 
@@ -2410,6 +2484,14 @@
     updateHeader();
     renderCalendar();
     renderDayPanel();
+    const selected = document.querySelector(`.day[data-date="${key}"]`);
+    if (selected) {
+      const rect = selected.getBoundingClientRect();
+      state.selectedDatePoint = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
   };
 
   const changeMonth = (delta) => {
@@ -2483,7 +2565,27 @@
       if (finishBanner) finishBanner.classList.add("show");
       if (state.xpTransferKey !== state.selectedDate) {
         state.xpTransferKey = state.selectedDate;
-        setTimeout(() => launchXpTransfer(), 120);
+        const originPoint = state.quizOriginPoint ? { ...state.quizOriginPoint } : null;
+        state.quizOriginPoint = null;
+        setTimeout(() => {
+          launchXpTransfer({
+            duration: 3500,
+            startPoint: originPoint,
+            onComplete: () => {
+              const balloon = getVisibleXpBalloon();
+              triggerBalloonImpact(balloon);
+              if (state.pendingLevelUp) {
+                const level = state.pendingLevelUp;
+                state.pendingLevelUp = null;
+                setTimeout(() => triggerLevelUpSequence(level), 250);
+              }
+            }
+          });
+        }, 120);
+      } else if (state.pendingLevelUp) {
+        const level = state.pendingLevelUp;
+        state.pendingLevelUp = null;
+        setTimeout(() => triggerLevelUpSequence(level), 250);
       }
       if (wheelNote) wheelNote.textContent = "Defi termine !";
       spinBtn?.setAttribute("disabled", "disabled");
@@ -2725,6 +2827,15 @@
   };
 
   const startGame = (key) => {
+    const dayButton = document.querySelector(`.day[data-date="${key}"]`);
+    if (dayButton) {
+      const rect = dayButton.getBoundingClientRect();
+      state.quizOriginPoint = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    } else if (state.selectedDatePoint) {
+      state.quizOriginPoint = { ...state.selectedDatePoint };
+    } else {
+      state.quizOriginPoint = null;
+    }
     ensureProgress(key);
     state.awaitingAnswer = false;
     state.currentQuestion = null;
