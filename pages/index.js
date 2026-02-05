@@ -216,10 +216,10 @@ const APP_HTML = `
       <div class="card teacher-card">
         <h3>Banque de questions</h3>
         <div class="form-row">
-          <label>Matiere</label>
+          <label>Matière</label>
           <div class="select" data-select="bankSubjectSelect">
             <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-              <span class="select-value placeholder" data-placeholder="Choisir une matiere">Choisir une matiere</span>
+              <span class="select-value placeholder" data-placeholder="Choisir une matière">Choisir une matière</span>
               <span class="select-caret">▾</span>
             </button>
             <div class="select-menu" role="listbox"></div>
@@ -227,7 +227,7 @@ const APP_HTML = `
           </div>
         </div>
         <div class="form-row">
-          <label>Sous-theme</label>
+          <label>Sous-thème</label>
           <div class="select" data-select="bankSubthemeSelect">
             <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
               <span class="select-value placeholder" data-placeholder="Choisir un sous-thème">Choisir un sous-thème</span>
@@ -324,7 +324,7 @@ const APP_HTML = `
                 </div>
                 <div class="quiz-filters-row">
                   <div class="quiz-filter">
-                    <label>Matiere</label>
+                    <label>Matière</label>
                     <div class="select" data-select="quizBankSubjectFilter">
                       <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
                         <span class="select-value" data-placeholder="Toutes les matières">Toutes les matières</span>
@@ -565,10 +565,10 @@ const APP_HTML = `
       </button>
     </div>
     <div class="form-row">
-      <label>Matiere</label>
+      <label>Matière</label>
       <div class="select" data-select="editSubjectSelect">
         <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-          <span class="select-value" data-placeholder="Choisir une matiere">Choisir une matiere</span>
+          <span class="select-value" data-placeholder="Choisir une matière">Choisir une matière</span>
           <span class="select-caret">▾</span>
         </button>
         <div class="select-menu" role="listbox"></div>
@@ -576,7 +576,7 @@ const APP_HTML = `
       </div>
     </div>
     <div class="form-row">
-      <label>Sous-theme</label>
+      <label>Sous-thème</label>
       <div class="select" data-select="editSubthemeSelect">
         <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
           <span class="select-value" data-placeholder="Choisir un sous-thème">Choisir un sous-thème</span>
@@ -647,7 +647,7 @@ const APP_HTML = `
     <div class="modal-section">
       <h4>Créer une matière</h4>
       <div class="form-row">
-        <label>Matiere</label>
+        <label>Matière</label>
         <input id="newSubjectInput" placeholder="Ex: Arts plastiques" />
       </div>
       <div class="form-row">
@@ -660,10 +660,10 @@ const APP_HTML = `
     <div class="modal-section">
       <h4>Ajouter un sous-thème</h4>
       <div class="form-row">
-        <label>Matiere</label>
+        <label>Matière</label>
         <div class="select" data-select="addSubthemeSubjectSelect">
           <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-            <span class="select-value" data-placeholder="Choisir une matiere">Choisir une matiere</span>
+            <span class="select-value" data-placeholder="Choisir une matière">Choisir une matière</span>
             <span class="select-caret">▾</span>
           </button>
           <div class="select-menu" role="listbox"></div>

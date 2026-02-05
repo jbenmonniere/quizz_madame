@@ -512,7 +512,7 @@
     if (!error) return "Une erreur est survenue.";
     const message = error.message || String(error);
     if (/already registered|User already registered/i.test(message)) {
-      return "Ce nom existe deja. Essaie de te connecter.";
+      return "Ce nom existe déjà. Essaie de te connecter.";
     }
     if (/invalid email/i.test(message)) {
       return "Nom d'utilisateur invalide. Utilise des lettres ou chiffres.";
@@ -1280,7 +1280,7 @@
           ? `Récompense spéciale · ${typeLabel}${text ? ` : ${text}` : ""}`
           : `${typeLabel}${text ? ` : ${text}` : ""}`;
       } else {
-        previewReward.textContent = "Aucune recompense active.";
+        previewReward.textContent = "Aucune récompense active.";
       }
     }
     if (previewMeta) {
@@ -2021,7 +2021,7 @@
     const subthemes = getSubthemesForSubject(subjectFilter);
     updateSelectOptions("quizSubthemeFilter", subthemes, {
       includeAll: true,
-      allLabel: "Tous les sous-themes",
+      allLabel: "Tous les sous-thèmes",
       defaultValue: "all"
     });
   };
@@ -2042,7 +2042,7 @@
     if (!select) return;
     updateSelectOptions("quizDifficultyFilter", getDifficultyOptions(), {
       includeAll: true,
-      allLabel: "Toutes les difficultes",
+      allLabel: "Toutes les difficultés",
       defaultValue: "all"
     });
   };
@@ -2065,7 +2065,7 @@
     const subthemes = getSubthemesForSubject(subjectFilter);
     updateSelectOptions("quizBankSubthemeFilter", subthemes, {
       includeAll: true,
-      allLabel: "Tous les sous-themes",
+      allLabel: "Tous les sous-thèmes",
       defaultValue: "all"
     });
   };
@@ -2075,7 +2075,7 @@
     if (!select) return;
     updateSelectOptions("quizBankDifficultyFilter", getDifficultyOptions(), {
       includeAll: true,
-      allLabel: "Toutes les difficultes",
+      allLabel: "Toutes les difficultés",
       defaultValue: "all"
     });
   };
@@ -2226,7 +2226,7 @@
       return;
     }
     if (map[subject].includes(subtheme)) {
-      setSubjectModalMessage("Ce sous-theme existe deja.");
+      setSubjectModalMessage("Ce sous-thème existe déjà.");
       return;
     }
     const custom = getStoredSubjects();
@@ -2235,7 +2235,7 @@
     store.setSubjects(custom);
     $("#newSubthemeInput").value = "";
     refreshSubjectSelects();
-    setSubjectModalMessage("Sous-theme ajoute.");
+    setSubjectModalMessage("Sous-thème ajouté.");
   };
 
   const openSubjectModal = () => {
@@ -2393,7 +2393,7 @@
     renderSubjectFilter();
     renderSubthemeFilter();
     renderQuizBankList();
-    setTeacherMessage("Question ajoutee a la banque.");
+    setTeacherMessage("Question ajoutée à la banque.");
   };
 
   const handleAddToQuiz = (id) => {
@@ -2970,7 +2970,7 @@
       return;
     }
     if (scores[state.selectedDate]) {
-      const proceed = window.confirm("Cette journee a deja une note. Rejouer et remplacer la note ?");
+      const proceed = window.confirm("Cette journée a déjà une note. Rejouer et remplacer la note ?");
       if (!proceed) return;
       delete scores[state.selectedDate];
       setCalendarScores(scores);

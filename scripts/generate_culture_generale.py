@@ -1,5 +1,6 @@
 import json
 import random
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,7 +17,93 @@ LEVELS = [
 ]
 
 CREATED_AT = datetime(2026, 2, 5, tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
-SUBJECT = "Culture generale"
+SUBJECT = "Culture générale"
+
+RAW_REPLACEMENTS = [
+    ("s appelle", "s'appelle"),
+]
+
+WORD_REPLACEMENTS = [
+    ("bebe", "bébé"),
+    ("journee", "journée"),
+    ("deja", "déjà"),
+    ("equipe", "équipe"),
+    ("francais", "français"),
+    ("mathematique", "mathématique"),
+    ("geometrie", "géométrie"),
+    ("operation", "opération"),
+    ("operations", "opérations"),
+    ("categorie", "catégorie"),
+    ("categories", "catégories"),
+    ("difficulte", "difficulté"),
+    ("difficultes", "difficultés"),
+    ("recompense", "récompense"),
+    ("recompenses", "récompenses"),
+    ("competence", "compétence"),
+    ("competences", "compétences"),
+    ("theme", "thème"),
+    ("themes", "thèmes"),
+    ("pedagogique", "pédagogique"),
+    ("pedagogiques", "pédagogiques"),
+    ("eleve", "élève"),
+    ("eleves", "élèves"),
+    ("ecole", "école"),
+    ("ete", "été"),
+    ("fevrier", "février"),
+    ("aout", "août"),
+    ("decembre", "décembre"),
+    ("peche", "pêche"),
+    ("pasteque", "pastèque"),
+    ("epinard", "épinard"),
+    ("helicoptere", "hélicoptère"),
+    ("metro", "métro"),
+    ("velo", "vélo"),
+    ("coeur", "cœur"),
+    ("president", "président"),
+    ("presidents", "présidents"),
+    ("pres", "près"),
+    ("generale", "générale"),
+    ("general", "général"),
+    ("numero", "numéro"),
+    ("tres", "très"),
+    ("cotes", "côtés"),
+    ("Etats-Unis", "États-Unis"),
+    ("Bresil", "Brésil"),
+    ("Perou", "Pérou"),
+    ("Suede", "Suède"),
+    ("Norvege", "Norvège"),
+    ("Grece", "Grèce"),
+    ("Coree", "Corée"),
+    ("Egypte", "Égypte"),
+    ("Athenes", "Athènes"),
+    ("Colisee", "Colisée"),
+    ("Liberte", "Liberté"),
+    ("Premiere", "Première"),
+    ("Decouverte", "Découverte"),
+    ("Revolution", "Révolution"),
+    ("Epoque", "Époque"),
+    ("Antiquite", "Antiquité"),
+    ("Oceanie", "Océanie"),
+    ("Amerique", "Amérique"),
+    ("Oxygene", "Oxygène"),
+    ("Hydrogene", "Hydrogène"),
+    ("Helium", "Hélium"),
+    ("Magnetisme", "Magnétisme"),
+    ("Gravite", "Gravité"),
+    ("Cinema", "Cinéma"),
+    ("Theatre", "Théâtre"),
+]
+
+
+def normalize_text(value):
+    if not isinstance(value, str):
+        return value
+    text = value
+    for src, dst in RAW_REPLACEMENTS:
+        text = text.replace(src, dst)
+    for src, dst in WORD_REPLACEMENTS:
+        text = re.sub(rf"\\b{re.escape(src)}\\b", dst, text)
+    return text
 
 
 def pick_wrongs(pool, correct, count=3):
@@ -53,11 +140,13 @@ def make_mc(question, correct, wrongs):
 
 def add_question(bank, qid, level, question, correct, wrongs, difficulty):
     q, choices, answer = make_mc(question, correct, wrongs)
+    q = normalize_text(q)
+    choices = [normalize_text(choice) for choice in choices]
     bank.append(
         {
             "id": qid,
-            "subject": SUBJECT,
-            "subtheme": level,
+            "subject": normalize_text(SUBJECT),
+            "subtheme": normalize_text(level),
             "question": q,
             "text": q,
             "choices": choices,
@@ -1210,7 +1299,7 @@ def build_bank():
     return bank
 
 
-def build_sql(bank):
+def build_sql(bank, username="jbmonniere"):
     payload = {
         "subjects": {SUBJECT: LEVELS},
         "bank": bank,
@@ -1218,7 +1307,7 @@ def build_sql(bank):
     json_payload = json.dumps(payload, ensure_ascii=False)
     sql = f"""
 with teacher as (
-  select id from teacher_profiles where username = 'jbmonniere'
+  select id from teacher_profiles where username = '{username}'
 ),
 payload as (
   select $$ {json_payload} $$::jsonb as data
@@ -1242,6 +1331,65 @@ set data = jsonb_set(
     return sql
 
 
+def build_sql_all(bank):
+    payload = {
+        "subjects": {SUBJECT: LEVELS},
+        "bank": bank,
+    }
+    json_payload = json.dumps(payload, ensure_ascii=False)
+    sql = f"""
+with payload as (
+  select $$ {json_payload} $$::jsonb as data
+),
+missing as (
+  select tp.id as user_id
+  from teacher_profiles tp
+  left join teacher_content tc on tc.user_id = tp.id
+  where tc.user_id is null
+)
+insert into teacher_content (user_id, data)
+select missing.user_id, '{{}}'::jsonb
+from missing
+on conflict (user_id) do nothing;
+
+with payload as (
+  select $$ {json_payload} $$::jsonb as data
+)
+update teacher_content
+set data = jsonb_set(
+  jsonb_set(
+    coalesce(teacher_content.data, '{{}}'::jsonb),
+    '{{subjects}}',
+    coalesce(teacher_content.data->'subjects', '{{}}'::jsonb) || (payload.data->'subjects'),
+    true
+  ),
+  '{{bank}}',
+  coalesce(teacher_content.data->'bank', '[]'::jsonb) || (payload.data->'bank'),
+  true
+)
+from payload;
+""".strip()
+    return sql
+
+
+def build_fix_accents_sql():
+    def sql_quote(value):
+        return "'" + value.replace("'", "''") + "'"
+
+    expr = "data::text"
+    for src, dst in RAW_REPLACEMENTS:
+        expr = f"replace({expr}, {sql_quote(src)}, {sql_quote(dst)})"
+    for src, dst in WORD_REPLACEMENTS:
+        pattern = f"\\m{src}\\M"
+        expr = f"regexp_replace({expr}, {sql_quote(pattern)}, {sql_quote(dst)}, 'g')"
+
+    sql = f"""
+update teacher_content
+set data = ({expr})::jsonb;
+""".strip()
+    return sql
+
+
 def main():
     bank = build_bank()
     if len(bank) != 700:
@@ -1250,6 +1398,16 @@ def main():
     out = Path("supabase/seed_culture_generale.sql")
     out.write_text(sql, encoding="utf-8")
     print(f"Wrote {out} with {len(bank)} questions.")
+
+    sql_all = build_sql_all(bank)
+    out_all = Path("supabase/seed_culture_generale_all.sql")
+    out_all.write_text(sql_all, encoding="utf-8")
+    print(f"Wrote {out_all} with {len(bank)} questions.")
+
+    fix_sql = build_fix_accents_sql()
+    out_fix = Path("supabase/fix_accents_teacher_content.sql")
+    out_fix.write_text(fix_sql, encoding="utf-8")
+    print(f"Wrote {out_fix}.")
 
 
 if __name__ == "__main__":
