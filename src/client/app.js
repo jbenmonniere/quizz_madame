@@ -361,6 +361,15 @@
     setTimeout(() => burst.remove(), 800);
   };
 
+  const showXpBonus = (balloon, amount) => {
+    if (!balloon) return;
+    const bonus = document.createElement("div");
+    bonus.className = "xp-bonus";
+    bonus.textContent = `+${amount} EXP`;
+    balloon.appendChild(bonus);
+    setTimeout(() => bonus.remove(), 1400);
+  };
+
   const triggerLevelUpSequence = (level) => {
     const balloon = getVisibleXpBalloon();
     triggerBalloonExplosion(balloon);
@@ -2887,6 +2896,25 @@
         if (idx > 0) nav.remove();
       });
     }
+
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const balloon = target.closest(".xp-balloon");
+      if (!balloon) return;
+      const panel = balloon.closest("[data-xp-panel]");
+      if (panel && panel.offsetParent === null) return;
+      const amount = 50;
+      const isGame = document.body.dataset.screen === "game";
+      if (isGame) state.sessionXp += amount;
+      awardXp(amount);
+      renderXpPanels(isGame ? state.sessionXp : amount);
+      if (!isGame) {
+        setTimeout(() => renderXpPanels(0), 1400);
+      }
+      showXpBonus(balloon, amount);
+      triggerBalloonImpact(balloon);
+    });
 
     $("#prevMonth")?.addEventListener("click", () => changeMonth(-1));
     $("#nextMonth")?.addEventListener("click", () => changeMonth(1));
