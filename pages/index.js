@@ -10,7 +10,7 @@ const APP_HTML = `
   <button class="tc-brand tc-brand-btn" id="openTeacher" type="button">
     <div class="tc-logo">QC</div>
     <div>
-      <div class="tc-title">Quiz de Mme Cryshtale</div>
+      <div class="tc-title" id="appTitle">Quiz de Mme Cryshtale</div>
       <div class="tc-subtitle">5 tours par jour · note sur 5</div>
     </div>
   </button>
@@ -101,18 +101,11 @@ const APP_HTML = `
       </div>
 
       <div class="calendar-side">
-        <div class="card day-panel">
+        <div class="card day-panel day-panel-compact">
           <div class="day-title" id="dayTitle"></div>
-          <div class="day-status" id="dayStatus"></div>
-          <div class="day-quiz-info" id="dayQuizInfo"></div>
-          <div class="day-score" id="dayScore"></div>
-          <div class="day-instructions">
-            La classe tourne la roue 5 fois et repond a 5 questions. La note reste sur le calendrier.
-          </div>
-          <div class="day-note">Astuce : cliquez sur un autre jour pour lancer un nouveau defi.</div>
         </div>
 
-        <div class="card xp-panel" data-xp-panel>
+        <div class="card xp-panel xp-panel-calendar" data-xp-panel>
           <div class="xp-title">Progression EXP</div>
           <div class="xp-balloon">
             <div class="xp-fill" data-xp-fill></div>

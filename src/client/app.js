@@ -367,11 +367,16 @@
     const classLabel = $("#activeClassLabel");
     const switchBtn = $("#switchClassBtn");
     const logoutBtn = $("#logoutBtn");
+    const title = $("#appTitle");
 
     if (userLabel) {
       userLabel.textContent = state.profile?.username
         ? `Compte: ${state.profile.username}`
         : "";
+    }
+    if (title) {
+      const username = state.profile?.username;
+      title.textContent = username ? `Quiz de ${username}` : "Quiz de Mme Cryshtale";
     }
     if (classLabel) {
       if (state.activeClass) {
@@ -932,7 +937,7 @@
     const dayStatus = $("#dayStatus");
     const dayQuizInfo = $("#dayQuizInfo");
     const dayScore = $("#dayScore");
-    if (!dayTitle || !dayStatus || !dayScore || !dayQuizInfo) return;
+    if (!dayTitle) return;
 
     const date = parseDateKey(state.selectedDate);
     const scores = getCalendarScores();
@@ -947,21 +952,23 @@
       year: "numeric"
     });
 
-    if (scoreEntry) {
-      dayStatus.textContent = "Defi termine";
-      dayScore.textContent = `Note: ${scoreEntry.score}/${MAX_ROUNDS}`;
-    } else if (progress) {
-      dayStatus.textContent = "Defi en cours";
-      dayScore.textContent = `Score provisoire: ${progress.correct}/${MAX_ROUNDS}`;
-    } else {
-      dayStatus.textContent = "Defi du jour";
-      dayScore.textContent = "Aucune note encore";
-    }
+    if (dayStatus && dayScore && dayQuizInfo) {
+      if (scoreEntry) {
+        dayStatus.textContent = "Defi termine";
+        dayScore.textContent = `Note: ${scoreEntry.score}/${MAX_ROUNDS}`;
+      } else if (progress) {
+        dayStatus.textContent = "Defi en cours";
+        dayScore.textContent = `Score provisoire: ${progress.correct}/${MAX_ROUNDS}`;
+      } else {
+        dayStatus.textContent = "Defi du jour";
+        dayScore.textContent = "Aucune note encore";
+      }
 
-    if (assignedQuiz) {
-      dayQuizInfo.textContent = `Quiz attribue: ${assignedQuiz.title} (${assignedQuiz.questions.length} questions)`;
-    } else {
-      dayQuizInfo.textContent = "Aucun quiz attribue: mode categories aleatoires.";
+      if (assignedQuiz) {
+        dayQuizInfo.textContent = `Quiz attribue: ${assignedQuiz.title} (${assignedQuiz.questions.length} questions)`;
+      } else {
+        dayQuizInfo.textContent = "Aucun quiz attribue: mode categories aleatoires.";
+      }
     }
   };
 
