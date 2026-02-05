@@ -1,0 +1,501 @@
+id,question,A,B,C,D,reponse
+1,Quel animal est connu pour le roi de la jungle ?,le dauphin,la baleine bleue,le lion,le chameau,C
+2,Quel animal est connu pour le plus grand animal ?,le lion,la baleine bleue,le dauphin,le chameau,B
+3,Quel animal est connu pour un mammifère marin intelligent ?,la baleine bleue,le dauphin,le chameau,le lion,B
+4,Quel animal est connu pour vivre dans le désert ?,le dauphin,la baleine bleue,le lion,le chameau,D
+5,Quel animal est connu pour avoir une carapace ?,le lion,le dauphin,la tortue,la baleine bleue,C
+6,Quel animal est connu pour voler très haut ?,l’aigle,la baleine bleue,le dauphin,le lion,A
+7,Quel animal est connu pour miauler ?,le lion,le chat,la baleine bleue,le dauphin,B
+8,Quel animal est connu pour produire du miel ?,la baleine bleue,le dauphin,l’abeille,le lion,C
+9,Quel animal est connu pour être le meilleur ami de l’humain ?,le chien,la baleine bleue,le lion,le dauphin,A
+10,Quel animal est connu pour galoper ?,le cheval,la baleine bleue,le lion,le dauphin,A
+11,Quel animal est connu pour produire de la laine ?,la baleine bleue,le mouton,le lion,le dauphin,B
+12,Quel animal est connu pour donner du lait ?,la vache,le lion,le dauphin,la baleine bleue,A
+13,Quel animal est connu pour chanter le matin ?,le lion,le coq,la baleine bleue,le dauphin,B
+14,Quel animal est connu pour grimper aux arbres ?,le dauphin,le singe,la baleine bleue,le lion,B
+15,Quel animal est connu pour manger du bambou ?,le lion,le dauphin,le panda,la baleine bleue,C
+16,Quel animal est connu pour sauter ?,le lion,le kangourou,le dauphin,la baleine bleue,B
+17,Quel animal est connu pour vivre dans l’Arctique ?,l’ours polaire,la baleine bleue,le lion,le dauphin,A
+18,Quel animal est connu pour vivre au pôle Sud ?,le lion,le pingouin,le dauphin,la baleine bleue,B
+19,Quel animal est connu pour être rusé ?,le renard,la baleine bleue,le dauphin,le lion,A
+20,Quel animal est connu pour vivre en meute ?,le lion,la baleine bleue,le dauphin,le loup,D
+21,Laquelle de ces planètes fait partie du système solaire ?,Terre,Mercure,Mars,Vénus,B
+22,Laquelle de ces planètes fait partie du système solaire ?,Vénus,Terre,Mars,Mercure,A
+23,Laquelle de ces planètes fait partie du système solaire ?,Mercure,Terre,Mars,Vénus,B
+24,Laquelle de ces planètes fait partie du système solaire ?,Vénus,Terre,Mars,Mercure,C
+25,Laquelle de ces planètes fait partie du système solaire ?,Mercure,Vénus,Jupiter,Terre,C
+26,Laquelle de ces planètes fait partie du système solaire ?,Vénus,Saturne,Terre,Mercure,B
+27,Laquelle de ces planètes fait partie du système solaire ?,Terre,Mercure,Uranus,Vénus,C
+28,Laquelle de ces planètes fait partie du système solaire ?,Vénus,Terre,Mercure,Neptune,D
+29,Lequel de ces choix est un continent ?,Amérique du Sud,Afrique,Amérique du Nord,Antarctique,B
+30,Lequel de ces choix est un continent ?,Amérique du Nord,Afrique,Antarctique,Amérique du Sud,A
+31,Lequel de ces choix est un continent ?,Afrique,Antarctique,Amérique du Nord,Amérique du Sud,D
+32,Lequel de ces choix est un continent ?,Antarctique,Amérique du Sud,Amérique du Nord,Afrique,A
+33,Lequel de ces choix est un continent ?,Asie,Amérique du Nord,Afrique,Amérique du Sud,A
+34,Lequel de ces choix est un continent ?,Europe,Afrique,Amérique du Nord,Amérique du Sud,A
+35,Lequel de ces choix est un continent ?,Océanie,Afrique,Amérique du Nord,Amérique du Sud,A
+36,Quelle est la capitale de Canada ?,Ottawa,Rome,Madrid,Paris,A
+37,Quelle est la capitale de France ?,Ottawa,Rome,Paris,Madrid,C
+38,Quelle est la capitale de Italie ?,Rome,Madrid,Ottawa,Paris,A
+39,Quelle est la capitale de Espagne ?,Rome,Ottawa,Madrid,Paris,C
+40,Quelle est la capitale de Japon ?,Ottawa,Rome,Paris,Tokyo,D
+41,Quelle est la capitale de Brésil ?,Brasilia,Paris,Ottawa,Rome,A
+42,Quelle est la capitale de Allemagne ?,Rome,Ottawa,Paris,Berlin,D
+43,Quelle est la capitale de Mexique ?,Mexico,Paris,Ottawa,Rome,A
+44,Quelle est la capitale de Chine ?,Rome,Paris,Ottawa,Pékin,D
+45,Quelle est la capitale de Portugal ?,Rome,Ottawa,Paris,Lisbonne,D
+46,Quel organe sert à respirer ?,le cerveau,le cœur,les yeux,les poumons,D
+47,Quel organe sert à faire circuler le sang ?,le cœur,les yeux,le cerveau,les poumons,A
+48,Quel organe sert à penser ?,le cœur,les poumons,le cerveau,les yeux,C
+49,Quel organe sert à voir ?,le cœur,le cerveau,les yeux,les poumons,C
+50,Quel organe sert à entendre ?,le cerveau,les poumons,le cœur,les oreilles,D
+51,Quel organe sert à protéger le corps ?,la peau,les poumons,le cerveau,le cœur,A
+52,Quel sport se joue surtout avec ballon rond ?,hockey,basketball,soccer,tennis,C
+53,Quel sport se joue surtout avec glace ?,tennis,basketball,soccer,hockey,D
+54,Quel sport se joue surtout avec panier ?,hockey,basketball,soccer,tennis,B
+55,Quel sport se joue surtout avec raquette ?,basketball,soccer,tennis,hockey,C
+56,Quel sport se joue surtout avec batte ?,baseball,hockey,soccer,basketball,A
+57,Quelle saison vient après printemps ?,été,automne,printemps,hiver,A
+58,Quelle saison vient après été ?,printemps,été,hiver,automne,D
+59,Quelle saison vient après automne ?,automne,printemps,été,hiver,D
+60,Quelle saison vient après hiver ?,automne,été,printemps,hiver,C
+61,Quel jour vient après lundi ?,mercredi,lundi,mardi,jeudi,C
+62,Quel jour vient après mardi ?,jeudi,lundi,mardi,mercredi,D
+63,Quel jour vient après mercredi ?,lundi,jeudi,mardi,mercredi,B
+64,Quel jour vient après jeudi ?,vendredi,mardi,lundi,mercredi,A
+65,Quel jour vient après vendredi ?,lundi,samedi,mardi,mercredi,B
+66,Quel jour vient après samedi ?,mardi,mercredi,lundi,dimanche,D
+67,Quel jour vient après dimanche ?,lundi,jeudi,mardi,mercredi,A
+68,Quelle couleur obtient-on en mélangeant le bleu et le jaune ?,vert,gris,rose,marron,A
+69,Quelle couleur obtient-on en mélangeant le rouge et le jaune ?,gris,rose,orange,marron,C
+70,Quelle couleur obtient-on en mélangeant le bleu et le rouge ?,gris,violet,marron,rose,B
+71,À quoi sert un feu rouge ?,à arrêter les voitures,à tourner,à stationner,à accélérer,A
+72,Quel objet sert à écrire ?,un crayon,une gomme,une règle,un cahier,A
+73,Quel repas mange-t-on le matin ?,le souper,la collation,le dîner,le déjeuner,D
+74,Quel instrument sert à mesurer la température ?,une règle,un compas,un thermomètre,un baromètre,C
+75,Pourquoi recycle-t-on ?,pour jeter plus,pour décorer,pour protéger l’environnement,pour polluer,C
+76,Quel symbole représente le Canada ?,le chêne,le lion,la feuille d’érable,l’aigle,C
+77,Quel moyen de transport vole ?,la voiture,le bateau,le train,l’avion,D
+78,Quel appareil sert à téléphoner ?,une radio,une télévision,un micro-ondes,un téléphone,D
+79,Quel animal est un mammifère ?,le chien,la grenouille,le pigeon,le serpent,A
+80,Quel animal pond des œufs ?,la poule,le cheval,la vache,le chien,A
+81,À quoi sert un feu rouge ?,à stationner,à tourner,à accélérer,à arrêter les voitures,D
+82,Quel objet sert à écrire ?,un crayon,une gomme,un cahier,une règle,A
+83,Quel repas mange-t-on le matin ?,le dîner,le souper,le déjeuner,la collation,C
+84,Quel instrument sert à mesurer la température ?,une règle,un thermomètre,un compas,un baromètre,B
+85,Pourquoi recycle-t-on ?,pour jeter plus,pour décorer,pour protéger l’environnement,pour polluer,C
+86,Quel symbole représente le Canada ?,la feuille d’érable,l’aigle,le chêne,le lion,A
+87,Quel moyen de transport vole ?,l’avion,le bateau,la voiture,le train,A
+88,Quel appareil sert à téléphoner ?,une radio,une télévision,un téléphone,un micro-ondes,C
+89,Quel animal est un mammifère ?,la grenouille,le serpent,le pigeon,le chien,D
+90,Quel animal pond des œufs ?,la poule,la vache,le chien,le cheval,A
+91,À quoi sert un feu rouge ?,à accélérer,à arrêter les voitures,à tourner,à stationner,B
+92,Quel objet sert à écrire ?,une règle,un crayon,un cahier,une gomme,B
+93,Quel repas mange-t-on le matin ?,le déjeuner,le souper,le dîner,la collation,A
+94,Quel instrument sert à mesurer la température ?,un baromètre,un compas,une règle,un thermomètre,D
+95,Pourquoi recycle-t-on ?,pour polluer,pour décorer,pour jeter plus,pour protéger l’environnement,D
+96,Quel symbole représente le Canada ?,la feuille d’érable,le chêne,l’aigle,le lion,A
+97,Quel moyen de transport vole ?,la voiture,le bateau,l’avion,le train,C
+98,Quel appareil sert à téléphoner ?,une radio,une télévision,un téléphone,un micro-ondes,C
+99,Quel animal est un mammifère ?,le serpent,le chien,le pigeon,la grenouille,B
+100,Quel animal pond des œufs ?,la vache,la poule,le chien,le cheval,B
+101,À quoi sert un feu rouge ?,à stationner,à accélérer,à tourner,à arrêter les voitures,D
+102,Quel objet sert à écrire ?,une règle,un crayon,une gomme,un cahier,B
+103,Quel repas mange-t-on le matin ?,la collation,le souper,le déjeuner,le dîner,C
+104,Quel instrument sert à mesurer la température ?,un baromètre,une règle,un compas,un thermomètre,D
+105,Pourquoi recycle-t-on ?,pour jeter plus,pour polluer,pour décorer,pour protéger l’environnement,D
+106,Quel symbole représente le Canada ?,le lion,le chêne,la feuille d’érable,l’aigle,C
+107,Quel moyen de transport vole ?,le bateau,l’avion,le train,la voiture,B
+108,Quel appareil sert à téléphoner ?,une télévision,un téléphone,une radio,un micro-ondes,B
+109,Quel animal est un mammifère ?,le chien,la grenouille,le pigeon,le serpent,A
+110,Quel animal pond des œufs ?,la poule,le cheval,le chien,la vache,A
+111,À quoi sert un feu rouge ?,à tourner,à accélérer,à arrêter les voitures,à stationner,C
+112,Quel objet sert à écrire ?,une règle,un crayon,une gomme,un cahier,B
+113,Quel repas mange-t-on le matin ?,la collation,le dîner,le déjeuner,le souper,C
+114,Quel instrument sert à mesurer la température ?,un thermomètre,une règle,un compas,un baromètre,A
+115,Pourquoi recycle-t-on ?,pour jeter plus,pour protéger l’environnement,pour décorer,pour polluer,B
+116,Quel symbole représente le Canada ?,le lion,la feuille d’érable,le chêne,l’aigle,B
+117,Quel moyen de transport vole ?,l’avion,le bateau,le train,la voiture,A
+118,Quel appareil sert à téléphoner ?,une radio,une télévision,un micro-ondes,un téléphone,D
+119,Quel animal est un mammifère ?,la grenouille,le serpent,le chien,le pigeon,C
+120,Quel animal pond des œufs ?,le cheval,la vache,la poule,le chien,C
+121,À quoi sert un feu rouge ?,à stationner,à tourner,à accélérer,à arrêter les voitures,D
+122,Quel objet sert à écrire ?,une gomme,un crayon,une règle,un cahier,B
+123,Quel repas mange-t-on le matin ?,le souper,le déjeuner,la collation,le dîner,B
+124,Quel instrument sert à mesurer la température ?,un baromètre,un thermomètre,un compas,une règle,B
+125,Pourquoi recycle-t-on ?,pour polluer,pour jeter plus,pour décorer,pour protéger l’environnement,D
+126,Quel symbole représente le Canada ?,l’aigle,le lion,le chêne,la feuille d’érable,D
+127,Quel moyen de transport vole ?,la voiture,l’avion,le train,le bateau,B
+128,Quel appareil sert à téléphoner ?,une radio,un micro-ondes,une télévision,un téléphone,D
+129,Quel animal est un mammifère ?,le pigeon,le chien,le serpent,la grenouille,B
+130,Quel animal pond des œufs ?,le chien,la poule,la vache,le cheval,B
+131,À quoi sert un feu rouge ?,à tourner,à stationner,à accélérer,à arrêter les voitures,D
+132,Quel objet sert à écrire ?,une règle,un crayon,un cahier,une gomme,B
+133,Quel repas mange-t-on le matin ?,la collation,le dîner,le déjeuner,le souper,C
+134,Quel instrument sert à mesurer la température ?,un baromètre,un compas,une règle,un thermomètre,D
+135,Pourquoi recycle-t-on ?,pour décorer,pour jeter plus,pour protéger l’environnement,pour polluer,C
+136,Quel symbole représente le Canada ?,le lion,l’aigle,la feuille d’érable,le chêne,C
+137,Quel moyen de transport vole ?,l’avion,le bateau,le train,la voiture,A
+138,Quel appareil sert à téléphoner ?,un téléphone,une télévision,un micro-ondes,une radio,A
+139,Quel animal est un mammifère ?,la grenouille,le pigeon,le chien,le serpent,C
+140,Quel animal pond des œufs ?,le chien,le cheval,la vache,la poule,D
+141,À quoi sert un feu rouge ?,à stationner,à tourner,à arrêter les voitures,à accélérer,C
+142,Quel objet sert à écrire ?,un cahier,un crayon,une règle,une gomme,B
+143,Quel repas mange-t-on le matin ?,le souper,la collation,le dîner,le déjeuner,D
+144,Quel instrument sert à mesurer la température ?,un baromètre,un thermomètre,un compas,une règle,B
+145,Pourquoi recycle-t-on ?,pour décorer,pour polluer,pour protéger l’environnement,pour jeter plus,C
+146,Quel symbole représente le Canada ?,le lion,l’aigle,le chêne,la feuille d’érable,D
+147,Quel moyen de transport vole ?,l’avion,le bateau,la voiture,le train,A
+148,Quel appareil sert à téléphoner ?,un téléphone,un micro-ondes,une radio,une télévision,A
+149,Quel animal est un mammifère ?,la grenouille,le pigeon,le chien,le serpent,C
+150,Quel animal pond des œufs ?,le chien,la vache,la poule,le cheval,C
+151,À quoi sert un feu rouge ?,à tourner,à arrêter les voitures,à accélérer,à stationner,B
+152,Quel objet sert à écrire ?,un cahier,un crayon,une gomme,une règle,B
+153,Quel repas mange-t-on le matin ?,le déjeuner,la collation,le souper,le dîner,A
+154,Quel instrument sert à mesurer la température ?,un baromètre,un compas,un thermomètre,une règle,C
+155,Pourquoi recycle-t-on ?,pour jeter plus,pour polluer,pour décorer,pour protéger l’environnement,D
+156,Quel symbole représente le Canada ?,le lion,le chêne,la feuille d’érable,l’aigle,C
+157,Quel moyen de transport vole ?,le train,l’avion,la voiture,le bateau,B
+158,Quel appareil sert à téléphoner ?,un téléphone,un micro-ondes,une radio,une télévision,A
+159,Quel animal est un mammifère ?,la grenouille,le chien,le pigeon,le serpent,B
+160,Quel animal pond des œufs ?,le chien,le cheval,la vache,la poule,D
+161,À quoi sert un feu rouge ?,à accélérer,à arrêter les voitures,à stationner,à tourner,B
+162,Quel objet sert à écrire ?,un cahier,une règle,une gomme,un crayon,D
+163,Quel repas mange-t-on le matin ?,le dîner,la collation,le souper,le déjeuner,D
+164,Quel instrument sert à mesurer la température ?,une règle,un thermomètre,un compas,un baromètre,B
+165,Pourquoi recycle-t-on ?,pour polluer,pour décorer,pour protéger l’environnement,pour jeter plus,C
+166,Quel symbole représente le Canada ?,le lion,le chêne,l’aigle,la feuille d’érable,D
+167,Quel moyen de transport vole ?,l’avion,le train,la voiture,le bateau,A
+168,Quel appareil sert à téléphoner ?,une télévision,un micro-ondes,un téléphone,une radio,C
+169,Quel animal est un mammifère ?,le serpent,le pigeon,le chien,la grenouille,C
+170,Quel animal pond des œufs ?,le chien,le cheval,la poule,la vache,C
+171,À quoi sert un feu rouge ?,à stationner,à accélérer,à arrêter les voitures,à tourner,C
+172,Quel objet sert à écrire ?,un cahier,un crayon,une gomme,une règle,B
+173,Quel repas mange-t-on le matin ?,le déjeuner,la collation,le souper,le dîner,A
+174,Quel instrument sert à mesurer la température ?,un thermomètre,un compas,une règle,un baromètre,A
+175,Pourquoi recycle-t-on ?,pour protéger l’environnement,pour polluer,pour jeter plus,pour décorer,A
+176,Quel symbole représente le Canada ?,le chêne,le lion,l’aigle,la feuille d’érable,D
+177,Quel moyen de transport vole ?,le bateau,l’avion,la voiture,le train,B
+178,Quel appareil sert à téléphoner ?,un micro-ondes,une radio,un téléphone,une télévision,C
+179,Quel animal est un mammifère ?,le serpent,le chien,le pigeon,la grenouille,B
+180,Quel animal pond des œufs ?,le chien,le cheval,la vache,la poule,D
+181,À quoi sert un feu rouge ?,à accélérer,à tourner,à stationner,à arrêter les voitures,D
+182,Quel objet sert à écrire ?,un crayon,une gomme,une règle,un cahier,A
+183,Quel repas mange-t-on le matin ?,le souper,le déjeuner,le dîner,la collation,B
+184,Quel instrument sert à mesurer la température ?,un thermomètre,un baromètre,un compas,une règle,A
+185,Pourquoi recycle-t-on ?,pour protéger l’environnement,pour décorer,pour jeter plus,pour polluer,A
+186,Quel symbole représente le Canada ?,l’aigle,le lion,le chêne,la feuille d’érable,D
+187,Quel moyen de transport vole ?,le bateau,la voiture,le train,l’avion,D
+188,Quel appareil sert à téléphoner ?,un micro-ondes,un téléphone,une télévision,une radio,B
+189,Quel animal est un mammifère ?,le pigeon,le chien,la grenouille,le serpent,B
+190,Quel animal pond des œufs ?,le cheval,la vache,la poule,le chien,C
+191,À quoi sert un feu rouge ?,à tourner,à accélérer,à arrêter les voitures,à stationner,C
+192,Quel objet sert à écrire ?,une gomme,une règle,un cahier,un crayon,D
+193,Quel repas mange-t-on le matin ?,le souper,la collation,le déjeuner,le dîner,C
+194,Quel instrument sert à mesurer la température ?,une règle,un baromètre,un compas,un thermomètre,D
+195,Pourquoi recycle-t-on ?,pour décorer,pour protéger l’environnement,pour polluer,pour jeter plus,B
+196,Quel symbole représente le Canada ?,le chêne,le lion,la feuille d’érable,l’aigle,C
+197,Quel moyen de transport vole ?,la voiture,le train,l’avion,le bateau,C
+198,Quel appareil sert à téléphoner ?,une télévision,une radio,un téléphone,un micro-ondes,C
+199,Quel animal est un mammifère ?,le chien,la grenouille,le pigeon,le serpent,A
+200,Quel animal pond des œufs ?,la vache,la poule,le cheval,le chien,B
+201,À quoi sert un feu rouge ?,à stationner,à arrêter les voitures,à accélérer,à tourner,B
+202,Quel objet sert à écrire ?,un crayon,une gomme,une règle,un cahier,A
+203,Quel repas mange-t-on le matin ?,le souper,la collation,le dîner,le déjeuner,D
+204,Quel instrument sert à mesurer la température ?,un compas,un thermomètre,un baromètre,une règle,B
+205,Pourquoi recycle-t-on ?,pour protéger l’environnement,pour polluer,pour décorer,pour jeter plus,A
+206,Quel symbole représente le Canada ?,le lion,la feuille d’érable,le chêne,l’aigle,B
+207,Quel moyen de transport vole ?,l’avion,le bateau,la voiture,le train,A
+208,Quel appareil sert à téléphoner ?,un téléphone,un micro-ondes,une télévision,une radio,A
+209,Quel animal est un mammifère ?,le pigeon,le serpent,le chien,la grenouille,C
+210,Quel animal pond des œufs ?,le chien,la vache,le cheval,la poule,D
+211,À quoi sert un feu rouge ?,à stationner,à accélérer,à tourner,à arrêter les voitures,D
+212,Quel objet sert à écrire ?,une règle,un cahier,un crayon,une gomme,C
+213,Quel repas mange-t-on le matin ?,le déjeuner,le souper,la collation,le dîner,A
+214,Quel instrument sert à mesurer la température ?,un compas,un thermomètre,un baromètre,une règle,B
+215,Pourquoi recycle-t-on ?,pour jeter plus,pour décorer,pour polluer,pour protéger l’environnement,D
+216,Quel symbole représente le Canada ?,le chêne,le lion,la feuille d’érable,l’aigle,C
+217,Quel moyen de transport vole ?,le bateau,l’avion,la voiture,le train,B
+218,Quel appareil sert à téléphoner ?,un micro-ondes,un téléphone,une radio,une télévision,B
+219,Quel animal est un mammifère ?,le pigeon,le chien,le serpent,la grenouille,B
+220,Quel animal pond des œufs ?,la poule,le chien,le cheval,la vache,A
+221,À quoi sert un feu rouge ?,à stationner,à tourner,à arrêter les voitures,à accélérer,C
+222,Quel objet sert à écrire ?,un cahier,une gomme,une règle,un crayon,D
+223,Quel repas mange-t-on le matin ?,la collation,le souper,le dîner,le déjeuner,D
+224,Quel instrument sert à mesurer la température ?,un compas,un thermomètre,une règle,un baromètre,B
+225,Pourquoi recycle-t-on ?,pour protéger l’environnement,pour décorer,pour polluer,pour jeter plus,A
+226,Quel symbole représente le Canada ?,le chêne,la feuille d’érable,l’aigle,le lion,B
+227,Quel moyen de transport vole ?,l’avion,le train,le bateau,la voiture,A
+228,Quel appareil sert à téléphoner ?,une radio,un micro-ondes,une télévision,un téléphone,D
+229,Quel animal est un mammifère ?,le pigeon,la grenouille,le serpent,le chien,D
+230,Quel animal pond des œufs ?,le chien,la vache,le cheval,la poule,D
+231,À quoi sert un feu rouge ?,à arrêter les voitures,à tourner,à stationner,à accélérer,A
+232,Quel objet sert à écrire ?,un crayon,une règle,une gomme,un cahier,A
+233,Quel repas mange-t-on le matin ?,le souper,le dîner,le déjeuner,la collation,C
+234,Quel instrument sert à mesurer la température ?,un baromètre,un compas,une règle,un thermomètre,D
+235,Pourquoi recycle-t-on ?,pour polluer,pour protéger l’environnement,pour jeter plus,pour décorer,B
+236,Quel symbole représente le Canada ?,la feuille d’érable,le chêne,l’aigle,le lion,A
+237,Quel moyen de transport vole ?,la voiture,le train,l’avion,le bateau,C
+238,Quel appareil sert à téléphoner ?,un téléphone,une radio,une télévision,un micro-ondes,A
+239,Quel animal est un mammifère ?,le pigeon,le chien,le serpent,la grenouille,B
+240,Quel animal pond des œufs ?,le chien,la poule,la vache,le cheval,B
+241,À quoi sert un feu rouge ?,à accélérer,à arrêter les voitures,à tourner,à stationner,B
+242,Quel objet sert à écrire ?,une règle,un crayon,un cahier,une gomme,B
+243,Quel repas mange-t-on le matin ?,la collation,le dîner,le souper,le déjeuner,D
+244,Quel instrument sert à mesurer la température ?,un baromètre,un compas,une règle,un thermomètre,D
+245,Pourquoi recycle-t-on ?,pour protéger l’environnement,pour polluer,pour décorer,pour jeter plus,A
+246,Quel symbole représente le Canada ?,le chêne,le lion,l’aigle,la feuille d’érable,D
+247,Quel moyen de transport vole ?,l’avion,la voiture,le bateau,le train,A
+248,Quel appareil sert à téléphoner ?,un téléphone,une radio,un micro-ondes,une télévision,A
+249,Quel animal est un mammifère ?,la grenouille,le chien,le pigeon,le serpent,B
+250,Quel animal pond des œufs ?,la vache,le chien,le cheval,la poule,D
+251,À quoi sert un feu rouge ?,à arrêter les voitures,à stationner,à tourner,à accélérer,A
+252,Quel objet sert à écrire ?,une règle,un cahier,un crayon,une gomme,C
+253,Quel repas mange-t-on le matin ?,le dîner,la collation,le déjeuner,le souper,C
+254,Quel instrument sert à mesurer la température ?,un compas,une règle,un baromètre,un thermomètre,D
+255,Pourquoi recycle-t-on ?,pour jeter plus,pour polluer,pour décorer,pour protéger l’environnement,D
+256,Quel symbole représente le Canada ?,le chêne,la feuille d’érable,le lion,l’aigle,B
+257,Quel moyen de transport vole ?,l’avion,le train,la voiture,le bateau,A
+258,Quel appareil sert à téléphoner ?,un micro-ondes,une radio,un téléphone,une télévision,C
+259,Quel animal est un mammifère ?,la grenouille,le pigeon,le serpent,le chien,D
+260,Quel animal pond des œufs ?,la poule,la vache,le cheval,le chien,A
+261,À quoi sert un feu rouge ?,à accélérer,à stationner,à tourner,à arrêter les voitures,D
+262,Quel objet sert à écrire ?,une règle,une gomme,un cahier,un crayon,D
+263,Quel repas mange-t-on le matin ?,le souper,le déjeuner,le dîner,la collation,B
+264,Quel instrument sert à mesurer la température ?,un thermomètre,une règle,un baromètre,un compas,A
+265,Pourquoi recycle-t-on ?,pour décorer,pour protéger l’environnement,pour polluer,pour jeter plus,B
+266,Quel symbole représente le Canada ?,le chêne,l’aigle,la feuille d’érable,le lion,C
+267,Quel moyen de transport vole ?,le bateau,le train,la voiture,l’avion,D
+268,Quel appareil sert à téléphoner ?,un micro-ondes,une radio,une télévision,un téléphone,D
+269,Quel animal est un mammifère ?,le pigeon,le serpent,la grenouille,le chien,D
+270,Quel animal pond des œufs ?,la vache,le chien,le cheval,la poule,D
+271,À quoi sert un feu rouge ?,à tourner,à accélérer,à arrêter les voitures,à stationner,C
+272,Quel objet sert à écrire ?,une règle,une gomme,un crayon,un cahier,C
+273,Quel repas mange-t-on le matin ?,le déjeuner,la collation,le souper,le dîner,A
+274,Quel instrument sert à mesurer la température ?,un compas,un thermomètre,une règle,un baromètre,B
+275,Pourquoi recycle-t-on ?,pour polluer,pour décorer,pour protéger l’environnement,pour jeter plus,C
+276,Quel symbole représente le Canada ?,le lion,le chêne,l’aigle,la feuille d’érable,D
+277,Quel moyen de transport vole ?,l’avion,la voiture,le bateau,le train,A
+278,Quel appareil sert à téléphoner ?,une radio,une télévision,un téléphone,un micro-ondes,C
+279,Quel animal est un mammifère ?,le chien,la grenouille,le pigeon,le serpent,A
+280,Quel animal pond des œufs ?,la vache,la poule,le chien,le cheval,B
+281,À quoi sert un feu rouge ?,à arrêter les voitures,à stationner,à tourner,à accélérer,A
+282,Quel objet sert à écrire ?,une règle,une gomme,un crayon,un cahier,C
+283,Quel repas mange-t-on le matin ?,le déjeuner,la collation,le dîner,le souper,A
+284,Quel instrument sert à mesurer la température ?,une règle,un baromètre,un thermomètre,un compas,C
+285,Pourquoi recycle-t-on ?,pour polluer,pour jeter plus,pour protéger l’environnement,pour décorer,C
+286,Quel symbole représente le Canada ?,la feuille d’érable,l’aigle,le lion,le chêne,A
+287,Quel moyen de transport vole ?,le bateau,le train,la voiture,l’avion,D
+288,Quel appareil sert à téléphoner ?,une télévision,un téléphone,une radio,un micro-ondes,B
+289,Quel animal est un mammifère ?,le pigeon,le serpent,le chien,la grenouille,C
+290,Quel animal pond des œufs ?,le cheval,la vache,le chien,la poule,D
+291,À quoi sert un feu rouge ?,à stationner,à tourner,à arrêter les voitures,à accélérer,C
+292,Quel objet sert à écrire ?,une gomme,une règle,un cahier,un crayon,D
+293,Quel repas mange-t-on le matin ?,le dîner,la collation,le déjeuner,le souper,C
+294,Quel instrument sert à mesurer la température ?,un baromètre,un compas,un thermomètre,une règle,C
+295,Pourquoi recycle-t-on ?,pour jeter plus,pour protéger l’environnement,pour décorer,pour polluer,B
+296,Quel symbole représente le Canada ?,la feuille d’érable,le chêne,l’aigle,le lion,A
+297,Quel moyen de transport vole ?,le bateau,le train,la voiture,l’avion,D
+298,Quel appareil sert à téléphoner ?,une radio,un téléphone,un micro-ondes,une télévision,B
+299,Quel animal est un mammifère ?,la grenouille,le serpent,le pigeon,le chien,D
+300,Quel animal pond des œufs ?,le cheval,la poule,le chien,la vache,B
+301,À quoi sert un feu rouge ?,à accélérer,à tourner,à arrêter les voitures,à stationner,C
+302,Quel objet sert à écrire ?,une règle,un cahier,une gomme,un crayon,D
+303,Quel repas mange-t-on le matin ?,le souper,le déjeuner,le dîner,la collation,B
+304,Quel instrument sert à mesurer la température ?,un compas,une règle,un baromètre,un thermomètre,D
+305,Pourquoi recycle-t-on ?,pour décorer,pour protéger l’environnement,pour polluer,pour jeter plus,B
+306,Quel symbole représente le Canada ?,le chêne,le lion,la feuille d’érable,l’aigle,C
+307,Quel moyen de transport vole ?,le train,le bateau,la voiture,l’avion,D
+308,Quel appareil sert à téléphoner ?,une radio,un micro-ondes,une télévision,un téléphone,D
+309,Quel animal est un mammifère ?,le serpent,le chien,le pigeon,la grenouille,B
+310,Quel animal pond des œufs ?,la vache,la poule,le chien,le cheval,B
+311,À quoi sert un feu rouge ?,à accélérer,à stationner,à tourner,à arrêter les voitures,D
+312,Quel objet sert à écrire ?,une règle,un cahier,une gomme,un crayon,D
+313,Quel repas mange-t-on le matin ?,le dîner,le déjeuner,le souper,la collation,B
+314,Quel instrument sert à mesurer la température ?,une règle,un compas,un thermomètre,un baromètre,C
+315,Pourquoi recycle-t-on ?,pour jeter plus,pour décorer,pour protéger l’environnement,pour polluer,C
+316,Quel symbole représente le Canada ?,le chêne,la feuille d’érable,l’aigle,le lion,B
+317,Quel moyen de transport vole ?,la voiture,l’avion,le bateau,le train,B
+318,Quel appareil sert à téléphoner ?,une radio,une télévision,un micro-ondes,un téléphone,D
+319,Quel animal est un mammifère ?,le serpent,le pigeon,le chien,la grenouille,C
+320,Quel animal pond des œufs ?,le chien,la vache,la poule,le cheval,C
+321,À quoi sert un feu rouge ?,à arrêter les voitures,à accélérer,à stationner,à tourner,A
+322,Quel objet sert à écrire ?,un crayon,un cahier,une règle,une gomme,A
+323,Quel repas mange-t-on le matin ?,le dîner,le déjeuner,le souper,la collation,B
+324,Quel instrument sert à mesurer la température ?,un baromètre,une règle,un compas,un thermomètre,D
+325,Pourquoi recycle-t-on ?,pour décorer,pour polluer,pour jeter plus,pour protéger l’environnement,D
+326,Quel symbole représente le Canada ?,l’aigle,le lion,la feuille d’érable,le chêne,C
+327,Quel moyen de transport vole ?,l’avion,la voiture,le train,le bateau,A
+328,Quel appareil sert à téléphoner ?,une radio,un téléphone,un micro-ondes,une télévision,B
+329,Quel animal est un mammifère ?,le chien,la grenouille,le serpent,le pigeon,A
+330,Quel animal pond des œufs ?,la poule,le cheval,la vache,le chien,A
+331,À quoi sert un feu rouge ?,à arrêter les voitures,à accélérer,à stationner,à tourner,A
+332,Quel objet sert à écrire ?,un cahier,une règle,un crayon,une gomme,C
+333,Quel repas mange-t-on le matin ?,la collation,le dîner,le souper,le déjeuner,D
+334,Quel instrument sert à mesurer la température ?,une règle,un baromètre,un thermomètre,un compas,C
+335,Pourquoi recycle-t-on ?,pour jeter plus,pour polluer,pour protéger l’environnement,pour décorer,C
+336,Quel symbole représente le Canada ?,le chêne,le lion,la feuille d’érable,l’aigle,C
+337,Quel moyen de transport vole ?,l’avion,le bateau,le train,la voiture,A
+338,Quel appareil sert à téléphoner ?,une radio,un téléphone,une télévision,un micro-ondes,B
+339,Quel animal est un mammifère ?,le serpent,la grenouille,le chien,le pigeon,C
+340,Quel animal pond des œufs ?,le cheval,le chien,la vache,la poule,D
+341,À quoi sert un feu rouge ?,à arrêter les voitures,à tourner,à accélérer,à stationner,A
+342,Quel objet sert à écrire ?,une règle,un crayon,un cahier,une gomme,B
+343,Quel repas mange-t-on le matin ?,la collation,le dîner,le déjeuner,le souper,C
+344,Quel instrument sert à mesurer la température ?,un baromètre,une règle,un compas,un thermomètre,D
+345,Pourquoi recycle-t-on ?,pour jeter plus,pour décorer,pour polluer,pour protéger l’environnement,D
+346,Quel symbole représente le Canada ?,le lion,le chêne,la feuille d’érable,l’aigle,C
+347,Quel moyen de transport vole ?,le bateau,le train,l’avion,la voiture,C
+348,Quel appareil sert à téléphoner ?,un téléphone,une radio,un micro-ondes,une télévision,A
+349,Quel animal est un mammifère ?,le chien,la grenouille,le serpent,le pigeon,A
+350,Quel animal pond des œufs ?,le chien,le cheval,la vache,la poule,D
+351,À quoi sert un feu rouge ?,à accélérer,à stationner,à tourner,à arrêter les voitures,D
+352,Quel objet sert à écrire ?,un cahier,une gomme,un crayon,une règle,C
+353,Quel repas mange-t-on le matin ?,le déjeuner,la collation,le dîner,le souper,A
+354,Quel instrument sert à mesurer la température ?,un compas,un thermomètre,une règle,un baromètre,B
+355,Pourquoi recycle-t-on ?,pour protéger l’environnement,pour décorer,pour polluer,pour jeter plus,A
+356,Quel symbole représente le Canada ?,le lion,l’aigle,le chêne,la feuille d’érable,D
+357,Quel moyen de transport vole ?,la voiture,l’avion,le train,le bateau,B
+358,Quel appareil sert à téléphoner ?,une radio,un téléphone,un micro-ondes,une télévision,B
+359,Quel animal est un mammifère ?,le serpent,le pigeon,la grenouille,le chien,D
+360,Quel animal pond des œufs ?,la poule,le chien,le cheval,la vache,A
+361,À quoi sert un feu rouge ?,à arrêter les voitures,à tourner,à accélérer,à stationner,A
+362,Quel objet sert à écrire ?,un crayon,un cahier,une règle,une gomme,A
+363,Quel repas mange-t-on le matin ?,le souper,le déjeuner,la collation,le dîner,B
+364,Quel instrument sert à mesurer la température ?,un baromètre,un compas,un thermomètre,une règle,C
+365,Pourquoi recycle-t-on ?,pour jeter plus,pour décorer,pour polluer,pour protéger l’environnement,D
+366,Quel symbole représente le Canada ?,l’aigle,la feuille d’érable,le chêne,le lion,B
+367,Quel moyen de transport vole ?,la voiture,l’avion,le bateau,le train,B
+368,Quel appareil sert à téléphoner ?,un téléphone,une télévision,un micro-ondes,une radio,A
+369,Quel animal est un mammifère ?,la grenouille,le pigeon,le serpent,le chien,D
+370,Quel animal pond des œufs ?,la vache,le chien,le cheval,la poule,D
+371,À quoi sert un feu rouge ?,à arrêter les voitures,à stationner,à accélérer,à tourner,A
+372,Quel objet sert à écrire ?,une gomme,un cahier,un crayon,une règle,C
+373,Quel repas mange-t-on le matin ?,la collation,le souper,le déjeuner,le dîner,C
+374,Quel instrument sert à mesurer la température ?,un thermomètre,un baromètre,une règle,un compas,A
+375,Pourquoi recycle-t-on ?,pour protéger l’environnement,pour jeter plus,pour polluer,pour décorer,A
+376,Quel symbole représente le Canada ?,l’aigle,le lion,le chêne,la feuille d’érable,D
+377,Quel moyen de transport vole ?,le train,l’avion,le bateau,la voiture,B
+378,Quel appareil sert à téléphoner ?,une radio,un micro-ondes,une télévision,un téléphone,D
+379,Quel animal est un mammifère ?,le pigeon,le chien,la grenouille,le serpent,B
+380,Quel animal pond des œufs ?,la poule,le cheval,la vache,le chien,A
+381,À quoi sert un feu rouge ?,à stationner,à arrêter les voitures,à accélérer,à tourner,B
+382,Quel objet sert à écrire ?,un crayon,une règle,un cahier,une gomme,A
+383,Quel repas mange-t-on le matin ?,la collation,le déjeuner,le dîner,le souper,B
+384,Quel instrument sert à mesurer la température ?,un thermomètre,un compas,une règle,un baromètre,A
+385,Pourquoi recycle-t-on ?,pour polluer,pour protéger l’environnement,pour décorer,pour jeter plus,B
+386,Quel symbole représente le Canada ?,l’aigle,le lion,la feuille d’érable,le chêne,C
+387,Quel moyen de transport vole ?,le train,la voiture,le bateau,l’avion,D
+388,Quel appareil sert à téléphoner ?,un micro-ondes,un téléphone,une radio,une télévision,B
+389,Quel animal est un mammifère ?,le serpent,le chien,le pigeon,la grenouille,B
+390,Quel animal pond des œufs ?,la poule,la vache,le chien,le cheval,A
+391,À quoi sert un feu rouge ?,à accélérer,à arrêter les voitures,à stationner,à tourner,B
+392,Quel objet sert à écrire ?,une gomme,une règle,un crayon,un cahier,C
+393,Quel repas mange-t-on le matin ?,le déjeuner,le souper,le dîner,la collation,A
+394,Quel instrument sert à mesurer la température ?,un baromètre,une règle,un thermomètre,un compas,C
+395,Pourquoi recycle-t-on ?,pour protéger l’environnement,pour polluer,pour jeter plus,pour décorer,A
+396,Quel symbole représente le Canada ?,l’aigle,la feuille d’érable,le chêne,le lion,B
+397,Quel moyen de transport vole ?,l’avion,le bateau,la voiture,le train,A
+398,Quel appareil sert à téléphoner ?,un téléphone,un micro-ondes,une télévision,une radio,A
+399,Quel animal est un mammifère ?,le chien,la grenouille,le serpent,le pigeon,A
+400,Quel animal pond des œufs ?,la poule,la vache,le cheval,le chien,A
+401,À quoi sert un feu rouge ?,à tourner,à accélérer,à stationner,à arrêter les voitures,D
+402,Quel objet sert à écrire ?,un crayon,une gomme,un cahier,une règle,A
+403,Quel repas mange-t-on le matin ?,le dîner,la collation,le souper,le déjeuner,D
+404,Quel instrument sert à mesurer la température ?,un baromètre,une règle,un thermomètre,un compas,C
+405,Pourquoi recycle-t-on ?,pour décorer,pour jeter plus,pour polluer,pour protéger l’environnement,D
+406,Quel symbole représente le Canada ?,l’aigle,le chêne,le lion,la feuille d’érable,D
+407,Quel moyen de transport vole ?,la voiture,le bateau,le train,l’avion,D
+408,Quel appareil sert à téléphoner ?,un téléphone,une radio,une télévision,un micro-ondes,A
+409,Quel animal est un mammifère ?,le pigeon,la grenouille,le chien,le serpent,C
+410,Quel animal pond des œufs ?,la vache,le cheval,le chien,la poule,D
+411,À quoi sert un feu rouge ?,à tourner,à arrêter les voitures,à stationner,à accélérer,B
+412,Quel objet sert à écrire ?,une règle,un cahier,un crayon,une gomme,C
+413,Quel repas mange-t-on le matin ?,la collation,le dîner,le souper,le déjeuner,D
+414,Quel instrument sert à mesurer la température ?,une règle,un compas,un thermomètre,un baromètre,C
+415,Pourquoi recycle-t-on ?,pour polluer,pour jeter plus,pour décorer,pour protéger l’environnement,D
+416,Quel symbole représente le Canada ?,le chêne,le lion,l’aigle,la feuille d’érable,D
+417,Quel moyen de transport vole ?,le bateau,la voiture,l’avion,le train,C
+418,Quel appareil sert à téléphoner ?,un téléphone,un micro-ondes,une télévision,une radio,A
+419,Quel animal est un mammifère ?,le pigeon,le serpent,le chien,la grenouille,C
+420,Quel animal pond des œufs ?,la poule,le cheval,la vache,le chien,A
+421,À quoi sert un feu rouge ?,à tourner,à arrêter les voitures,à stationner,à accélérer,B
+422,Quel objet sert à écrire ?,un crayon,un cahier,une gomme,une règle,A
+423,Quel repas mange-t-on le matin ?,le dîner,le déjeuner,le souper,la collation,B
+424,Quel instrument sert à mesurer la température ?,un baromètre,un thermomètre,un compas,une règle,B
+425,Pourquoi recycle-t-on ?,pour décorer,pour protéger l’environnement,pour jeter plus,pour polluer,B
+426,Quel symbole représente le Canada ?,la feuille d’érable,le chêne,le lion,l’aigle,A
+427,Quel moyen de transport vole ?,le train,la voiture,l’avion,le bateau,C
+428,Quel appareil sert à téléphoner ?,un micro-ondes,une télévision,un téléphone,une radio,C
+429,Quel animal est un mammifère ?,le serpent,la grenouille,le chien,le pigeon,C
+430,Quel animal pond des œufs ?,la vache,le chien,le cheval,la poule,D
+431,À quoi sert un feu rouge ?,à stationner,à accélérer,à tourner,à arrêter les voitures,D
+432,Quel objet sert à écrire ?,une règle,une gomme,un cahier,un crayon,D
+433,Quel repas mange-t-on le matin ?,le souper,la collation,le déjeuner,le dîner,C
+434,Quel instrument sert à mesurer la température ?,un thermomètre,un baromètre,une règle,un compas,A
+435,Pourquoi recycle-t-on ?,pour jeter plus,pour protéger l’environnement,pour polluer,pour décorer,B
+436,Quel symbole représente le Canada ?,la feuille d’érable,l’aigle,le chêne,le lion,A
+437,Quel moyen de transport vole ?,l’avion,le train,la voiture,le bateau,A
+438,Quel appareil sert à téléphoner ?,une télévision,une radio,un micro-ondes,un téléphone,D
+439,Quel animal est un mammifère ?,la grenouille,le chien,le pigeon,le serpent,B
+440,Quel animal pond des œufs ?,la vache,le chien,le cheval,la poule,D
+441,À quoi sert un feu rouge ?,à tourner,à stationner,à accélérer,à arrêter les voitures,D
+442,Quel objet sert à écrire ?,un crayon,une règle,un cahier,une gomme,A
+443,Quel repas mange-t-on le matin ?,le dîner,le souper,la collation,le déjeuner,D
+444,Quel instrument sert à mesurer la température ?,un thermomètre,un baromètre,un compas,une règle,A
+445,Pourquoi recycle-t-on ?,pour polluer,pour décorer,pour protéger l’environnement,pour jeter plus,C
+446,Quel symbole représente le Canada ?,le chêne,le lion,la feuille d’érable,l’aigle,C
+447,Quel moyen de transport vole ?,la voiture,l’avion,le train,le bateau,B
+448,Quel appareil sert à téléphoner ?,un micro-ondes,un téléphone,une radio,une télévision,B
+449,Quel animal est un mammifère ?,le chien,le pigeon,la grenouille,le serpent,A
+450,Quel animal pond des œufs ?,la poule,le chien,la vache,le cheval,A
+451,À quoi sert un feu rouge ?,à stationner,à tourner,à accélérer,à arrêter les voitures,D
+452,Quel objet sert à écrire ?,un crayon,un cahier,une règle,une gomme,A
+453,Quel repas mange-t-on le matin ?,la collation,le souper,le dîner,le déjeuner,D
+454,Quel instrument sert à mesurer la température ?,un thermomètre,un compas,une règle,un baromètre,A
+455,Pourquoi recycle-t-on ?,pour jeter plus,pour décorer,pour polluer,pour protéger l’environnement,D
+456,Quel symbole représente le Canada ?,le chêne,l’aigle,le lion,la feuille d’érable,D
+457,Quel moyen de transport vole ?,le bateau,l’avion,le train,la voiture,B
+458,Quel appareil sert à téléphoner ?,une télévision,un micro-ondes,un téléphone,une radio,C
+459,Quel animal est un mammifère ?,le pigeon,le chien,le serpent,la grenouille,B
+460,Quel animal pond des œufs ?,la vache,le cheval,le chien,la poule,D
+461,À quoi sert un feu rouge ?,à tourner,à accélérer,à stationner,à arrêter les voitures,D
+462,Quel objet sert à écrire ?,un cahier,une règle,une gomme,un crayon,D
+463,Quel repas mange-t-on le matin ?,le souper,le déjeuner,la collation,le dîner,B
+464,Quel instrument sert à mesurer la température ?,un thermomètre,une règle,un compas,un baromètre,A
+465,Pourquoi recycle-t-on ?,pour décorer,pour protéger l’environnement,pour jeter plus,pour polluer,B
+466,Quel symbole représente le Canada ?,la feuille d’érable,l’aigle,le chêne,le lion,A
+467,Quel moyen de transport vole ?,l’avion,le train,le bateau,la voiture,A
+468,Quel appareil sert à téléphoner ?,une radio,un téléphone,une télévision,un micro-ondes,B
+469,Quel animal est un mammifère ?,la grenouille,le chien,le pigeon,le serpent,B
+470,Quel animal pond des œufs ?,le chien,le cheval,la vache,la poule,D
+471,À quoi sert un feu rouge ?,à stationner,à accélérer,à arrêter les voitures,à tourner,C
+472,Quel objet sert à écrire ?,une gomme,un crayon,une règle,un cahier,B
+473,Quel repas mange-t-on le matin ?,le souper,le dîner,la collation,le déjeuner,D
+474,Quel instrument sert à mesurer la température ?,une règle,un baromètre,un compas,un thermomètre,D
+475,Pourquoi recycle-t-on ?,pour décorer,pour protéger l’environnement,pour polluer,pour jeter plus,B
+476,Quel symbole représente le Canada ?,le chêne,la feuille d’érable,le lion,l’aigle,B
+477,Quel moyen de transport vole ?,la voiture,l’avion,le bateau,le train,B
+478,Quel appareil sert à téléphoner ?,une télévision,un micro-ondes,un téléphone,une radio,C
+479,Quel animal est un mammifère ?,le pigeon,le chien,le serpent,la grenouille,B
+480,Quel animal pond des œufs ?,le cheval,la vache,la poule,le chien,C
+481,À quoi sert un feu rouge ?,à arrêter les voitures,à accélérer,à stationner,à tourner,A
+482,Quel objet sert à écrire ?,un cahier,une règle,une gomme,un crayon,D
+483,Quel repas mange-t-on le matin ?,le dîner,la collation,le souper,le déjeuner,D
+484,Quel instrument sert à mesurer la température ?,un compas,un thermomètre,une règle,un baromètre,B
+485,Pourquoi recycle-t-on ?,pour protéger l’environnement,pour jeter plus,pour polluer,pour décorer,A
+486,Quel symbole représente le Canada ?,l’aigle,le chêne,le lion,la feuille d’érable,D
+487,Quel moyen de transport vole ?,la voiture,le bateau,l’avion,le train,C
+488,Quel appareil sert à téléphoner ?,un téléphone,un micro-ondes,une télévision,une radio,A
+489,Quel animal est un mammifère ?,le chien,le serpent,la grenouille,le pigeon,A
+490,Quel animal pond des œufs ?,la poule,la vache,le chien,le cheval,A
+491,À quoi sert un feu rouge ?,à accélérer,à tourner,à arrêter les voitures,à stationner,C
+492,Quel objet sert à écrire ?,un cahier,une gomme,un crayon,une règle,C
+493,Quel repas mange-t-on le matin ?,la collation,le déjeuner,le dîner,le souper,B
+494,Quel instrument sert à mesurer la température ?,un baromètre,une règle,un thermomètre,un compas,C
+495,Pourquoi recycle-t-on ?,pour jeter plus,pour décorer,pour protéger l’environnement,pour polluer,C
+496,Quel symbole représente le Canada ?,l’aigle,la feuille d’érable,le chêne,le lion,B
+497,Quel moyen de transport vole ?,le train,la voiture,l’avion,le bateau,C
+498,Quel appareil sert à téléphoner ?,un micro-ondes,une télévision,un téléphone,une radio,C
+499,Quel animal est un mammifère ?,la grenouille,le serpent,le pigeon,le chien,D
+500,Quel animal pond des œufs ?,la vache,le chien,la poule,le cheval,C

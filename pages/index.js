@@ -681,6 +681,21 @@ const APP_HTML = `
   </div>
 </div>
 
+<div class="modal" id="aiConfirmModal" aria-hidden="true">
+  <div class="modal-backdrop" data-ai-confirm="close"></div>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Questions ajoutées</h3>
+    </div>
+    <div class="modal-section">
+      <p id="aiConfirmText">Questions ajoutées à la banque.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="primary" id="aiConfirmOk" type="button">OK</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="subjectModal" aria-hidden="true">
   <div class="modal-backdrop" data-action="close-subject"></div>
   <div class="modal-card">

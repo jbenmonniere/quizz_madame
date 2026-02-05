@@ -2498,7 +2498,8 @@
     renderQuizBankList();
     renderQuizBankSubjectFilter();
     renderQuizBankSubthemeFilter();
-    setAiMessage(`${selected.length} questions ajoutées à la banque.`);
+    setAiMessage("");
+    showAiConfirm(selected.length);
   };
 
   const openSubjectModal = () => {
@@ -2517,6 +2518,24 @@
       modal.classList.remove("active");
       modal.setAttribute("aria-hidden", "true");
     }
+  };
+
+  const showAiConfirm = (count) => {
+    const modal = $("#aiConfirmModal");
+    if (!modal) return;
+    const text = $("#aiConfirmText");
+    if (text) {
+      text.textContent = `${count} question${count > 1 ? "s" : ""} ajoutée${count > 1 ? "s" : ""} à la banque.`;
+    }
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+  };
+
+  const hideAiConfirm = () => {
+    const modal = $("#aiConfirmModal");
+    if (!modal) return;
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
   };
 
   const resetBankInputs = () => {
@@ -3584,6 +3603,18 @@
       state.aiQuestions[idx] = { ...state.aiQuestions[idx], selected: target.checked };
     });
     $("#aiSubjectSelect")?.addEventListener("change", renderAiSubthemeSelect);
+    $("#aiConfirmOk")?.addEventListener("click", () => {
+      hideAiConfirm();
+      showScreen("teacher");
+      setTeacherTab("questions");
+    });
+    $("#aiConfirmModal")?.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (target.dataset.aiConfirm !== undefined || target.classList.contains("modal-backdrop")) {
+        hideAiConfirm();
+      }
+    });
 
     $("#quizList")?.addEventListener("click", (event) => {
       const target = event.target;
@@ -3672,6 +3703,7 @@
         closeEditModal();
         closeSubjectModal();
         hideLevelUp();
+        hideAiConfirm();
       }
     });
 
