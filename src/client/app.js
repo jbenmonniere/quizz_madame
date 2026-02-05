@@ -1165,6 +1165,7 @@
 
     panels.forEach((panel) => {
       panel.style.setProperty("--xp-inflate", inflate.toFixed(2));
+      panel.style.setProperty("--xp-progress", `${Math.round(clamped * 100)}%`);
       const textEl = panel.querySelector("[data-xp-text]");
       if (textEl) {
         textEl.textContent = `${xp.current} EXP / ${xp.max} EXP`;

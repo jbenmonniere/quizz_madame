@@ -111,6 +111,9 @@ const APP_HTML = `
             <div class="xp-fill" data-xp-fill></div>
             <div class="xp-text" data-xp-text>0 EXP / 200 EXP</div>
           </div>
+          <div class="xp-bar">
+            <div class="xp-bar-fill"></div>
+          </div>
           <div class="xp-meta">
             <div class="xp-level" data-xp-level>Niveau 1</div>
             <div class="xp-gain" data-xp-gain>+0 EXP</div>
@@ -163,6 +166,9 @@ const APP_HTML = `
         <div class="xp-balloon">
           <div class="xp-fill" data-xp-fill></div>
           <div class="xp-text" data-xp-text>0 EXP / 200 EXP</div>
+        </div>
+        <div class="xp-bar">
+          <div class="xp-bar-fill"></div>
         </div>
         <div class="xp-meta">
           <div class="xp-level" data-xp-level>Niveau 1</div>
