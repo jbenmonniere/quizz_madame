@@ -82,7 +82,16 @@ const APP_HTML = `
         </div>
         <div class="form-row">
           <label>Niveau (optionnel)</label>
-          <input id="classLevelInput" placeholder="Ex: 5e" />
+          <select id="classLevelInput">
+            <option value="">Choisir un niveau</option>
+            <option value="Maternelle">Maternelle</option>
+            <option value="1ère année">1ère année</option>
+            <option value="2ème année">2ème année</option>
+            <option value="3ème année">3ème année</option>
+            <option value="4ème année">4ème année</option>
+            <option value="5ème année">5ème année</option>
+            <option value="6ème année">6ème année</option>
+          </select>
         </div>
         <button class="primary" id="createClassBtn" type="button">Creer la classe</button>
       </div>
