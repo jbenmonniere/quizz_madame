@@ -112,7 +112,7 @@ const APP_HTML = `
             <div class="xp-text" data-xp-text>0 EXP / 200 EXP</div>
           </div>
           <div class="xp-bar">
-            <div class="xp-bar-gem" aria-hidden="true"></div>
+            <div class="xp-bar-balloon" aria-hidden="true"></div>
             <div class="xp-bar-track">
               <div class="xp-bar-fill"></div>
               <div class="xp-bar-text" data-xp-bar-text>0 / 200</div>
@@ -172,7 +172,7 @@ const APP_HTML = `
           <div class="xp-text" data-xp-text>0 EXP / 200 EXP</div>
         </div>
         <div class="xp-bar">
-          <div class="xp-bar-gem" aria-hidden="true"></div>
+          <div class="xp-bar-balloon" aria-hidden="true"></div>
           <div class="xp-bar-track">
             <div class="xp-bar-fill"></div>
             <div class="xp-bar-text" data-xp-bar-text>0 / 200</div>

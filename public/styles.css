@@ -664,6 +664,7 @@ textarea:focus {
   transform: scale(var(--xp-inflate, 0.8));
   transform-origin: center bottom;
   transition: transform 0.35s var(--ease-pop);
+  animation: xpFloat 5s ease-in-out infinite;
 }
 
 .xp-fill {
@@ -729,25 +730,31 @@ textarea:focus {
   grid-template-columns: auto 1fr;
   align-items: center;
   gap: 10px;
-  margin: 6px auto 0;
+  margin: 18px auto 0;
 }
 
-.xp-bar-gem {
-  width: 46px;
-  height: 34px;
-  background: linear-gradient(135deg, #7b2cff, #b36bff);
-  clip-path: polygon(0% 50%, 20% 8%, 70% 0%, 100% 50%, 70% 100%, 20% 92%);
-  box-shadow: 0 6px 14px rgba(99, 46, 204, 0.35);
+.xp-bar-balloon {
   position: relative;
+  width: 36px;
+  height: 44px;
+  border-radius: 50% 50% 46% 46%;
+  border: 2px solid rgba(255, 40, 40, 0.8);
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.9), rgba(255, 66, 66, 0.95) 55%, rgba(204, 0, 0, 0.95) 100%);
+  box-shadow: 0 8px 14px rgba(120, 15, 15, 0.2);
+  animation: xpFloat 4.4s ease-in-out infinite;
 }
 
-.xp-bar-gem::after {
+.xp-bar-balloon::after {
   content: "";
   position: absolute;
-  inset: 20% 22%;
-  background: rgba(255, 255, 255, 0.45);
-  clip-path: polygon(0% 50%, 30% 10%, 80% 20%, 100% 60%, 70% 100%, 20% 90%);
-  filter: blur(0.2px);
+  bottom: -6px;
+  left: 50%;
+  width: 10px;
+  height: 8px;
+  background: rgba(255, 40, 40, 0.95);
+  border: 2px solid rgba(255, 40, 40, 0.85);
+  border-radius: 3px;
+  transform: translateX(-50%) rotate(45deg);
 }
 
 .xp-bar-track {
@@ -766,6 +773,16 @@ textarea:focus {
   width: var(--xp-progress, 0%);
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0));
   transition: width 0.35s var(--ease-pop);
+}
+
+.xp-bar-track::after {
+  content: "";
+  position: absolute;
+  inset: -40% -10%;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0) 70%);
+  opacity: 0.75;
+  transform: translateX(-40%);
+  animation: xpWave 2.8s ease-in-out infinite;
 }
 
 .xp-bar-text {
@@ -821,7 +838,7 @@ textarea:focus {
 }
 
 .xp-panel-calendar .xp-bar {
-  margin-top: 10px;
+  margin-top: 24px;
 }
 
 .game-top {
@@ -1295,6 +1312,17 @@ button:focus-visible {
   0% { transform: scale(var(--xp-inflate, 0.8)); }
   55% { transform: scale(calc(var(--xp-inflate, 0.8) + 0.1)); }
   100% { transform: scale(var(--xp-inflate, 0.8)); }
+}
+
+@keyframes xpFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes xpWave {
+  0% { transform: translateX(-40%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(40%); }
 }
 
 
