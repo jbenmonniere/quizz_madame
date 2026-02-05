@@ -1170,6 +1170,10 @@
       if (textEl) {
         textEl.textContent = `${xp.current} EXP / ${xp.max} EXP`;
       }
+      const barText = panel.querySelector("[data-xp-bar-text]");
+      if (barText) {
+        barText.textContent = `${xp.current} / ${xp.max}`;
+      }
       const levelEl = panel.querySelector("[data-xp-level]");
       if (levelEl) {
         levelEl.textContent = `Niveau ${xp.level}`;
