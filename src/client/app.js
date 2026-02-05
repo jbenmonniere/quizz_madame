@@ -20,7 +20,7 @@
     const get = (key, fallback) => safeParse(localStorage.getItem(key), fallback);
     const set = (key, value) => localStorage.setItem(key, JSON.stringify(value));
     const defaultClassState = { calendar: {}, progress: {}, assignments: {}, settings: {}, xp: null };
-    const defaultTeacherContent = { bank: [], quizzes: [], subjects: {} };
+    const defaultTeacherContent = { bank: [], quizzes: [], subjects: {}, rewards: null };
     let activeClass = get(STORAGE.activeClass, null);
     let classState = get(STORAGE.classState, {});
     let teacherContent = get(STORAGE.teacherContent, defaultTeacherContent);
@@ -106,6 +106,11 @@
       getQuizzes: () => teacherContent.quizzes,
       setQuizzes: (data) => {
         teacherContent = { ...teacherContent, quizzes: data };
+        set(STORAGE.teacherContent, teacherContent);
+      },
+      getRewards: () => teacherContent.rewards,
+      setRewards: (data) => {
+        teacherContent = { ...teacherContent, rewards: data };
         set(STORAGE.teacherContent, teacherContent);
       },
       getSubjects: () => teacherContent.subjects,
@@ -218,7 +223,9 @@
     profile: null,
     classes: [],
     activeClass: null,
-    authMode: "login"
+    authMode: "login",
+    selectedRewardLevel: 1,
+    rewardsFilter: "all"
   };
 
   const weekdays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
@@ -266,6 +273,55 @@
     }
   };
 
+  const MAX_LEVEL = 100;
+  const DEFAULT_REWARD = {
+    enabled: false,
+    type: "badge",
+    rewardText: "",
+    special: false,
+    message: "",
+    theme: "",
+    skill: "",
+    objective: "",
+    audio: ""
+  };
+
+  const buildRewardsConfig = (raw) => {
+    const levels = {};
+    const source = raw?.levels || raw || {};
+    for (let i = 1; i <= MAX_LEVEL; i += 1) {
+      const entry = source[i] || source[String(i)] || {};
+      levels[i] = { ...DEFAULT_REWARD, ...entry };
+    }
+    return { levels };
+  };
+
+  const getRewardsConfig = () => {
+    if (!store.getRewards || !store.setRewards) return buildRewardsConfig({});
+    const raw = store.getRewards();
+    const normalized = buildRewardsConfig(raw);
+    const hasLevels = raw?.levels && Object.keys(raw.levels).length >= MAX_LEVEL;
+    if (!hasLevels) {
+      store.setRewards(normalized);
+    }
+    return normalized;
+  };
+
+  const updateRewardLevel = (level, updates) => {
+    if (!store.setRewards) return;
+    const config = getRewardsConfig();
+    config.levels[level] = { ...DEFAULT_REWARD, ...config.levels[level], ...updates };
+    store.setRewards(config);
+  };
+
+  const totalXpToReachLevel = (targetLevel) => {
+    let total = 0;
+    for (let lvl = 1; lvl < targetLevel; lvl += 1) {
+      total += XP_BASE + (lvl - 1) * XP_STEP;
+    }
+    return total;
+  };
+
   const computeXpGain = (question) => {
     const base = 70 + Math.floor(Math.random() * 31);
     const rawStars = Number.isFinite(question?.difficulty) ? question.difficulty : Number(question?.difficulty);
@@ -301,7 +357,31 @@
   const showLevelUp = (level) => {
     const modal = $("#levelUpModal");
     const value = $("#levelUpValue");
+    const rewardEl = $("#levelUpReward");
+    const metaEl = $("#levelUpMeta");
     if (value) value.textContent = `Niveau ${level}`;
+    const rewards = getRewardsConfig();
+    const reward = rewards.levels[level] || DEFAULT_REWARD;
+    if (rewardEl) {
+      if (reward.enabled) {
+        const typeLabel = {
+          badge: "Badge",
+          message: "Message",
+          animation: "Animation",
+          privilege: "Privilege"
+        }[reward.type] || "Recompense";
+        const text = reward.rewardText || reward.message || "";
+        rewardEl.textContent = reward.special
+          ? `Recompense speciale · ${typeLabel}${text ? ` : ${text}` : ""}`
+          : `${typeLabel}${text ? ` : ${text}` : ""}`;
+      } else {
+        rewardEl.textContent = "";
+      }
+    }
+    if (metaEl) {
+      const meta = [reward.theme, reward.skill, reward.objective].filter(Boolean).join(" · ");
+      metaEl.textContent = meta;
+    }
     if (modal) {
       modal.classList.add("active");
       modal.setAttribute("aria-hidden", "false");
@@ -434,6 +514,7 @@
     renderAssignmentsList();
     renderWeeklyStats();
     renderSettings();
+    renderRewardsPanel();
     initQuestionTooltip();
   };
 
@@ -460,6 +541,9 @@
       renderQuizList();
       renderQuizBankList();
       renderSelectedQuestions();
+    }
+    if (name === "rewards") {
+      renderRewardsPanel();
     }
   };
 
@@ -995,6 +1079,121 @@
     }
   };
 
+  const getLevelStatus = (level, currentLevel) => {
+    if (level < currentLevel) return "completed";
+    if (level === currentLevel) return "active";
+    return "locked";
+  };
+
+  const renderRewardsGlobal = () => {
+    const bar = $(".rewards-global-bar");
+    const text = $("#rewardsGlobalText");
+    if (!bar || !text) return;
+    const xp = getXpState();
+    const totalRequired = totalXpToReachLevel(MAX_LEVEL);
+    const progress = totalRequired ? Math.min(1, xp.total / totalRequired) : 0;
+    bar.style.setProperty("--xp-progress", `${Math.round(progress * 100)}%`);
+    text.textContent = `${xp.total} / ${totalRequired} EXP`;
+  };
+
+  const renderRewardsGrid = () => {
+    const grid = $("#rewardsGrid");
+    if (!grid) return;
+    const rewards = getRewardsConfig();
+    const currentLevel = getXpState().level;
+    const filter = state.rewardsFilter || "all";
+    grid.innerHTML = "";
+    for (let level = 1; level <= MAX_LEVEL; level += 1) {
+      const reward = rewards.levels[level];
+      const status = getLevelStatus(level, currentLevel);
+      if (filter === "unlocked" && status === "locked") continue;
+      if (filter === "locked" && status !== "locked") continue;
+      if (filter === "reward" && !reward.enabled) continue;
+      if (filter === "special" && !reward.special) continue;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `reward-tile ${status}${reward.enabled ? " has-reward" : ""}${reward.special ? " special" : ""}`;
+      btn.dataset.level = String(level);
+      btn.textContent = level;
+      if (level === state.selectedRewardLevel) {
+        btn.classList.add("selected");
+      }
+      grid.appendChild(btn);
+    }
+  };
+
+  const renderRewardsEditor = () => {
+    const rewards = getRewardsConfig();
+    const currentLevel = getXpState().level;
+    const level = state.selectedRewardLevel || currentLevel;
+    const reward = rewards.levels[level] || DEFAULT_REWARD;
+    const status = getLevelStatus(level, currentLevel);
+
+    const levelLabel = $("#rewardsLevelLabel");
+    const statusLabel = $("#rewardsStatusLabel");
+    if (levelLabel) levelLabel.textContent = `Niveau ${level}`;
+    if (statusLabel) {
+      statusLabel.textContent = status === "completed" ? "Complete" : status === "active" ? "En cours" : "Verrouille";
+    }
+
+    const enabled = $("#rewardsEnabled");
+    const type = $("#rewardsType");
+    const text = $("#rewardsText");
+    const special = $("#rewardsSpecial");
+    const message = $("#rewardsMessage");
+    const theme = $("#rewardsTheme");
+    const skill = $("#rewardsSkill");
+    const objective = $("#rewardsObjective");
+    const audio = $("#rewardsAudio");
+
+    if (enabled) enabled.checked = reward.enabled;
+    if (type) type.value = reward.type;
+    if (text) text.value = reward.rewardText || "";
+    if (special) special.checked = reward.special;
+    if (message) message.value = reward.message || "";
+    if (theme) theme.value = reward.theme || "";
+    if (skill) skill.value = reward.skill || "";
+    if (objective) objective.value = reward.objective || "";
+    if (audio) audio.value = reward.audio || "";
+
+    renderRewardsPreview(level, reward);
+  };
+
+  const renderRewardsPreview = (level, reward) => {
+    const previewLevel = $("#rewardsPreviewLevel");
+    const previewReward = $("#rewardsPreviewReward");
+    const previewMeta = $("#rewardsPreviewMeta");
+    if (previewLevel) previewLevel.textContent = `Niveau ${level}`;
+    if (previewReward) {
+      if (reward.enabled) {
+        const typeLabel = {
+          badge: "Badge",
+          message: "Message",
+          animation: "Animation",
+          privilege: "Privilege"
+        }[reward.type] || "Recompense";
+        const text = reward.rewardText || reward.message || "";
+        previewReward.textContent = reward.special
+          ? `Recompense speciale · ${typeLabel}${text ? ` : ${text}` : ""}`
+          : `${typeLabel}${text ? ` : ${text}` : ""}`;
+      } else {
+        previewReward.textContent = "Aucune recompense active.";
+      }
+    }
+    if (previewMeta) {
+      const meta = [reward.theme, reward.skill, reward.objective].filter(Boolean).join(" · ");
+      previewMeta.textContent = meta;
+    }
+  };
+
+  const renderRewardsPanel = () => {
+    const filterSelect = $("#rewardsFilter");
+    if (filterSelect) filterSelect.value = state.rewardsFilter;
+    renderRewardsGlobal();
+    renderRewardsGrid();
+    renderRewardsEditor();
+  };
+
   const renderClassList = () => {
     const list = $("#classList");
     if (!list) return;
@@ -1033,6 +1232,7 @@
     const today = new Date();
     state.month = new Date(today.getFullYear(), today.getMonth(), 1);
     state.selectedDate = dateKey(today);
+    state.selectedRewardLevel = getXpState().level;
     state.sessionXp = 0;
     state.xpTransferKey = null;
     updateHeaderMeta();
@@ -2693,6 +2893,60 @@
     $("#quizMoreBtn")?.addEventListener("click", () => {
       quizListVisibleCount += QUIZ_LIST_PAGE;
       renderQuizList();
+    });
+
+    $("#rewardsFilter")?.addEventListener("change", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLSelectElement)) return;
+      state.rewardsFilter = target.value || "all";
+      renderRewardsGrid();
+    });
+
+    $("#rewardsGrid")?.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const btn = target.closest(".reward-tile");
+      if (!btn) return;
+      const level = Number(btn.dataset.level);
+      if (!Number.isFinite(level)) return;
+      state.selectedRewardLevel = level;
+      renderRewardsGrid();
+      renderRewardsEditor();
+    });
+
+    const rewardsInputs = [
+      "rewardsEnabled",
+      "rewardsType",
+      "rewardsText",
+      "rewardsSpecial",
+      "rewardsMessage",
+      "rewardsTheme",
+      "rewardsSkill",
+      "rewardsObjective",
+      "rewardsAudio"
+    ];
+    rewardsInputs.forEach((id) => {
+      const input = document.getElementById(id);
+      if (!input) return;
+      const handler = () => {
+        const level = state.selectedRewardLevel || getXpState().level;
+        const updates = {
+          enabled: Boolean($("#rewardsEnabled")?.checked),
+          type: $("#rewardsType")?.value || "badge",
+          rewardText: $("#rewardsText")?.value || "",
+          special: Boolean($("#rewardsSpecial")?.checked),
+          message: $("#rewardsMessage")?.value || "",
+          theme: $("#rewardsTheme")?.value || "",
+          skill: $("#rewardsSkill")?.value || "",
+          objective: $("#rewardsObjective")?.value || "",
+          audio: $("#rewardsAudio")?.value || ""
+        };
+        updateRewardLevel(level, updates);
+        renderRewardsGrid();
+        renderRewardsPreview(level, { ...DEFAULT_REWARD, ...updates });
+      };
+      input.addEventListener("input", handler);
+      input.addEventListener("change", handler);
     });
 
     document.querySelectorAll("[data-teacher-tab]").forEach((btn) => {

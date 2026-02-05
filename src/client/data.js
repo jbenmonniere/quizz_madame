@@ -19,7 +19,8 @@ const DEFAULT_CLASS_STATE = {
 const DEFAULT_TEACHER_CONTENT = {
   bank: [],
   quizzes: [],
-  subjects: {}
+  subjects: {},
+  rewards: null
 };
 
 const safeParse = (raw, fallback) => {
@@ -53,7 +54,8 @@ const normalizeClassState = (data = {}) => ({
 const normalizeTeacherContent = (data = {}) => ({
   bank: data.bank ?? DEFAULT_TEACHER_CONTENT.bank,
   quizzes: data.quizzes ?? DEFAULT_TEACHER_CONTENT.quizzes,
-  subjects: data.subjects ?? DEFAULT_TEACHER_CONTENT.subjects
+  subjects: data.subjects ?? DEFAULT_TEACHER_CONTENT.subjects,
+  rewards: data.rewards ?? DEFAULT_TEACHER_CONTENT.rewards
 });
 
 const loadLocalState = () => ({
@@ -475,6 +477,11 @@ const DataStore = {
   setQuizzes: (data) => {
     const current = getTeacherContent();
     setTeacherContent({ ...current, quizzes: data });
+  },
+  getRewards: () => getTeacherContent().rewards,
+  setRewards: (data) => {
+    const current = getTeacherContent();
+    setTeacherContent({ ...current, rewards: data });
   },
   getSubjects: () => getTeacherContent().subjects,
   setSubjects: (data) => {

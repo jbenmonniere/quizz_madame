@@ -194,6 +194,7 @@ const APP_HTML = `
         <button class="tab-btn active" data-teacher-tab="builder" type="button">Portail enseignante</button>
         <button class="tab-btn" data-teacher-tab="quizz" type="button">Quizz</button>
         <button class="tab-btn" data-teacher-tab="questions" type="button">Questions</button>
+        <button class="tab-btn" data-teacher-tab="rewards" type="button">Recompenses</button>
       </div>
     </div>
 
@@ -369,6 +370,109 @@ const APP_HTML = `
           </div>
           <button class="primary" id="saveQuizBtn">Enregistrer le quiz</button>
           <div class="note" id="quizMessage"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="teacher-section" data-teacher-panel="rewards">
+      <div class="rewards-layout">
+        <div class="card rewards-card">
+          <h3>Progression globale</h3>
+          <div class="xp-bar rewards-global-bar">
+            <div class="xp-bar-balloon" aria-hidden="true"></div>
+            <div class="xp-bar-track">
+              <div class="xp-bar-fill"></div>
+              <div class="xp-bar-text" id="rewardsGlobalText">0 / 0 EXP</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Filtrer</label>
+            <select id="rewardsFilter">
+              <option value="all">Tous les niveaux</option>
+              <option value="unlocked">Niveaux actifs</option>
+              <option value="locked">Niveaux verrouilles</option>
+              <option value="reward">Avec recompense</option>
+              <option value="special">Recompenses speciales</option>
+            </select>
+          </div>
+          <div class="rewards-grid" id="rewardsGrid"></div>
+        </div>
+
+        <div class="card rewards-card">
+          <h3>Configuration du niveau</h3>
+          <div class="rewards-editor">
+            <div class="rewards-header">
+              <div class="rewards-level" id="rewardsLevelLabel">Niveau 1</div>
+              <div class="rewards-status" id="rewardsStatusLabel">En cours</div>
+            </div>
+
+            <div class="form-row">
+              <label>Recompense active</label>
+              <label class="switch">
+                <input type="checkbox" id="rewardsEnabled" />
+                <span class="switch-track"></span>
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label>Type de recompense</label>
+              <select id="rewardsType">
+                <option value="badge">Badge</option>
+                <option value="message">Message de felicitations</option>
+                <option value="animation">Animation visuelle</option>
+                <option value="privilege">Privilege en classe</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label>Texte de recompense</label>
+              <input id="rewardsText" placeholder="Ex: Badge Or" />
+            </div>
+
+            <div class="form-row">
+              <label>Recompense speciale</label>
+              <label class="switch">
+                <input type="checkbox" id="rewardsSpecial" />
+                <span class="switch-track"></span>
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label>Message personnalise</label>
+              <textarea id="rewardsMessage" placeholder="Bravo pour ce niveau !" ></textarea>
+            </div>
+
+            <div class="form-row">
+              <label>Audio (lien optionnel)</label>
+              <input id="rewardsAudio" placeholder="https://..." />
+            </div>
+
+            <div class="form-row two-cols">
+              <div>
+                <label>Theme</label>
+                <input id="rewardsTheme" placeholder="Ex: Fractions" />
+              </div>
+              <div>
+                <label>Competence</label>
+                <input id="rewardsSkill" placeholder="Ex: Addition" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label>Objectif pedagogique</label>
+              <input id="rewardsObjective" placeholder="Ex: Maitriser les conversions" />
+            </div>
+
+            <div class="rewards-preview">
+              <div class="rewards-preview-title">Previsualisation</div>
+              <div class="rewards-preview-card">
+                <div class="rewards-preview-header">Niveau supérieur</div>
+                <div class="rewards-preview-level" id="rewardsPreviewLevel">Niveau 1</div>
+                <div class="rewards-preview-reward" id="rewardsPreviewReward"></div>
+                <div class="rewards-preview-meta" id="rewardsPreviewMeta"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -572,6 +676,8 @@ const APP_HTML = `
     <div class="levelup-crown">★</div>
     <div class="levelup-title" id="levelUpTitle">Niveau supérieur</div>
     <div class="levelup-level" id="levelUpValue">Niveau 1</div>
+    <div class="levelup-reward" id="levelUpReward"></div>
+    <div class="levelup-meta" id="levelUpMeta"></div>
     <div class="levelup-sub">Bravo ! Tu passes au niveau suivant.</div>
     <button class="primary" type="button" id="levelUpClose">Continuer</button>
   </div>
