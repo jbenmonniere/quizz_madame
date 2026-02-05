@@ -20,7 +20,7 @@ const APP_HTML = `
     <div class="tc-class-actions">
       <div class="tc-class" id="activeClassLabel"></div>
       <button class="ghost small" id="switchClassBtn" type="button">Mes classes</button>
-      <button class="ghost small" id="logoutBtn" type="button">Deconnexion</button>
+      <button class="ghost small" id="logoutBtn" type="button">Déconnexion</button>
     </div>
   </div>
 </header>
@@ -29,7 +29,7 @@ const APP_HTML = `
   <button class="tab-btn nav-tab" data-nav="builder" type="button">Portail enseignante</button>
   <button class="tab-btn nav-tab" data-nav="quizz" type="button">Quizz</button>
   <button class="tab-btn nav-tab" data-nav="questions" type="button">Questions</button>
-  <button class="tab-btn nav-tab" data-nav="rewards" type="button">Recompenses</button>
+  <button class="tab-btn nav-tab" data-nav="rewards" type="button">Récompenses</button>
 </nav>
 
 <main class="tc-app">
@@ -38,11 +38,11 @@ const APP_HTML = `
       <div class="card auth-card">
         <div class="auth-tabs">
           <button class="tab-btn active" data-auth-tab="login" type="button">Connexion</button>
-          <button class="tab-btn" data-auth-tab="signup" type="button">Creer un compte</button>
+          <button class="tab-btn" data-auth-tab="signup" type="button">Créer un compte</button>
         </div>
         <div class="auth-panel active" data-auth-panel="login">
           <div class="form-row">
-            <label>Nom d'utilisateur (pas d'email)</label>
+            <label>Nom d'utilisateur (pas d'e-mail)</label>
             <input id="loginUsername" autocomplete="username" />
           </div>
           <div class="form-row">
@@ -53,14 +53,14 @@ const APP_HTML = `
         </div>
         <div class="auth-panel" data-auth-panel="signup">
           <div class="form-row">
-            <label>Nom d'utilisateur (pas d'email)</label>
+            <label>Nom d'utilisateur (pas d'e-mail)</label>
             <input id="signupUsername" autocomplete="username" />
           </div>
           <div class="form-row">
             <label>Mot de passe</label>
             <input type="password" id="signupPassword" autocomplete="new-password" />
           </div>
-          <button class="primary" id="signupBtn" type="button">Creer le compte</button>
+          <button class="primary" id="signupBtn" type="button">Créer le compte</button>
         </div>
         <div class="note" id="authMessage"></div>
       </div>
@@ -75,7 +75,7 @@ const APP_HTML = `
         <div class="note" id="classMessage"></div>
       </div>
       <div class="card class-card">
-        <h3 id="classFormTitle">Creer une classe</h3>
+        <h3 id="classFormTitle">Créer une classe</h3>
         <div class="form-row">
           <label>Nom de la classe</label>
           <input id="classNameInput" placeholder="Ex: 5e B" />
@@ -94,7 +94,7 @@ const APP_HTML = `
           </select>
         </div>
         <div class="class-form-actions">
-          <button class="primary" id="createClassBtn" type="button">Creer la classe</button>
+          <button class="primary" id="createClassBtn" type="button">Créer la classe</button>
           <button class="ghost hidden" id="cancelEditClassBtn" type="button">Annuler</button>
         </div>
       </div>
@@ -166,8 +166,8 @@ const APP_HTML = `
 
       <div class="card question-card">
         <div class="wrong-x" id="wrongX" aria-hidden="true">X</div>
-        <div class="question-category" id="questionCategory">Categorie</div>
-        <div class="question-text" id="questionText">Selectionne un jour et tourne la roue.</div>
+        <div class="question-category" id="questionCategory">Catégorie</div>
+        <div class="question-text" id="questionText">Sélectionne un jour et tourne la roue.</div>
         <div class="choice-list" id="choiceList"></div>
         <div class="answer-feedback" id="answerFeedback"></div>
       </div>
@@ -175,7 +175,7 @@ const APP_HTML = `
 
     <div class="finish-banner" id="finishBanner">
       <div>
-        <div class="finish-title">Journee terminee !</div>
+        <div class="finish-title">Journée terminée !</div>
         <div class="finish-score" id="finishScore">Note finale: 0/5</div>
       </div>
       <div class="xp-panel xp-panel-compact" data-xp-panel>
@@ -207,7 +207,7 @@ const APP_HTML = `
         <button class="tab-btn active" data-teacher-tab="builder" type="button">Portail enseignante</button>
         <button class="tab-btn" data-teacher-tab="quizz" type="button">Quizz</button>
         <button class="tab-btn" data-teacher-tab="questions" type="button">Questions</button>
-        <button class="tab-btn" data-teacher-tab="rewards" type="button">Recompenses</button>
+        <button class="tab-btn" data-teacher-tab="rewards" type="button">Récompenses</button>
       </div>
     </div>
 
@@ -230,7 +230,7 @@ const APP_HTML = `
           <label>Sous-theme</label>
           <div class="select" data-select="bankSubthemeSelect">
             <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-              <span class="select-value placeholder" data-placeholder="Choisir un sous-theme">Choisir un sous-theme</span>
+              <span class="select-value placeholder" data-placeholder="Choisir un sous-thème">Choisir un sous-thème</span>
               <span class="select-caret">▾</span>
             </button>
             <div class="select-menu" role="listbox"></div>
@@ -320,14 +320,14 @@ const APP_HTML = `
               <div class="quiz-bank-header">
                 <div class="quiz-search-row">
                   <label>Recherche</label>
-                  <input id="quizBankSearchInput" placeholder="Question, matiere ou sous-theme" />
+                  <input id="quizBankSearchInput" placeholder="Question, matière ou sous-thème" />
                 </div>
                 <div class="quiz-filters-row">
                   <div class="quiz-filter">
                     <label>Matiere</label>
                     <div class="select" data-select="quizBankSubjectFilter">
                       <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                        <span class="select-value" data-placeholder="Toutes les matieres">Toutes les matieres</span>
+                        <span class="select-value" data-placeholder="Toutes les matières">Toutes les matières</span>
                         <span class="select-caret">▾</span>
                       </button>
                       <div class="select-menu" role="listbox"></div>
@@ -335,10 +335,10 @@ const APP_HTML = `
                     </div>
                   </div>
                   <div class="quiz-filter">
-                    <label>Sous-theme</label>
+                    <label>Sous-thème</label>
                     <div class="select" data-select="quizBankSubthemeFilter">
                       <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                        <span class="select-value" data-placeholder="Tous les sous-themes">Tous les sous-themes</span>
+                        <span class="select-value" data-placeholder="Tous les sous-thèmes">Tous les sous-thèmes</span>
                         <span class="select-caret">▾</span>
                       </button>
                       <div class="select-menu" role="listbox"></div>
@@ -346,10 +346,10 @@ const APP_HTML = `
                     </div>
                   </div>
                   <div class="quiz-filter">
-                    <label>Difficulte</label>
+                    <label>Difficulté</label>
                     <div class="select" data-select="quizBankDifficultyFilter">
                       <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                        <span class="select-value" data-placeholder="Toutes les difficultes">Toutes les difficultes</span>
+                        <span class="select-value" data-placeholder="Toutes les difficultés">Toutes les difficultés</span>
                         <span class="select-caret">▾</span>
                       </button>
                       <div class="select-menu" role="listbox"></div>
@@ -367,7 +367,7 @@ const APP_HTML = `
           </div>
         </div>
         <div class="card teacher-card">
-          <h3>Creer un quiz</h3>
+          <h3>Créer un quiz</h3>
           <div class="form-row">
             <label>Titre du quiz</label>
             <input id="quizTitleInput" placeholder="Ex: Les fractions" />
@@ -376,7 +376,7 @@ const APP_HTML = `
             <label>Date du quiz</label>
             <input type="date" id="quizDateInput" />
           </div>
-          <div class="note">Questions selectionnees</div>
+          <div class="note">Questions sélectionnées</div>
           <div class="question-list compact drag-list" id="selectedQuestionList"></div>
           <div class="drop-zone" id="quizDropZone">
             Glisse plusieurs questions ici pour composer le quiz.
@@ -403,9 +403,9 @@ const APP_HTML = `
             <select id="rewardsFilter">
               <option value="all">Tous les niveaux</option>
               <option value="unlocked">Niveaux actifs</option>
-              <option value="locked">Niveaux verrouilles</option>
-              <option value="reward">Avec recompense</option>
-              <option value="special">Recompenses speciales</option>
+              <option value="locked">Niveaux verrouillés</option>
+              <option value="reward">Avec récompense</option>
+              <option value="special">Récompenses spéciales</option>
             </select>
           </div>
           <div class="rewards-grid" id="rewardsGrid"></div>
@@ -420,7 +420,7 @@ const APP_HTML = `
             </div>
 
             <div class="form-row">
-              <label>Recompense active</label>
+              <label>Récompense active</label>
               <label class="switch">
                 <input type="checkbox" id="rewardsEnabled" />
                 <span class="switch-track"></span>
@@ -428,22 +428,22 @@ const APP_HTML = `
             </div>
 
             <div class="form-row">
-              <label>Type de recompense</label>
+              <label>Type de récompense</label>
               <select id="rewardsType">
                 <option value="badge">Badge</option>
-                <option value="message">Message de felicitations</option>
+                <option value="message">Message de félicitations</option>
                 <option value="animation">Animation visuelle</option>
-                <option value="privilege">Privilege en classe</option>
+                <option value="privilege">Privilège en classe</option>
               </select>
             </div>
 
             <div class="form-row">
-              <label>Texte de recompense</label>
+              <label>Texte de récompense</label>
               <input id="rewardsText" placeholder="Ex: Badge Or" />
             </div>
 
             <div class="form-row">
-              <label>Recompense speciale</label>
+              <label>Récompense spéciale</label>
               <label class="switch">
                 <input type="checkbox" id="rewardsSpecial" />
                 <span class="switch-track"></span>
@@ -451,7 +451,7 @@ const APP_HTML = `
             </div>
 
             <div class="form-row">
-              <label>Message personnalise</label>
+              <label>Message personnalisé</label>
               <textarea id="rewardsMessage" placeholder="Bravo pour ce niveau !" ></textarea>
             </div>
 
@@ -462,22 +462,22 @@ const APP_HTML = `
 
             <div class="form-row two-cols">
               <div>
-                <label>Theme</label>
+                <label>Thème</label>
                 <input id="rewardsTheme" placeholder="Ex: Fractions" />
               </div>
               <div>
-                <label>Competence</label>
+                <label>Compétence</label>
                 <input id="rewardsSkill" placeholder="Ex: Addition" />
               </div>
             </div>
 
             <div class="form-row">
-              <label>Objectif pedagogique</label>
+              <label>Objectif pédagogique</label>
               <input id="rewardsObjective" placeholder="Ex: Maitriser les conversions" />
             </div>
 
             <div class="rewards-preview">
-              <div class="rewards-preview-title">Previsualisation</div>
+              <div class="rewards-preview-title">Prévisualisation</div>
               <div class="rewards-preview-card">
                 <div class="rewards-preview-header">Niveau supérieur</div>
                 <div class="rewards-preview-level" id="rewardsPreviewLevel">Niveau 1</div>
@@ -494,8 +494,8 @@ const APP_HTML = `
       <div class="card teacher-card">
         <h3>Toutes les questions</h3>
         <div class="form-row actions-row">
-          <button class="primary" id="openCreateQuestionBtn">Creer une question</button>
-          <button class="secondary" id="openSubjectModalBtn">Creer matiere / sous-theme</button>
+          <button class="primary" id="openCreateQuestionBtn">Créer une question</button>
+          <button class="secondary" id="openSubjectModalBtn">Créer matière / sous-thème</button>
         </div>
         <div class="question-header">
           <div class="question-left">
@@ -505,11 +505,11 @@ const APP_HTML = `
             <div class="question-inline header-grid">
               <div class="header-cell">
                 <button class="header-filter-toggle" type="button" data-filter="quizDifficultyFilter">
-                  Difficulte
+                  Difficulté
                 </button>
                 <div class="select select-compact" data-select="quizDifficultyFilter">
                   <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                    <span class="select-value" data-placeholder="Toutes les difficultes">Toutes les difficultes</span>
+                    <span class="select-value" data-placeholder="Toutes les difficultés">Toutes les difficultés</span>
                     <span class="select-caret">▾</span>
                   </button>
                   <div class="select-menu" role="listbox"></div>
@@ -518,11 +518,11 @@ const APP_HTML = `
               </div>
               <div class="header-cell">
                 <button class="header-filter-toggle" type="button" data-filter="quizSubthemeFilter">
-                  Sous-theme
+                  Sous-thème
                 </button>
                 <div class="select select-compact" data-select="quizSubthemeFilter">
                   <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                    <span class="select-value" data-placeholder="Tous les sous-themes">Tous les sous-themes</span>
+                    <span class="select-value" data-placeholder="Tous les sous-thèmes">Tous les sous-thèmes</span>
                     <span class="select-caret">▾</span>
                   </button>
                   <div class="select-menu" role="listbox"></div>
@@ -531,11 +531,11 @@ const APP_HTML = `
               </div>
               <div class="header-cell">
                 <button class="header-filter-toggle" type="button" data-filter="quizSubjectFilter">
-                  Matiere
+                  Matière
                 </button>
                 <div class="select select-compact" data-select="quizSubjectFilter">
                   <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                    <span class="select-value" data-placeholder="Toutes les matieres">Toutes les matieres</span>
+                    <span class="select-value" data-placeholder="Toutes les matières">Toutes les matières</span>
                     <span class="select-caret">▾</span>
                   </button>
                   <div class="select-menu" role="listbox"></div>
@@ -579,7 +579,7 @@ const APP_HTML = `
       <label>Sous-theme</label>
       <div class="select" data-select="editSubthemeSelect">
         <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-          <span class="select-value" data-placeholder="Choisir un sous-theme">Choisir un sous-theme</span>
+          <span class="select-value" data-placeholder="Choisir un sous-thème">Choisir un sous-thème</span>
           <span class="select-caret">▾</span>
         </button>
         <div class="select-menu" role="listbox"></div>
@@ -637,7 +637,7 @@ const APP_HTML = `
   <div class="modal-backdrop" data-action="close-subject"></div>
   <div class="modal-card">
     <div class="modal-header">
-      <h3>Matieres & sous-themes</h3>
+      <h3>Matières & sous-thèmes</h3>
       <button class="icon-button" data-action="close-subject" aria-label="Fermer">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.7 2.89 18.3 9.17 12 2.89 5.7 4.3 4.29l6.29 6.3 6.3-6.3z"/>
@@ -645,20 +645,20 @@ const APP_HTML = `
       </button>
     </div>
     <div class="modal-section">
-      <h4>Creer une matiere</h4>
+      <h4>Créer une matière</h4>
       <div class="form-row">
         <label>Matiere</label>
         <input id="newSubjectInput" placeholder="Ex: Arts plastiques" />
       </div>
       <div class="form-row">
-        <label>Premier sous-theme</label>
+        <label>Premier sous-thème</label>
         <input id="newSubjectSubthemeInput" placeholder="Ex: Couleurs" />
       </div>
-      <button class="primary" id="createSubjectBtn">Creer la matiere</button>
+      <button class="primary" id="createSubjectBtn">Créer la matière</button>
     </div>
     <div class="modal-divider"></div>
     <div class="modal-section">
-      <h4>Ajouter un sous-theme</h4>
+      <h4>Ajouter un sous-thème</h4>
       <div class="form-row">
         <label>Matiere</label>
         <div class="select" data-select="addSubthemeSubjectSelect">
@@ -671,10 +671,10 @@ const APP_HTML = `
         </div>
       </div>
       <div class="form-row">
-        <label>Nouveau sous-theme</label>
+        <label>Nouveau sous-thème</label>
         <input id="newSubthemeInput" placeholder="Ex: Lecture" />
       </div>
-      <button class="primary" id="addSubthemeBtn">Ajouter le sous-theme</button>
+      <button class="primary" id="addSubthemeBtn">Ajouter le sous-thème</button>
     </div>
     <div class="note" id="subjectModalMessage"></div>
   </div>

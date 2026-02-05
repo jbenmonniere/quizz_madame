@@ -170,54 +170,54 @@
   const confettiColors = ["#ffb6d5", "#a9d8ff", "#b9f3d1", "#ffe39a", "#ffd2a6", "#cbbcff"];
 
   const BASE_SUBJECTS = {
-    "Francais": ["Lecture", "Ecriture", "Grammaire"],
-    "Mathematique": ["Nombre", "Operations", "Geometrie/mesure"],
-    "Univers social": ["General"],
-    "Science et technologie": ["General"]
+    "Français": ["Lecture", "Écriture", "Grammaire"],
+    "Mathématique": ["Nombre", "Opérations", "Géométrie/mesure"],
+    "Univers social": ["Général"],
+    "Science et technologie": ["Général"]
   };
 
   const questionBank = {
     science: [
-      { text: "Quel organe pompe le sang dans le corps humain ?", choices: ["Le foie", "Le coeur", "Le poumon", "Le cerveau"], answer: 1 },
-      { text: "Quelle planète est la plus proche du Soleil ?", choices: ["Mercure", "Venus", "Mars", "Saturne"], answer: 0 },
-      { text: "L'eau bout a quelle temperature (au niveau de la mer) ?", choices: ["50°C", "100°C", "150°C", "200°C"], answer: 1 },
-      { text: "Quelle force nous maintient au sol ?", choices: ["Magnetisme", "Gravite", "Inertie", "Pression"], answer: 1 },
-      { text: "Quel gaz respire-t-on principalement ?", choices: ["Oxygene", "Azote", "Hydrogene", "Helium"], answer: 1 }
+      { text: "Quel organe pompe le sang dans le corps humain ?", choices: ["Le foie", "Le cœur", "Le poumon", "Le cerveau"], answer: 1 },
+      { text: "Quelle planète est la plus proche du Soleil ?", choices: ["Mercure", "Vénus", "Mars", "Saturne"], answer: 0 },
+      { text: "L'eau bout à quelle température (au niveau de la mer) ?", choices: ["50°C", "100°C", "150°C", "200°C"], answer: 1 },
+      { text: "Quelle force nous maintient au sol ?", choices: ["Magnétisme", "Gravité", "Inertie", "Pression"], answer: 1 },
+      { text: "Quel gaz respire-t-on principalement ?", choices: ["Oxygène", "Azote", "Hydrogène", "Hélium"], answer: 1 }
     ],
     arts: [
-      { text: "Quel est le nom de l'instrument avec 88 touches ?", choices: ["Violoncelle", "Piano", "Flute", "Tambour"], answer: 1 },
-      { text: "Quel art utilise de la peinture sur toile ?", choices: ["Sculpture", "Peinture", "Danse", "Cinema"], answer: 1 },
-      { text: "Dans un theatre, comment appelle-t-on les coulisses ?", choices: ["La scene", "Les loges", "Les coulisses", "La salle"], answer: 2 },
+      { text: "Quel est le nom de l'instrument avec 88 touches ?", choices: ["Violoncelle", "Piano", "Flûte", "Tambour"], answer: 1 },
+      { text: "Quel art utilise de la peinture sur toile ?", choices: ["Sculpture", "Peinture", "Danse", "Cinéma"], answer: 1 },
+      { text: "Dans un théâtre, comment appelle-t-on les coulisses ?", choices: ["La scène", "Les loges", "Les coulisses", "La salle"], answer: 2 },
       { text: "Quel est un style musical ?", choices: ["Jazz", "Triangle", "Montagne", "Voiture"], answer: 0 },
       { text: "Lequel est un art visuel ?", choices: ["Photographie", "Basket", "Cuisine", "Natation"], answer: 0 }
     ],
     geo: [
       { text: "Quelle est la capitale de la France ?", choices: ["Lyon", "Paris", "Marseille", "Nice"], answer: 1 },
-      { text: "Quel continent est le plus vaste ?", choices: ["Afrique", "Europe", "Asie", "Oceanie"], answer: 2 },
-      { text: "Dans quel ocean se trouve Madagascar ?", choices: ["Atlantique", "Indien", "Arctique", "Pacifique"], answer: 1 },
-      { text: "Quelle chaine de montagnes est en Europe ?", choices: ["Andes", "Himalaya", "Alpes", "Rocheuses"], answer: 2 },
-      { text: "Quel pays est surnomme le pays du soleil levant ?", choices: ["Canada", "Japon", "Espagne", "Bresil"], answer: 1 }
+      { text: "Quel continent est le plus vaste ?", choices: ["Afrique", "Europe", "Asie", "Océanie"], answer: 2 },
+      { text: "Dans quel océan se trouve Madagascar ?", choices: ["Atlantique", "Indien", "Arctique", "Pacifique"], answer: 1 },
+      { text: "Quelle chaîne de montagnes est en Europe ?", choices: ["Andes", "Himalaya", "Alpes", "Rocheuses"], answer: 2 },
+      { text: "Quel pays est surnommé le pays du soleil levant ?", choices: ["Canada", "Japon", "Espagne", "Brésil"], answer: 1 }
     ],
     sports: [
-      { text: "Combien de joueurs dans une equipe de football sur le terrain ?", choices: ["9", "10", "11", "12"], answer: 2 },
+      { text: "Combien de joueurs dans une équipe de football sur le terrain ?", choices: ["9", "10", "11", "12"], answer: 2 },
       { text: "Quel sport se joue avec une raquette ?", choices: ["Tennis", "Football", "Basket", "Rugby"], answer: 0 },
-      { text: "Quel est un sport olympique ?", choices: ["Natation", "Dominos", "Echecs", "Quilles"], answer: 0 },
+      { text: "Quel est un sport olympique ?", choices: ["Natation", "Dominos", "Échecs", "Quilles"], answer: 0 },
       { text: "En basket, combien vaut un panier classique ?", choices: ["1 point", "2 points", "3 points", "4 points"], answer: 1 },
       { text: "Dans quel sport utilise-t-on un gant et une balle blanche ?", choices: ["Baseball", "Golf", "Hockey", "Volley"], answer: 0 }
     ],
     histoire: [
-      { text: "Les pyramides d'Egypte sont tres...", choices: ["recentes", "anciennes", "nouvelles", "futures"], answer: 1 },
-      { text: "Qui etait le premier president des Etats-Unis ?", choices: ["Lincoln", "Washington", "Jefferson", "Adams"], answer: 1 },
-      { text: "Quelle epoque vient avant le Moyen Age ?", choices: ["Antiquite", "Renaissance", "Moderne", "Contemporaine"], answer: 0 },
-      { text: "Quelle civilisation a construit le Colisee ?", choices: ["Grecque", "Romaine", "Viking", "Maya"], answer: 1 },
-      { text: "Quel evenement marque 1789 en France ?", choices: ["La Revolution", "La Decouverte de l'Amerique", "La Premiere Guerre", "La Construction de la Tour Eiffel"], answer: 0 }
+      { text: "Les pyramides d'Égypte sont très...", choices: ["récentes", "anciennes", "nouvelles", "futures"], answer: 1 },
+      { text: "Qui était le premier président des États-Unis ?", choices: ["Lincoln", "Washington", "Jefferson", "Adams"], answer: 1 },
+      { text: "Quelle époque vient avant le Moyen Âge ?", choices: ["Antiquité", "Renaissance", "Moderne", "Contemporaine"], answer: 0 },
+      { text: "Quelle civilisation a construit le Colisée ?", choices: ["Grecque", "Romaine", "Viking", "Maya"], answer: 1 },
+      { text: "Quel événement marque 1789 en France ?", choices: ["La Révolution", "La Découverte de l'Amérique", "La Première Guerre", "La Construction de la Tour Eiffel"], answer: 0 }
     ],
     logique: [
-      { text: "Quel nombre complete la suite : 2, 4, 6, 8, ... ?", choices: ["9", "10", "12", "14"], answer: 1 },
+      { text: "Quel nombre complète la suite : 2, 4, 6, 8, ... ?", choices: ["9", "10", "12", "14"], answer: 1 },
       { text: "Si tu as 3 pommes et que tu en prends 2, combien t'en reste-t-il ?", choices: ["1", "2", "3", "5"], answer: 0 },
       { text: "Quel mot est l'intrus ?", choices: ["Chien", "Chat", "Pomme", "Lapin"], answer: 2 },
       { text: "Combien de jours y a-t-il dans une semaine ?", choices: ["5", "6", "7", "8"], answer: 2 },
-      { text: "Quelle forme a 4 cotes egaux ?", choices: ["Triangle", "Carre", "Cercle", "Ovale"], answer: 1 }
+      { text: "Quelle forme a 4 côtés égaux ?", choices: ["Triangle", "Carré", "Cercle", "Ovale"], answer: 1 }
     ]
   };
 
@@ -438,11 +438,11 @@
           badge: "Badge",
           message: "Message",
           animation: "Animation",
-          privilege: "Privilege"
-        }[reward.type] || "Recompense";
+          privilege: "Privilège"
+        }[reward.type] || "Récompense";
         const text = reward.rewardText || reward.message || "";
         rewardEl.textContent = reward.special
-          ? `Recompense speciale · ${typeLabel}${text ? ` : ${text}` : ""}`
+          ? `Récompense spéciale · ${typeLabel}${text ? ` : ${text}` : ""}`
           : `${typeLabel}${text ? ` : ${text}` : ""}`;
       } else {
         rewardEl.textContent = "";
@@ -518,13 +518,13 @@
       return "Nom d'utilisateur invalide. Utilise des lettres ou chiffres.";
     }
     if (/password/i.test(message) && /6|characters|length/i.test(message)) {
-      return "Mot de passe trop court (minimum 6 caracteres).";
+      return "Mot de passe trop court (minimum 6 caractères).";
     }
     if (/rate limit exceeded/i.test(message)) {
       return "Trop d'essais en peu de temps. Attends un moment puis reessaie.";
     }
     if (/email.*not confirmed/i.test(message)) {
-      return "Compte cree. Confirme l'email dans Supabase ou desactive la confirmation.";
+      return "Compte créé. Confirme l'e-mail dans Supabase ou désactive la confirmation.";
     }
     return message;
   };
@@ -1164,20 +1164,20 @@
 
     if (dayStatus && dayScore && dayQuizInfo) {
       if (scoreEntry) {
-        dayStatus.textContent = "Defi termine";
-        dayScore.textContent = `Note: ${scoreEntry.score}/${MAX_ROUNDS}`;
+        dayStatus.textContent = "Défi terminé";
+        dayScore.textContent = `Note : ${scoreEntry.score}/${MAX_ROUNDS}`;
       } else if (progress) {
-        dayStatus.textContent = "Defi en cours";
-        dayScore.textContent = `Score provisoire: ${progress.correct}/${MAX_ROUNDS}`;
+        dayStatus.textContent = "Défi en cours";
+        dayScore.textContent = `Score provisoire : ${progress.correct}/${MAX_ROUNDS}`;
       } else {
-        dayStatus.textContent = "Defi du jour";
+        dayStatus.textContent = "Défi du jour";
         dayScore.textContent = "Aucune note encore";
       }
 
       if (assignedQuiz) {
-        dayQuizInfo.textContent = `Quiz attribue: ${assignedQuiz.title} (${assignedQuiz.questions.length} questions)`;
+        dayQuizInfo.textContent = `Quiz attribué : ${assignedQuiz.title} (${assignedQuiz.questions.length} questions)`;
       } else {
-        dayQuizInfo.textContent = "Aucun quiz attribue: mode categories aleatoires.";
+        dayQuizInfo.textContent = "Aucun quiz attribué : mode catégories aléatoires.";
       }
     }
   };
@@ -1236,7 +1236,7 @@
     const statusLabel = $("#rewardsStatusLabel");
     if (levelLabel) levelLabel.textContent = `Niveau ${level}`;
     if (statusLabel) {
-      statusLabel.textContent = status === "completed" ? "Complete" : status === "active" ? "En cours" : "Verrouille";
+      statusLabel.textContent = status === "completed" ? "Complété" : status === "active" ? "En cours" : "Verrouillé";
     }
 
     const enabled = $("#rewardsEnabled");
@@ -1274,10 +1274,10 @@
           message: "Message",
           animation: "Animation",
           privilege: "Privilege"
-        }[reward.type] || "Recompense";
+        }[reward.type] || "Récompense";
         const text = reward.rewardText || reward.message || "";
         previewReward.textContent = reward.special
-          ? `Recompense speciale · ${typeLabel}${text ? ` : ${text}` : ""}`
+          ? `Récompense spéciale · ${typeLabel}${text ? ` : ${text}` : ""}`
           : `${typeLabel}${text ? ` : ${text}` : ""}`;
       } else {
         previewReward.textContent = "Aucune recompense active.";
@@ -1380,7 +1380,7 @@
       return;
     }
     if (!isValidUsername(username)) {
-      setAuthMessage("Nom d'utilisateur invalide (pas d'email, min 3 caracteres).");
+      setAuthMessage("Nom d'utilisateur invalide (pas d'e-mail, min 3 caractères).");
       return;
     }
     setAuthMessage("Connexion...");
@@ -1391,7 +1391,7 @@
     }
     const user = data?.user || data?.session?.user;
     if (!user) {
-      setAuthMessage("Connexion impossible. Verifie la confirmation email dans Supabase.");
+      setAuthMessage("Connexion impossible. Vérifie la confirmation e-mail dans Supabase.");
       return;
     }
     await handleSignedIn(user, username);
@@ -1405,10 +1405,10 @@
       return;
     }
     if (!isValidUsername(username)) {
-      setAuthMessage("Nom d'utilisateur invalide (pas d'email, min 3 caracteres).");
+      setAuthMessage("Nom d'utilisateur invalide (pas d'e-mail, min 3 caractères).");
       return;
     }
-    setAuthMessage("Creation du compte...");
+    setAuthMessage("Création du compte...");
     const { data, error } = await store.auth.signUp(username, password);
     if (error) {
       setAuthMessage(formatAuthError(error));
@@ -1416,7 +1416,7 @@
     }
     const user = data?.user || data?.session?.user;
     if (!user) {
-      setAuthMessage("Compte cree. Confirme l'email dans Supabase ou desactive la confirmation.");
+      setAuthMessage("Compte créé. Confirme l'e-mail dans Supabase ou désactive la confirmation.");
       return;
     }
     await handleSignedIn(user, username);
@@ -1441,7 +1441,7 @@
       return;
     }
     if (state.editingClassId) {
-      setClassMessage("Mise a jour...");
+      setClassMessage("Mise à jour...");
       const { data, error } = await store.updateClass?.({ id: state.editingClassId, name, level });
       if (error) {
         setClassMessage(error.message || "Impossible de modifier la classe.");
@@ -1452,19 +1452,19 @@
         state.activeClass = data;
         updateHeaderMeta();
       }
-      setClassMessage("Classe mise a jour.");
+      setClassMessage("Classe mise à jour.");
       setClassFormMode("create");
       renderClassList();
       return;
     }
-    setClassMessage("Creation...");
+    setClassMessage("Création...");
     const { data, error } = await store.createClass({ name, level });
     if (error) {
-      setClassMessage(error.message || "Impossible de creer la classe.");
+      setClassMessage(error.message || "Impossible de créer la classe.");
       return;
     }
     setClassFormMode("create");
-    setClassMessage("Classe creee.");
+    setClassMessage("Classe créée.");
     state.classes = [data, ...state.classes];
     renderClassList();
     await openClass(data.id);
@@ -1496,7 +1496,7 @@
     if (state.editingClassId === classId) {
       setClassFormMode("create");
     }
-    setClassMessage("Classe supprimee.");
+    setClassMessage("Classe supprimée.");
     renderClassList();
     showScreen("classes");
   };
@@ -1833,7 +1833,7 @@
     const moreBtn = $("#quizMoreBtn");
     list.innerHTML = "";
     if (!all.length) {
-      list.innerHTML = "<div class=\"note\">Aucun quiz cree pour le moment.</div>";
+      list.innerHTML = "<div class=\"note\">Aucun quiz créé pour le moment.</div>";
       if (moreWrap) moreWrap.style.display = "none";
       return;
     }
@@ -1849,7 +1849,7 @@
       const item = document.createElement("div");
       item.className = "quiz-item compact";
       const assignedDate = getAssignedDateForQuiz(quiz.id);
-      const dateLabel = assignedDate ? parseDateKey(assignedDate).toLocaleDateString("fr-FR") : "Non attribue";
+      const dateLabel = assignedDate ? parseDateKey(assignedDate).toLocaleDateString("fr-FR") : "Non attribué";
       item.innerHTML = `
         <strong>${quiz.title}</strong>
         <div class="quiz-meta">${quiz.questions.length} question(s) · Date: ${dateLabel}</div>
@@ -2009,7 +2009,7 @@
     const subjects = getSubjectList();
     updateSelectOptions("quizSubjectFilter", subjects, {
       includeAll: true,
-      allLabel: "Toutes les matieres",
+      allLabel: "Toutes les matières",
       defaultValue: "all"
     });
   };
@@ -2053,7 +2053,7 @@
     const subjects = getSubjectList();
     updateSelectOptions("quizBankSubjectFilter", subjects, {
       includeAll: true,
-      allLabel: "Toutes les matieres",
+      allLabel: "Toutes les matières",
       defaultValue: "all"
     });
   };
@@ -2196,12 +2196,12 @@
     const subject = normalizeLabel($("#newSubjectInput").value || "");
     const subtheme = normalizeLabel($("#newSubjectSubthemeInput").value || "");
     if (!subject || !subtheme) {
-      setSubjectModalMessage("Ajoute une matiere et un sous-theme.");
+      setSubjectModalMessage("Ajoute une matière et un sous-thème.");
       return;
     }
     const map = getSubjectsMap();
     if (map[subject]) {
-      setSubjectModalMessage("Cette matiere existe deja. Ajoute un sous-theme.");
+      setSubjectModalMessage("Cette matière existe déjà. Ajoute un sous-thème.");
       return;
     }
     const custom = getStoredSubjects();
@@ -2210,19 +2210,19 @@
     $("#newSubjectInput").value = "";
     $("#newSubjectSubthemeInput").value = "";
     refreshSubjectSelects();
-    setSubjectModalMessage("Matiere creee.");
+    setSubjectModalMessage("Matière créée.");
   };
 
   const handleAddSubtheme = () => {
     const subject = $("#addSubthemeSubjectSelect").value.trim();
     const subtheme = normalizeLabel($("#newSubthemeInput").value || "");
     if (!subject || !subtheme) {
-      setSubjectModalMessage("Choisis une matiere et un sous-theme.");
+      setSubjectModalMessage("Choisis une matière et un sous-thème.");
       return;
     }
     const map = getSubjectsMap();
     if (!map[subject]) {
-      setSubjectModalMessage("Cette matiere n'existe pas.");
+      setSubjectModalMessage("Cette matière n'existe pas.");
       return;
     }
     if (map[subject].includes(subtheme)) {
@@ -2325,7 +2325,7 @@
     const selected = document.querySelector('input[name="editCorrect"]:checked');
     const answer = selected ? Number(selected.value) : NaN;
     if (!subject || !subtheme || !question || choices.some((c) => !c)) {
-      setTeacherMessage("Complete tous les champs pour modifier la question.");
+      setTeacherMessage("Complète tous les champs pour modifier la question.");
       return;
     }
     if (Number.isNaN(answer)) {
@@ -2368,7 +2368,7 @@
     const selected = document.querySelector('input[name="bankCorrect"]:checked');
     const answer = selected ? Number(selected.value) : NaN;
     if (!subject || !subtheme || !question || choices.some((c) => !c)) {
-      setTeacherMessage("Complete tous les champs pour ajouter a la banque.");
+      setTeacherMessage("Complète tous les champs pour ajouter à la banque.");
       return;
     }
     if (Number.isNaN(answer)) {
@@ -2450,7 +2450,7 @@
     const entries = Object.entries(assignments).sort(([a], [b]) => a.localeCompare(b));
     list.innerHTML = "";
     if (!entries.length) {
-      list.innerHTML = "<div class=\"note\">Aucune date attribuee.</div>";
+      list.innerHTML = "<div class=\"note\">Aucune date attribuée.</div>";
       return;
     }
     entries.forEach(([dateKeyValue, quizId]) => {
@@ -2569,7 +2569,7 @@
     const assignments = getAssignments();
     assignments[dateValue] = quizId;
     setAssignments(assignments);
-    setTeacherMessage("Quiz attribue au calendrier.");
+    setTeacherMessage("Quiz attribué au calendrier.");
     renderAssignmentsList();
     renderCalendar();
     renderDayPanel();
@@ -2623,7 +2623,7 @@
     const choices = $("#choiceList");
     const feedback = $("#answerFeedback");
     if (category) {
-      category.textContent = "Categorie";
+      category.textContent = "Catégorie";
       category.style.background = "";
       category.style.borderColor = "";
     }
@@ -2692,7 +2692,7 @@
         state.pendingLevelUp = null;
         setTimeout(() => triggerLevelUpSequence(level), 250);
       }
-      if (wheelNote) wheelNote.textContent = "Defi termine !";
+      if (wheelNote) wheelNote.textContent = "Défi terminé !";
       spinBtn?.setAttribute("disabled", "disabled");
     } else {
       if (finishBanner) finishBanner.classList.remove("show");
@@ -2868,7 +2868,7 @@
 
     const feedback = $("#answerFeedback");
     if (feedback) {
-      feedback.textContent = "Temps total ecoule. Partie terminee.";
+      feedback.textContent = "Temps total écoulé. Partie terminée.";
       feedback.className = "answer-feedback bad";
     }
 
@@ -2966,7 +2966,7 @@
     const scores = getCalendarScores();
     const assignedQuiz = getAssignedQuiz(state.selectedDate);
     if (assignedQuiz && assignedQuiz.questions.length < MAX_ROUNDS) {
-      alert(`Le quiz attribue doit avoir au moins ${MAX_ROUNDS} questions.`);
+      alert(`Le quiz attribué doit avoir au moins ${MAX_ROUNDS} questions.`);
       return;
     }
     if (scores[state.selectedDate]) {
