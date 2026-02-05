@@ -170,10 +170,67 @@
   const confettiColors = ["#ffb6d5", "#a9d8ff", "#b9f3d1", "#ffe39a", "#ffd2a6", "#cbbcff"];
 
   const BASE_SUBJECTS = {
-    "Français": ["Lecture", "Écriture", "Grammaire"],
-    "Mathématique": ["Nombre", "Opérations", "Géométrie/mesure"],
-    "Univers social": ["Général"],
-    "Science et technologie": ["Général"]
+    "Mathématiques": [
+      "Numération",
+      "Fractions",
+      "Nombres décimaux",
+      "Opérations",
+      "Priorités des opérations",
+      "Propriétés des nombres",
+      "Facteurs premiers",
+      "Critères de divisibilité",
+      "Exposants",
+      "Conversion de mesures",
+      "Masse",
+      "Capacité",
+      "Température",
+      "Heures et durées",
+      "Aire",
+      "Périmètre",
+      "Volume",
+      "Angles et triangles",
+      "Cercle",
+      "Frises et dallages",
+      "Moyenne",
+      "Plan cartésien",
+      "Pourcentage",
+      "Probabilités et statistiques"
+    ],
+    "CCQ (Culture et citoyenneté québécoise)": [
+      "Identité",
+      "Valeurs",
+      "Vie collective",
+      "Entraves au dialogue",
+      "Puberté",
+      "Persévérance scolaire",
+      "Avenir",
+      "Environnement",
+      "Médias",
+      "Droits des enfants"
+    ],
+    "Sciences": [
+      "Corps humain",
+      "Démarche scientifique",
+      "Matériaux isolants",
+      "Phénomènes naturels",
+      "Nutrition",
+      "Propriétés de la matière",
+      "Roches et minéraux",
+      "Plantes",
+      "Machines simples"
+    ],
+    "Français": [
+      "Classes de mots",
+      "Constituants de la phrase",
+      "Conjugaison",
+      "Homophones",
+      "Types de phrases",
+      "Synonymes et antonymes",
+      "Préfixes et suffixes",
+      "Stratégies de lecture",
+      "Inférence",
+      "Vocabulaire"
+    ]
   };
 
   const questionBank = {
