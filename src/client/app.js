@@ -1213,7 +1213,7 @@
       const padding = 8;
       const inner = size * 0.2 + iconSize / 2 + padding;
       const outer = size / 2 - iconSize / 2 - padding;
-      const labelRadius = inner + (outer - inner) * 0.4;
+      const labelRadius = inner + (outer - inner) * 0.28;
       wheel.style.setProperty("--label-radius", `${Math.round(labelRadius)}px`);
     }
     wheelCategories.forEach((cat, idx) => {
@@ -2227,6 +2227,29 @@
       return normalizeSubjectKey(resolved) === normalizeSubjectKey(categoryId);
     }
     return normalizeSubjectKey(questionSubject) === normalizeSubjectKey(categoryId);
+  };
+
+  const resolveQuestionSubject = (question) => {
+    if (!question) return "";
+    const direct =
+      question.subject ||
+      question.category ||
+      question.matiere ||
+      question.matière ||
+      question.subjectName;
+    if (direct) return direct;
+    const key = question.id || question._id;
+    if (!key) return "";
+    const bank = getBank();
+    const match = bank.find((q) => (q.id || q._id) === key);
+    return (
+      match?.subject ||
+      match?.category ||
+      match?.matiere ||
+      match?.matière ||
+      match?.subjectName ||
+      ""
+    );
   };
 
   const getCategoryIndexFromRotation = (rotation, count) => {
@@ -4069,7 +4092,7 @@
       labelText = `Quiz: ${assignedQuiz.title}`;
       labelColor = "#ffb6d5";
     } else {
-      if (question && !isSubjectMatch(question.subject || question.category || "", category.id, categories)) {
+      if (question && !isSubjectMatch(resolveQuestionSubject(question), category.id, categories)) {
         question = null;
         state.pendingQuestion = null;
       }
@@ -4273,7 +4296,8 @@
     let chosenQuestion = null;
     if (assignedQuiz) {
       chosenQuestion = assignedQuiz.questions[progress.spinsDone % assignedQuiz.questions.length];
-      const idx = findCategoryIndexBySubject(categories, chosenQuestion?.subject || chosenQuestion?.category || "");
+      const subjectName = resolveQuestionSubject(chosenQuestion);
+      const idx = findCategoryIndexBySubject(categories, subjectName);
       categoryIndex = idx >= 0 ? idx : Math.floor(Math.random() * categories.length);
     } else {
       const counts = buildSubjectCounts(getBank(), categories);
@@ -4310,11 +4334,8 @@
       const finalCategory = categories[finalIndex];
       const assigned = getAssignedQuiz(state.selectedDate);
       if (!assigned && state.pendingQuestion && finalCategory) {
-        const matches = isSubjectMatch(
-          state.pendingQuestion.subject || state.pendingQuestion.category || "",
-          finalCategory.id,
-          categories
-        );
+        const subjectName = resolveQuestionSubject(state.pendingQuestion);
+        const matches = isSubjectMatch(subjectName, finalCategory.id, categories);
         if (!matches) state.pendingQuestion = null;
       }
       showQuestion(finalIndex);
