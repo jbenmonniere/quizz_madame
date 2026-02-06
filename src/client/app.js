@@ -364,6 +364,7 @@
     statsFilters: loadStatsFilters(),
     statsSnapshot: null,
     statsRadarMode: "accuracy",
+    statsScheduleContext: null,
     aiQuestions: [],
     aiBusy: false
   };
@@ -2746,12 +2747,16 @@
     const map = {};
     attempts.forEach((a) => {
       const theme = a.theme || "General";
-      if (!map[theme]) map[theme] = { theme, attempts: 0, correct: 0 };
+      if (!map[theme]) map[theme] = { theme, attempts: 0, correct: 0, subjects: new Set() };
       map[theme].attempts += 1;
       if (a.isCorrect) map[theme].correct += 1;
+      if (a.subject) map[theme].subjects.add(a.subject);
     });
     return Object.values(map).map((item) => ({
-      ...item,
+      theme: item.theme,
+      attempts: item.attempts,
+      correct: item.correct,
+      subject: item.subjects.size === 1 ? Array.from(item.subjects)[0] : "",
       accuracy: item.attempts ? (item.correct / item.attempts) * 100 : 0
     }));
   };
@@ -3259,7 +3264,7 @@
 
   const createTargetedQuiz = ({ subject, subtheme, label }) => {
     const bank = getBank();
-    let candidates = bank.filter((q) => q.subject === subject);
+    let candidates = subject ? bank.filter((q) => q.subject === subject) : [...bank];
     if (subtheme) {
       const bySubtheme = candidates.filter((q) => q.subtheme === subtheme);
       if (bySubtheme.length >= MAX_ROUNDS) {
@@ -3301,6 +3306,51 @@
     renderDayPanel();
   };
 
+  const openStatsScheduleModal = (context) => {
+    if (!context) return;
+    const modal = $("#statsScheduleModal");
+    if (!modal) return;
+    state.statsScheduleContext = context;
+    const title = $("#statsScheduleTitle");
+    const subtitle = $("#statsScheduleSubtitle");
+    const dateInput = $("#statsScheduleDate");
+    if (title) title.textContent = context.title || "Planifier une révision";
+    if (subtitle) subtitle.textContent = context.subtitle || "Choisis une date pour la planification.";
+    if (dateInput) dateInput.value = state.selectedDate || "";
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+  };
+
+  const closeStatsScheduleModal = () => {
+    const modal = $("#statsScheduleModal");
+    if (!modal) return;
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+    state.statsScheduleContext = null;
+  };
+
+  const confirmStatsSchedule = () => {
+    const context = state.statsScheduleContext;
+    if (!context) return;
+    const dateValue = $("#statsScheduleDate")?.value || "";
+    if (!isValidDateKey(dateValue.trim())) {
+      setTeacherMessage("Date invalide. Utilise le format AAAA-MM-JJ.");
+      return;
+    }
+    const quiz = createTargetedQuiz({
+      subject: context.subject || "",
+      subtheme: context.subtheme || "",
+      label: context.label
+    });
+    if (!quiz) {
+      setTeacherMessage("Pas assez de questions difficiles pour ce sujet.");
+      return;
+    }
+    scheduleQuiz(quiz, dateValue.trim());
+    setTeacherMessage(`${context.success || "Révision planifiée."} ${dateValue}.`);
+    closeStatsScheduleModal();
+  };
+
   const handleStatsRevision = () => {
     if (!state.statsSnapshot?.insights) {
       setTeacherMessage("Pas assez de données pour lancer une révision ciblée.");
@@ -3312,21 +3362,57 @@
       setTeacherMessage("Aucun sujet à renforcer pour l'instant.");
       return;
     }
-    const dateValue = window.prompt("Planifier la révision au : (AAAA-MM-JJ)", state.selectedDate || "");
-    if (!isValidDateKey((dateValue || "").trim())) {
-      setTeacherMessage("Date invalide. Utilise le format AAAA-MM-JJ.");
-      return;
-    }
-    const quiz = createTargetedQuiz({
+    openStatsScheduleModal({
+      type: "weak",
+      title: "Planifier une révision ciblée",
+      subtitle: `Révision sur ${target.subject}. Choisis une date.`,
       subject: target.subject,
-      label: target.subject
+      label: target.subject,
+      success: "Révision ciblée planifiée le"
     });
-    if (!quiz) {
-      setTeacherMessage("Pas assez de questions difficiles pour ce sujet.");
+  };
+
+  const handleStatsWeakQuiz = () => {
+    if (!state.statsSnapshot?.insights) {
+      setTeacherMessage("Pas assez de données pour générer un mini-quiz.");
       return;
     }
-    scheduleQuiz(quiz, dateValue.trim());
-    setTeacherMessage(`Révision ciblée planifiée le ${dateValue}.`);
+    const { weaknesses } = state.statsSnapshot.insights;
+    const target = weaknesses[0];
+    if (!target) {
+      setTeacherMessage("Aucun sujet à renforcer pour l'instant.");
+      return;
+    }
+    openStatsScheduleModal({
+      type: "weak",
+      title: "Planifier un mini-quiz",
+      subtitle: `Mini-quiz sur ${target.subject}. Choisis une date.`,
+      subject: target.subject,
+      label: target.subject,
+      success: "Mini-quiz planifié le"
+    });
+  };
+
+  const handleStatsMistakesQuiz = () => {
+    if (!state.statsSnapshot?.insights) {
+      setTeacherMessage("Pas assez de données pour recommander une activité.");
+      return;
+    }
+    const { commonMistakes } = state.statsSnapshot.insights;
+    const target = commonMistakes[0];
+    if (!target) {
+      setTeacherMessage("Aucune notion fragile pour l'instant.");
+      return;
+    }
+    openStatsScheduleModal({
+      type: "mistake",
+      title: "Planifier une activité ciblée",
+      subtitle: `Activité sur ${target.theme}. Choisis une date.`,
+      subject: target.subject || "",
+      subtheme: target.theme,
+      label: target.theme,
+      success: "Activité planifiée le"
+    });
   };
 
   const openStatsDetail = (kpiId) => {
@@ -4648,6 +4734,17 @@
       }
     });
     $("#statsRevisionBtn")?.addEventListener("click", handleStatsRevision);
+    $("#statsWeakBtn")?.addEventListener("click", handleStatsWeakQuiz);
+    $("#statsMistakesBtn")?.addEventListener("click", handleStatsMistakesQuiz);
+    $("#statsScheduleCancel")?.addEventListener("click", closeStatsScheduleModal);
+    $("#statsScheduleConfirm")?.addEventListener("click", confirmStatsSchedule);
+    $("#statsScheduleModal")?.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (target.dataset.statsSchedule !== undefined || target.classList.contains("modal-backdrop")) {
+        closeStatsScheduleModal();
+      }
+    });
 
     const summaryWrap = document.querySelector(".stats-radar-summary");
     const summaryTooltip = $("#statsSummaryTooltip");
@@ -4715,6 +4812,7 @@
         hideLevelUp();
         hideAiConfirm();
         closeStatsDetail();
+        closeStatsScheduleModal();
       }
     });
 

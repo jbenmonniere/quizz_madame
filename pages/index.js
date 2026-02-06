@@ -690,7 +690,7 @@ const APP_HTML = `
               </div>
               <ul id="statsWeakList"></ul>
               <div class="insight-actions">
-                <button class="ghost small" type="button">Générer mini-quiz</button>
+                <button class="ghost small" id="statsWeakBtn" type="button">Générer mini-quiz</button>
               </div>
             </div>
             <div class="insight-card">
@@ -703,7 +703,7 @@ const APP_HTML = `
               </div>
               <ul id="statsCommonMistakes"></ul>
               <div class="insight-actions">
-                <button class="ghost small" type="button">Recommander activité</button>
+                <button class="ghost small" id="statsMistakesBtn" type="button">Recommander activité</button>
               </div>
             </div>
             <div class="insight-card">
@@ -835,6 +835,26 @@ const APP_HTML = `
     </div>
     <div class="modal-actions">
       <button class="primary" id="statsDetailOk" type="button">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="statsScheduleModal" aria-hidden="true">
+  <div class="modal-backdrop" data-stats-schedule="close"></div>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="statsScheduleTitle">Planifier une révision</h3>
+    </div>
+    <div class="modal-section">
+      <p class="note" id="statsScheduleSubtitle">Choisis une date pour la planification.</p>
+    </div>
+    <div class="form-row">
+      <label>Date</label>
+      <input type="date" id="statsScheduleDate" />
+    </div>
+    <div class="modal-actions">
+      <button class="ghost" id="statsScheduleCancel" type="button">Annuler</button>
+      <button class="primary" id="statsScheduleConfirm" type="button">Planifier</button>
     </div>
   </div>
 </div>
