@@ -26,7 +26,6 @@ const APP_HTML = `
 </header>
 <nav class="tc-nav" aria-label="Navigation">
   <button class="tab-btn nav-tab active" data-nav="calendar" type="button">Calendrier</button>
-  <button class="tab-btn nav-tab" data-nav="builder" type="button">Portail enseignante</button>
   <button class="tab-btn nav-tab" data-nav="quizz" type="button">Quizz</button>
   <button class="tab-btn nav-tab" data-nav="questions" type="button">Questions</button>
   <button class="tab-btn nav-tab" data-nav="ai" type="button">IA</button>
@@ -204,91 +203,12 @@ const APP_HTML = `
     <div class="teacher-top">
       <button class="ghost" id="backToCalendarFromTeacher">Calendrier</button>
       <div class="teacher-tabs">
-        <button class="tab-btn active" data-teacher-tab="builder" type="button">Portail enseignante</button>
         <button class="tab-btn" data-teacher-tab="quizz" type="button">Quizz</button>
-        <button class="tab-btn" data-teacher-tab="questions" type="button">Questions</button>
+        <button class="tab-btn active" data-teacher-tab="questions" type="button">Questions</button>
         <button class="tab-btn" data-teacher-tab="ai" type="button">IA</button>
         <button class="tab-btn" data-teacher-tab="stats" type="button">Statistiques</button>
         <button class="tab-btn" data-teacher-tab="rewards" type="button">Récompenses</button>
       </div>
-    </div>
-
-    <div class="teacher-section active" data-teacher-panel="builder">
-      <div class="teacher-grid">
-      <div class="card teacher-card">
-        <h3>Banque de questions</h3>
-        <div class="form-row">
-          <label>Matière</label>
-          <div class="select" data-select="bankSubjectSelect">
-            <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-              <span class="select-value placeholder" data-placeholder="Choisir une matière">Choisir une matière</span>
-              <span class="select-caret">▾</span>
-            </button>
-            <div class="select-menu" role="listbox"></div>
-            <input type="hidden" id="bankSubjectSelect" value="" />
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Sous-thème</label>
-          <div class="select" data-select="bankSubthemeSelect">
-            <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-              <span class="select-value placeholder" data-placeholder="Choisir un sous-thème">Choisir un sous-thème</span>
-              <span class="select-caret">▾</span>
-            </button>
-            <div class="select-menu" role="listbox"></div>
-            <input type="hidden" id="bankSubthemeSelect" value="" />
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Question</label>
-          <textarea id="bankQuestionInput" placeholder="Enonce de la question"></textarea>
-        </div>
-        <div class="form-row two-cols">
-          <div class="choice-block">
-            <label class="choice-label" for="bankCorrectA">
-              <input type="radio" name="bankCorrect" id="bankCorrectA" value="0" checked />
-              <span class="radio-dot" aria-hidden="true"></span>
-              <span>Choix A</span>
-            </label>
-            <input id="bankChoiceAInput" placeholder="Reponse A" />
-          </div>
-          <div class="choice-block">
-            <label class="choice-label" for="bankCorrectB">
-              <input type="radio" name="bankCorrect" id="bankCorrectB" value="1" />
-              <span class="radio-dot" aria-hidden="true"></span>
-              <span>Choix B</span>
-            </label>
-            <input id="bankChoiceBInput" placeholder="Reponse B" />
-          </div>
-        </div>
-        <div class="form-row two-cols">
-          <div class="choice-block">
-            <label class="choice-label" for="bankCorrectC">
-              <input type="radio" name="bankCorrect" id="bankCorrectC" value="2" />
-              <span class="radio-dot" aria-hidden="true"></span>
-              <span>Choix C</span>
-            </label>
-            <input id="bankChoiceCInput" placeholder="Reponse C" />
-          </div>
-          <div class="choice-block">
-            <label class="choice-label" for="bankCorrectD">
-              <input type="radio" name="bankCorrect" id="bankCorrectD" value="3" />
-              <span class="radio-dot" aria-hidden="true"></span>
-              <span>Choix D</span>
-            </label>
-            <input id="bankChoiceDInput" placeholder="Reponse D" />
-          </div>
-        </div>
-        <button class="secondary" id="addBankQuestionBtn">Ajouter a la banque</button>
-      </div>
-
-      <div class="note" id="teacherMessage"></div>
-
-      <div class="card teacher-card stats-card">
-        <h3>Statistiques hebdomadaires</h3>
-        <div class="assignment-list" id="weeklyStats"></div>
-      </div>
-    </div>
     </div>
 
     <div class="teacher-section" data-teacher-panel="quizz">
@@ -481,7 +401,7 @@ const APP_HTML = `
       </div>
     </div>
 
-    <div class="teacher-section" data-teacher-panel="questions">
+    <div class="teacher-section active" data-teacher-panel="questions">
       <div class="card teacher-card">
         <h3>Toutes les questions</h3>
         <div class="form-row actions-row">

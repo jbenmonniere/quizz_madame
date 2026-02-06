@@ -3691,9 +3691,15 @@
     );
   };
 
+  const setEditModalTitle = (title) => {
+    const header = $("#editModal")?.querySelector(".modal-header h3");
+    if (header) header.textContent = title;
+  };
+
   const openEditModal = (question) => {
     if (!question) return;
     editingQuestionId = question.id;
+    setEditModalTitle("Modifier la question");
     renderEditSubjectSelect();
     setSelectValue("editSubjectSelect", question.subject, question.subject, false);
     renderEditSubthemeSelect();
@@ -3704,6 +3710,27 @@
     $("#editChoiceCInput").value = question.choices?.[2] || "";
     $("#editChoiceDInput").value = question.choices?.[3] || "";
     const correct = document.querySelector(`input[name="editCorrect"][value="${question.answer}"]`);
+    if (correct) correct.checked = true;
+    const modal = $("#editModal");
+    if (modal) {
+      modal.classList.add("active");
+      modal.setAttribute("aria-hidden", "false");
+    }
+  };
+
+  const openCreateModal = () => {
+    editingQuestionId = "__new__";
+    setEditModalTitle("Créer une question");
+    renderEditSubjectSelect();
+    setSelectValue("editSubjectSelect", "", "", false);
+    renderEditSubthemeSelect();
+    setSelectValue("editSubthemeSelect", "", "", false);
+    $("#editQuestionInput").value = "";
+    $("#editChoiceAInput").value = "";
+    $("#editChoiceBInput").value = "";
+    $("#editChoiceCInput").value = "";
+    $("#editChoiceDInput").value = "";
+    const correct = document.querySelector('input[name="editCorrect"][value="0"]');
     if (correct) correct.checked = true;
     const modal = $("#editModal");
     if (modal) {
@@ -3743,6 +3770,27 @@
       return;
     }
     const bank = getBank();
+    if (editingQuestionId === "__new__") {
+      bank.unshift({
+        id: uid("bank"),
+        subject,
+        subtheme,
+        question,
+        text: question,
+        choices,
+        answer,
+        difficulty: 0,
+        createdAt: new Date().toISOString()
+      });
+      setBank(bank);
+      renderBankList();
+      renderSubjectFilter();
+      renderSubthemeFilter();
+      renderQuizBankList();
+      setTeacherMessage("Question ajoutée à la banque.");
+      closeEditModal();
+      return;
+    }
     const idx = bank.findIndex((q) => q.id === editingQuestionId);
     if (idx === -1) return;
     const current = bank[idx];
@@ -4498,7 +4546,7 @@
       const assignInput = $("#assignDateInput");
       if (assignInput) assignInput.value = state.selectedDate;
       showScreen("teacher");
-      setTeacherTab("builder");
+      setTeacherTab("questions");
     });
     document.querySelectorAll("[data-nav]").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -4752,9 +4800,8 @@
     $("#saveEditBtn")?.addEventListener("click", handleSaveEdit);
     $("#openCreateQuestionBtn")?.addEventListener("click", () => {
       showScreen("teacher");
-      setTeacherTab("builder");
-      const anchor = $("#bankQuestionInput");
-      if (anchor) anchor.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTeacherTab("questions");
+      openCreateModal();
     });
     $("#openSubjectModalBtn")?.addEventListener("click", openSubjectModal);
     $("#createSubjectBtn")?.addEventListener("click", handleCreateSubject);
