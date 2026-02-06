@@ -658,41 +658,61 @@ const APP_HTML = `
           </div>
         </div>
 
-        <div class="stats-trends">
-          <div class="card stats-card">
-            <h3>Réussite dans le temps</h3>
-            <svg id="statsAccuracyTrend"></svg>
-          </div>
-          <div class="card stats-card">
-            <h3>Niveau moyen</h3>
-            <svg id="statsLevelTrend"></svg>
-          </div>
-          <div class="card stats-card">
-            <h3>Temps moyen par question</h3>
-            <svg id="statsTimeTrend"></svg>
-          </div>
-        </div>
-
         <div class="card stats-card stats-insights">
-          <h3>Diagnostic pédagogique</h3>
+          <div class="stats-insights-header">
+            <div>
+              <h3>Diagnostic pédagogique</h3>
+              <p class="note">Lecture rapide des points forts et des priorités pour la prochaine séance.</p>
+            </div>
+          </div>
           <div class="stats-insight-grid">
-            <div class="stats-insight">
-              <h4>Forces</h4>
+            <div class="insight-card">
+              <div class="insight-card-header">
+                <span class="insight-icon">✨</span>
+                <div>
+                  <h4>Forces</h4>
+                  <p class="note">Ce qui fonctionne déjà bien.</p>
+                </div>
+              </div>
               <ul id="statsStrengthList"></ul>
-              <button class="ghost small" id="statsRevisionBtn" type="button">Lancer révision ciblée</button>
+              <div class="insight-actions">
+                <button class="ghost small" id="statsRevisionBtn" type="button">Lancer révision ciblée</button>
+              </div>
             </div>
-            <div class="stats-insight">
-              <h4>À renforcer</h4>
+            <div class="insight-card">
+              <div class="insight-card-header">
+                <span class="insight-icon">🎯</span>
+                <div>
+                  <h4>À renforcer</h4>
+                  <p class="note">Priorités pour progresser.</p>
+                </div>
+              </div>
               <ul id="statsWeakList"></ul>
-              <button class="ghost small" type="button">Générer mini-quiz</button>
+              <div class="insight-actions">
+                <button class="ghost small" type="button">Générer mini-quiz</button>
+              </div>
             </div>
-            <div class="stats-insight">
-              <h4>Notions fragiles</h4>
+            <div class="insight-card">
+              <div class="insight-card-header">
+                <span class="insight-icon">🧠</span>
+                <div>
+                  <h4>Notions fragiles</h4>
+                  <p class="note">Notions à retravailler.</p>
+                </div>
+              </div>
               <ul id="statsCommonMistakes"></ul>
-              <button class="ghost small" type="button">Recommander activité</button>
+              <div class="insight-actions">
+                <button class="ghost small" type="button">Recommander activité</button>
+              </div>
             </div>
-            <div class="stats-insight">
-              <h4>Questions difficiles</h4>
+            <div class="insight-card">
+              <div class="insight-card-header">
+                <span class="insight-icon">🧩</span>
+                <div>
+                  <h4>Questions difficiles</h4>
+                  <p class="note">Questions qui posent problème.</p>
+                </div>
+              </div>
               <ul id="statsHardQuestions"></ul>
             </div>
           </div>

@@ -1523,16 +1523,69 @@ button:focus-visible {
   background: #fffafc;
 }
 
+.stats-insights-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
 .stats-insight-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
 }
 
-.stats-insight ul {
-  margin: 0 0 8px;
+.insight-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 2px solid rgba(201, 215, 255, 0.5);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  min-height: 220px;
+  box-shadow: var(--shadow-soft);
+}
+
+.insight-card-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.insight-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 214, 233, 0.6);
+  font-size: 18px;
+}
+
+.insight-card ul {
+  margin: 0;
   padding-left: 18px;
   font-size: 13px;
+  color: #3b3156;
+  display: grid;
+  gap: 6px;
+}
+
+.insight-note {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.insight-actions {
+  margin-top: auto;
+}
+
+.insight-actions .ghost.small {
+  width: fit-content;
+  padding: 8px 12px;
 }
 
 .stats-detail-value {

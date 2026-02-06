@@ -3163,15 +3163,15 @@
     };
 
     const formatSubject = (s) => {
-      const note = s.attempts < MIN_ATTEMPTS ? " · peu de données" : "";
+      const note = s.attempts < MIN_ATTEMPTS ? ' <span class="insight-note">• peu de données</span>' : "";
       return `<li>${s.subject} (${Math.round(s.accuracy)}%)${note}</li>`;
     };
     const formatTheme = (s) => {
-      const note = s.attempts < MIN_ATTEMPTS ? " · peu de données" : "";
+      const note = s.attempts < MIN_ATTEMPTS ? ' <span class="insight-note">• peu de données</span>' : "";
       return `<li>${s.theme} (${Math.round(s.accuracy)}%)${note}</li>`;
     };
     const formatQuestion = (q) => {
-      const note = q.attempts < MIN_ATTEMPTS ? " · peu de données" : "";
+      const note = q.attempts < MIN_ATTEMPTS ? ' <span class="insight-note">• peu de données</span>' : "";
       return `<li>${q.text} (${Math.round(q.accuracy)}%)${note}</li>`;
     };
 
@@ -3214,9 +3214,6 @@
 
     renderKpiCards(currentStats, prevStats);
     renderRadarChart(subjectStats, state.statsRadarMode || "accuracy");
-    renderLineChart("statsAccuracyTrend", buildTimeSeries(attempts, filters, "accuracy"), { min: 0, max: 100 });
-    renderLineChart("statsLevelTrend", buildTimeSeries(attempts, filters, "level"));
-    renderLineChart("statsTimeTrend", buildTimeSeries(attempts, filters, "time"));
 
     const topStrengths = subjectStats
       .filter((s) => s.attempts >= DISPLAY_MIN_ATTEMPTS)
@@ -3231,14 +3228,24 @@
     if (strengthEl) {
       strengthEl.innerHTML = topStrengths.length
         ? topStrengths
-            .map((s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)${s.attempts < MIN_ATTEMPTS ? " · peu de données" : ""}</li>`)
+            .map(
+              (s) =>
+                `<li>${s.subject} (${Math.round(s.accuracy)}%)${
+                  s.attempts < MIN_ATTEMPTS ? ' <span class="insight-note">• peu de données</span>' : ""
+                }</li>`
+            )
             .join("")
         : "<li>Aucune donnée</li>";
     }
     if (weakEl) {
       weakEl.innerHTML = topWeaknesses.length
         ? topWeaknesses
-            .map((s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)${s.attempts < MIN_ATTEMPTS ? " · peu de données" : ""}</li>`)
+            .map(
+              (s) =>
+                `<li>${s.subject} (${Math.round(s.accuracy)}%)${
+                  s.attempts < MIN_ATTEMPTS ? ' <span class="insight-note">• peu de données</span>' : ""
+                }</li>`
+            )
             .join("")
         : "<li>Aucune donnée</li>";
     }
