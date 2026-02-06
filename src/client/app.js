@@ -2777,9 +2777,19 @@
     showAiConfirm(selected.length);
   };
 
-  const openSubjectModal = () => {
+  const setSubjectTab = (tab) => {
+    document.querySelectorAll("[data-subject-panel]").forEach((panel) => {
+      panel.classList.toggle("active", panel.dataset.subjectPanel === tab);
+    });
+    document.querySelectorAll("[data-subject-tab]").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.subjectTab === tab);
+    });
+  };
+
+  const openSubjectModal = (tab = "subject") => {
     setSubjectModalMessage("");
     renderAddSubthemeSubjectSelect();
+    setSubjectTab(tab);
     const modal = $("#subjectModal");
     if (modal) {
       modal.classList.add("active");
@@ -4803,7 +4813,14 @@
       setTeacherTab("questions");
       openCreateModal();
     });
-    $("#openSubjectModalBtn")?.addEventListener("click", openSubjectModal);
+    $("#openCreateSubjectBtn")?.addEventListener("click", () => openSubjectModal("subject"));
+    $("#openCreateSubthemeBtn")?.addEventListener("click", () => openSubjectModal("subtheme"));
+    document.querySelectorAll("[data-subject-tab]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tab = btn.dataset.subjectTab;
+        if (tab) setSubjectTab(tab);
+      });
+    });
     $("#createSubjectBtn")?.addEventListener("click", handleCreateSubject);
     $("#addSubthemeBtn")?.addEventListener("click", handleAddSubtheme);
     $("#aiGenerateBtn")?.addEventListener("click", handleAiGenerate);

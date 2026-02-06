@@ -406,7 +406,8 @@ const APP_HTML = `
         <h3>Toutes les questions</h3>
         <div class="form-row actions-row">
           <button class="primary" id="openCreateQuestionBtn">Créer une question</button>
-          <button class="secondary" id="openSubjectModalBtn">Créer matière / sous-thème</button>
+          <button class="secondary" id="openCreateSubjectBtn">Créer une matière</button>
+          <button class="secondary" id="openCreateSubthemeBtn">Créer un sous-thème</button>
         </div>
         <div class="question-header">
           <div class="question-left">
@@ -777,7 +778,11 @@ const APP_HTML = `
         </svg>
       </button>
     </div>
-    <div class="modal-section">
+    <div class="subject-tabs">
+      <button class="tab-btn small active" data-subject-tab="subject" type="button">Créer une matière</button>
+      <button class="tab-btn small" data-subject-tab="subtheme" type="button">Créer un sous-thème</button>
+    </div>
+    <div class="modal-section subject-panel active" data-subject-panel="subject">
       <h4>Créer une matière</h4>
       <div class="form-row">
         <label>Matière</label>
@@ -789,8 +794,7 @@ const APP_HTML = `
       </div>
       <button class="primary" id="createSubjectBtn">Créer la matière</button>
     </div>
-    <div class="modal-divider"></div>
-    <div class="modal-section">
+    <div class="modal-section subject-panel" data-subject-panel="subtheme">
       <h4>Ajouter un sous-thème</h4>
       <div class="form-row">
         <label>Matière</label>

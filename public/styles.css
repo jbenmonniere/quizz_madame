@@ -2515,6 +2515,21 @@ button:focus-visible {
   gap: 10px;
 }
 
+.subject-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 4px 0 14px;
+}
+
+.subject-panel {
+  display: none;
+}
+
+.subject-panel.active {
+  display: grid;
+}
+
 .modal-section h4 {
   margin: 0;
   font-size: 16px;
