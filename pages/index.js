@@ -691,14 +691,6 @@ const APP_HTML = `
             </div>
           </div>
 
-          <div class="stats-level-range">
-            <label>Plage de niveaux</label>
-            <div class="stats-level-controls">
-              <input type="range" id="statsLevelMin" min="1" max="100" value="1" />
-              <input type="range" id="statsLevelMax" min="1" max="100" value="100" />
-              <div class="stats-level-label" id="statsLevelLabel">Niveaux 1 - 100</div>
-            </div>
-          </div>
         </div>
 
         <div class="stats-kpis" id="statsKpiRow"></div>
