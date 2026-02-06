@@ -2946,6 +2946,26 @@
     const svg = $("#statsRadarChart");
     if (!svg) return;
     svg.innerHTML = "";
+    const tooltip = $("#statsRadarTooltip");
+    const wrap = svg.parentElement;
+    const hideTooltip = () => {
+      if (!tooltip) return;
+      tooltip.classList.remove("active");
+      tooltip.setAttribute("aria-hidden", "true");
+    };
+    const showTooltip = (event, item) => {
+      if (!tooltip || !wrap) return;
+      const rect = wrap.getBoundingClientRect();
+      const point = event.touches ? event.touches[0] : event;
+      const x = point.clientX - rect.left;
+      const y = point.clientY - rect.top;
+      const percent = Math.round(item.attempts ? (item.correct / item.attempts) * 100 : 0);
+      tooltip.textContent = `${item.subject} — ${item.correct}/${item.attempts} (${percent}%)`;
+      tooltip.style.left = `${x + 12}px`;
+      tooltip.style.top = `${y - 12}px`;
+      tooltip.classList.add("active");
+      tooltip.setAttribute("aria-hidden", "false");
+    };
     if (!subjectStats.length) {
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
       text.setAttribute("x", "50%");
@@ -3035,6 +3055,20 @@
       title.textContent = `${item.subject} – ${Math.round(value)}% (${item.attempts} questions)${item.attempts < MIN_ATTEMPTS ? " · peu de données" : ""}`;
       dot.appendChild(title);
       svg.appendChild(dot);
+
+      const hit = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      hit.setAttribute("cx", String(x));
+      hit.setAttribute("cy", String(y));
+      hit.setAttribute("r", "14");
+      hit.setAttribute("fill", "transparent");
+      hit.style.cursor = "pointer";
+      hit.addEventListener("mouseenter", (e) => showTooltip(e, item));
+      hit.addEventListener("mousemove", (e) => showTooltip(e, item));
+      hit.addEventListener("mouseleave", hideTooltip);
+      hit.addEventListener("touchstart", (e) => showTooltip(e, item));
+      hit.addEventListener("touchmove", (e) => showTooltip(e, item));
+      hit.addEventListener("touchend", hideTooltip);
+      svg.appendChild(hit);
     });
 
     const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
@@ -3043,6 +3077,8 @@
     polygon.setAttribute("stroke", "#ff8fbf");
     polygon.setAttribute("stroke-width", "2");
     svg.appendChild(polygon);
+
+    svg.addEventListener("mouseleave", hideTooltip);
   };
 
   const renderLineChart = (id, series, config = {}) => {

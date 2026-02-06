@@ -644,6 +644,7 @@ const APP_HTML = `
           </div>
           <div class="stats-radar-wrap">
             <svg id="statsRadarChart"></svg>
+            <div class="stats-radar-tooltip" id="statsRadarTooltip" aria-hidden="true"></div>
           </div>
           <div class="stats-radar-summary">
             <div>
