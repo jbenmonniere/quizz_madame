@@ -1206,21 +1206,29 @@
     if (!wheelCategories.length) return;
     const segment = 360 / wheelCategories.length;
     const wheel = $("#wheel");
+    let size = 320;
+    let labelRadius = 100;
     if (wheel) {
-      let size = wheel.clientWidth || 320;
+      size = wheel.clientWidth || 320;
       if (size < 200) size = 320;
       const iconSize = 40;
       const padding = 8;
       const inner = size * 0.2 + iconSize / 2 + padding;
       const outer = size / 2 - iconSize / 2 - padding;
-      const labelRadius = inner + (outer - inner) * 0.28;
+      labelRadius = inner + (outer - inner) * 0.3;
       wheel.style.setProperty("--label-radius", `${Math.round(labelRadius)}px`);
     }
+    const center = size / 2;
     wheelCategories.forEach((cat, idx) => {
       const label = document.createElement("div");
       label.className = "wheel-label";
-      const angle = -90 + idx * segment;
-      label.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(var(--label-radius) * -1)) rotate(${-angle}deg)`;
+      const angleDeg = -90 + idx * segment;
+      const angle = (angleDeg * Math.PI) / 180;
+      const x = center + labelRadius * Math.cos(angle);
+      const y = center + labelRadius * Math.sin(angle);
+      label.style.left = `${x}px`;
+      label.style.top = `${y}px`;
+      label.style.transform = "translate(-50%, -50%)";
       label.style.setProperty("--wheel-label-color", cat.color);
       const icon = SUBJECT_ICONS[cat.name];
       if (icon) {
@@ -2250,6 +2258,64 @@
       match?.subjectName ||
       ""
     );
+  };
+
+  const getQuestionKey = (question) => {
+    if (!question) return "";
+    const rawText = question.text || question.question || "";
+    return question.id || question._id || rawText.slice(0, 80);
+  };
+
+  const shuffleArray = (items) => {
+    const arr = items.slice();
+    for (let i = arr.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
+  const getCorrectQuestionIds = () => {
+    const attempts = getAttempts();
+    const classId = state.activeClass || "class";
+    const correct = new Set();
+    attempts.forEach((att) => {
+      if (!att || !att.isCorrect) return;
+      if (att.groupId && att.groupId !== classId) return;
+      if (att.questionId) correct.add(att.questionId);
+    });
+    return correct;
+  };
+
+  const buildSessionQueue = (key) => {
+    const assignedQuiz = getAssignedQuiz(key);
+    if (assignedQuiz) {
+      return shuffleArray(assignedQuiz.questions || []).slice(0, MAX_ROUNDS);
+    }
+    const bank = getBank();
+    if (!bank.length) return [];
+    const correctIds = getCorrectQuestionIds();
+    const neverCorrect = bank.filter((q) => !correctIds.has(getQuestionKey(q)));
+    let selected = shuffleArray(neverCorrect).slice(0, MAX_ROUNDS);
+    if (selected.length < MAX_ROUNDS) {
+      const selectedIds = new Set(selected.map(getQuestionKey));
+      const remaining = bank.filter((q) => !selectedIds.has(getQuestionKey(q)));
+      selected = selected.concat(shuffleArray(remaining).slice(0, MAX_ROUNDS - selected.length));
+    }
+    return selected.slice(0, MAX_ROUNDS);
+  };
+
+  const ensureSessionQueue = (key) => {
+    const progress = ensureProgress(key);
+    if (Array.isArray(progress.queue) && progress.queue.length === MAX_ROUNDS) {
+      return progress;
+    }
+    progress.queue = buildSessionQueue(key);
+    progress.spinsDone = 0;
+    progress.correct = 0;
+    progress.used = {};
+    setProgress(key, progress);
+    return progress;
   };
 
   const getCategoryIndexFromRotation = (rotation, count) => {
@@ -4285,37 +4351,22 @@
     if (!wheel || !spinBtn) return;
 
     ensureWheelReady();
+    ensureSessionQueue(state.selectedDate);
     const categories = state.wheelCategories || [];
     if (!categories.length) return;
 
     state.spinning = true;
     spinBtn.disabled = true;
 
-    const assignedQuiz = getAssignedQuiz(state.selectedDate);
-    let categoryIndex = 0;
-    let chosenQuestion = null;
-    if (assignedQuiz) {
-      chosenQuestion = assignedQuiz.questions[progress.spinsDone % assignedQuiz.questions.length];
-      const subjectName = resolveQuestionSubject(chosenQuestion);
-      const idx = findCategoryIndexBySubject(categories, subjectName);
-      categoryIndex = idx >= 0 ? idx : Math.floor(Math.random() * categories.length);
-    } else {
-      const counts = buildSubjectCounts(getBank(), categories);
-      const available = categories
-        .map((cat, idx) => ({ idx, count: counts.get(cat.id) || 0 }))
-        .filter((entry) => entry.count > 0);
-      if (available.length) {
-        categoryIndex = available[Math.floor(Math.random() * available.length)].idx;
-      } else {
-        categoryIndex = Math.floor(Math.random() * categories.length);
-      }
-      const picked = pickQuestion(categories[categoryIndex]?.id, true);
-      if (picked) {
-        chosenQuestion = picked;
-        const idx = findCategoryIndexBySubject(categories, picked.subject || picked.category || "");
-        if (idx >= 0) categoryIndex = idx;
-      }
+    const planned = progress.queue || [];
+    let chosenQuestion = planned[progress.spinsDone] || null;
+    if (!chosenQuestion) {
+      const refreshed = ensureSessionQueue(state.selectedDate);
+      chosenQuestion = refreshed.queue ? refreshed.queue[refreshed.spinsDone || progress.spinsDone] : null;
     }
+    const subjectName = resolveQuestionSubject(chosenQuestion);
+    let categoryIndex = findCategoryIndexBySubject(categories, subjectName);
+    if (categoryIndex < 0) categoryIndex = Math.floor(Math.random() * categories.length);
     state.pendingQuestion = chosenQuestion;
     const segment = 360 / categories.length;
     const targetAngle = (360 - categoryIndex * segment) % 360;
@@ -4330,15 +4381,7 @@
     setTimeout(() => {
       state.spinning = false;
       wheel.classList.remove("is-spinning");
-      const finalIndex = getCategoryIndexFromRotation(state.rotation, categories.length);
-      const finalCategory = categories[finalIndex];
-      const assigned = getAssignedQuiz(state.selectedDate);
-      if (!assigned && state.pendingQuestion && finalCategory) {
-        const subjectName = resolveQuestionSubject(state.pendingQuestion);
-        const matches = isSubjectMatch(subjectName, finalCategory.id, categories);
-        if (!matches) state.pendingQuestion = null;
-      }
-      showQuestion(finalIndex);
+      showQuestion(categoryIndex);
     }, SPIN_DURATION);
   };
 
@@ -4352,7 +4395,7 @@
     } else {
       state.quizOriginPoint = null;
     }
-    ensureProgress(key);
+    ensureSessionQueue(key);
     state.awaitingAnswer = false;
     state.currentQuestion = null;
     state.currentCategory = null;
