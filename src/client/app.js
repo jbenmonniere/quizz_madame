@@ -1210,8 +1210,11 @@
       let size = wheel.clientWidth || 320;
       if (size < 200) size = 320;
       const iconSize = 40;
-      const outer = size / 2 - iconSize / 2 - 2;
-      wheel.style.setProperty("--label-radius", `${Math.round(outer)}px`);
+      const padding = 8;
+      const inner = size * 0.2 + iconSize / 2 + padding;
+      const outer = size / 2 - iconSize / 2 - padding;
+      const labelRadius = inner + (outer - inner) * 0.4;
+      wheel.style.setProperty("--label-radius", `${Math.round(labelRadius)}px`);
     }
     wheelCategories.forEach((cat, idx) => {
       const label = document.createElement("div");
