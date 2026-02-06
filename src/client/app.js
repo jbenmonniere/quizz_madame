@@ -3196,6 +3196,13 @@
     renderList("statsWeakList", weaknesses, (s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)</li>`);
     renderList("statsCommonMistakes", commonMistakes, (s) => `<li>${s.theme} (${Math.round(s.accuracy)}%)</li>`);
     renderList("statsHardQuestions", hardQuestions, (q) => `<li>${q.text} (${Math.round(q.accuracy)}%)</li>`);
+
+    return {
+      strengths,
+      weaknesses,
+      commonMistakes,
+      hardQuestions
+    };
   };
 
   const renderStats = () => {
@@ -3219,14 +3226,14 @@
 
     const currentStats = computeKpis(attempts, getXpState().level);
     const prevStats = computeKpis(prevAttempts, getXpState().level);
-    state.statsSnapshot = { currentStats, prevStats, subjectStats, themeStats, questionStats };
+    const insights = renderInsights(subjectStats, themeStats, questionStats);
+    state.statsSnapshot = { currentStats, prevStats, subjectStats, themeStats, questionStats, insights };
 
     renderKpiCards(currentStats, prevStats);
     renderRadarChart(subjectStats, state.statsRadarMode || "accuracy");
     renderLineChart("statsAccuracyTrend", buildTimeSeries(attempts, filters, "accuracy"), { min: 0, max: 100 });
     renderLineChart("statsLevelTrend", buildTimeSeries(attempts, filters, "level"));
     renderLineChart("statsTimeTrend", buildTimeSeries(attempts, filters, "time"));
-    renderInsights(subjectStats, themeStats, questionStats);
 
     const topStrengths = subjectStats
       .filter((s) => s.attempts >= MIN_ATTEMPTS)
@@ -3248,6 +3255,84 @@
         ? topWeaknesses.map((s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)</li>`).join("")
         : "<li>Aucune donnée</li>";
     }
+  };
+
+  const isValidDateKey = (value) => {
+    if (!value) return false;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    return !Number.isNaN(new Date(value).getTime());
+  };
+
+  const createTargetedQuiz = ({ subject, subtheme, label }) => {
+    const bank = getBank();
+    let candidates = bank.filter((q) => q.subject === subject);
+    if (subtheme) {
+      const bySubtheme = candidates.filter((q) => q.subtheme === subtheme);
+      if (bySubtheme.length >= MAX_ROUNDS) {
+        candidates = bySubtheme;
+      }
+    }
+    if (candidates.length < MAX_ROUNDS) return null;
+    const sorted = [...candidates].sort((a, b) => {
+      const diff = (Number(b.difficulty) || 0) - (Number(a.difficulty) || 0);
+      if (diff !== 0) return diff;
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    });
+    const questions = sorted.slice(0, MAX_ROUNDS).map((q) => ({ ...q }));
+    if (questions.length < MAX_ROUNDS) return null;
+    const quizId = uid("quiz");
+    const title = `Révision ciblée — ${label || subject}`;
+    const payload = {
+      id: quizId,
+      title,
+      questions,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    const quizzes = getQuizzes();
+    quizzes.unshift(payload);
+    setQuizzes(quizzes);
+    return payload;
+  };
+
+  const scheduleQuiz = (quiz, dateValue) => {
+    if (!quiz) return;
+    const assignments = getAssignments();
+    assignments[dateValue] = quiz.id;
+    setAssignments(assignments);
+    renderQuizList();
+    renderQuizSelect();
+    renderAssignmentsList();
+    renderCalendar();
+    renderDayPanel();
+  };
+
+  const handleStatsRevision = () => {
+    if (!state.statsSnapshot?.insights) {
+      setTeacherMessage("Pas assez de données pour lancer une révision ciblée.");
+      return;
+    }
+    const { weaknesses } = state.statsSnapshot.insights;
+    const target = weaknesses[0];
+    if (!target) {
+      setTeacherMessage("Aucun sujet à renforcer pour l'instant.");
+      return;
+    }
+    const dateValue = window.prompt("Planifier la révision au : (AAAA-MM-JJ)", state.selectedDate || "");
+    if (!isValidDateKey((dateValue || "").trim())) {
+      setTeacherMessage("Date invalide. Utilise le format AAAA-MM-JJ.");
+      return;
+    }
+    const quiz = createTargetedQuiz({
+      subject: target.subject,
+      label: target.subject
+    });
+    if (!quiz) {
+      setTeacherMessage("Pas assez de questions difficiles pour ce sujet.");
+      return;
+    }
+    scheduleQuiz(quiz, dateValue.trim());
+    setTeacherMessage(`Révision ciblée planifiée le ${dateValue}.`);
   };
 
   const openStatsDetail = (kpiId) => {
@@ -4568,6 +4653,7 @@
         closeStatsDetail();
       }
     });
+    $("#statsRevisionBtn")?.addEventListener("click", handleStatsRevision);
 
     $("#levelUpClose")?.addEventListener("click", hideLevelUp);
     $("#levelUpModal")?.addEventListener("click", (event) => {

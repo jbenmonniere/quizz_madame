@@ -739,7 +739,7 @@ const APP_HTML = `
             <div class="stats-insight">
               <h4>Forces</h4>
               <ul id="statsStrengthList"></ul>
-              <button class="ghost small" type="button">Lancer révision ciblée</button>
+              <button class="ghost small" id="statsRevisionBtn" type="button">Lancer révision ciblée</button>
             </div>
             <div class="stats-insight">
               <h4>À renforcer</h4>
