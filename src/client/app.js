@@ -1154,12 +1154,20 @@
   };
 
   const SUBJECT_ICONS = {
-    "Mathématiques": "🧮",
-    "CCQ (Culture et citoyenneté québécoise)": "⚜️",
-    "Sciences": "🔬",
-    "Français": "✍️",
-    "Culture générale": "🌍"
+    "Mathématiques": "/icons/roulette/mathematiques.svg",
+    "CCQ (Culture et citoyenneté québécoise)": "/icons/roulette/ccq.svg",
+    "Sciences": "/icons/roulette/sciences.svg",
+    "Français": "/icons/roulette/francais.svg",
+    "Culture générale": "/icons/roulette/culture-generale.svg"
   };
+
+  const normalizeSubjectKey = (value) =>
+    String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
 
   const buildWheelLabels = () => {
     const labels = $("#wheelLabels");
@@ -1173,8 +1181,13 @@
       label.className = "wheel-label";
       const angle = -90 + idx * segment;
       label.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(var(--label-radius) * -1)) rotate(${-angle}deg)`;
-      const icon = SUBJECT_ICONS[cat.name] || "📘";
-      label.innerHTML = `<span class="wheel-icon" aria-hidden="true">${icon}</span>`;
+      label.style.setProperty("--wheel-label-color", cat.color);
+      const icon = SUBJECT_ICONS[cat.name];
+      if (icon) {
+        label.innerHTML = `<span class="wheel-icon" aria-hidden="true"><img src="${icon}" alt="" /></span>`;
+      } else {
+        label.innerHTML = `<span class="wheel-icon" aria-hidden="true">📘</span>`;
+      }
       label.setAttribute("aria-label", cat.name);
       labels.appendChild(label);
     });
@@ -2149,6 +2162,22 @@
       name: subject,
       color: wheelPalette[idx % wheelPalette.length]
     }));
+  };
+
+  const findCategoryIndexBySubject = (categories, subject) => {
+    const targetKey = normalizeSubjectKey(subject);
+    if (!targetKey) return -1;
+    return categories.findIndex((cat) => normalizeSubjectKey(cat.id) === targetKey);
+  };
+
+  const buildSubjectCounts = (bank) => {
+    const counts = new Map();
+    bank.forEach((q) => {
+      const key = normalizeSubjectKey(q.subject);
+      if (!key) return;
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+    return counts;
   };
 
   const refreshWheel = () => {
@@ -3940,9 +3969,11 @@
     if (!progress) return null;
 
     const bank = getBank();
-    let pool = bank.filter((q) => q.subject === categoryId);
-    if (!pool.length) pool = bank;
-    if (!pool.length) pool = Object.values(questionBank).flat();
+    const targetKey = normalizeSubjectKey(categoryId);
+    let pool = bank.filter((q) => normalizeSubjectKey(q.subject) === targetKey);
+    if (!pool.length && !bank.length) {
+      pool = Object.values(questionBank).flat();
+    }
     if (!pool.length) return null;
 
     const used = new Set(progress.used[categoryId] || []);
@@ -4168,7 +4199,23 @@
     state.spinning = true;
     spinBtn.disabled = true;
 
-    const categoryIndex = Math.floor(Math.random() * categories.length);
+    const assignedQuiz = getAssignedQuiz(state.selectedDate);
+    let categoryIndex = 0;
+    if (assignedQuiz) {
+      const question = assignedQuiz.questions[progress.spinsDone % assignedQuiz.questions.length];
+      const idx = findCategoryIndexBySubject(categories, question?.subject || question?.category || "");
+      categoryIndex = idx >= 0 ? idx : Math.floor(Math.random() * categories.length);
+    } else {
+      const counts = buildSubjectCounts(getBank());
+      const available = categories
+        .map((cat, idx) => ({ idx, count: counts.get(normalizeSubjectKey(cat.id)) || 0 }))
+        .filter((entry) => entry.count > 0);
+      if (available.length) {
+        categoryIndex = available[Math.floor(Math.random() * available.length)].idx;
+      } else {
+        categoryIndex = Math.floor(Math.random() * categories.length);
+      }
+    }
     const segment = 360 / categories.length;
     const targetAngle = (360 - categoryIndex * segment) % 360;
     const currentAngle = ((state.rotation % 360) + 360) % 360;

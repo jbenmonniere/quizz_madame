@@ -1034,7 +1034,7 @@ textarea:focus {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 48px;
+  width: 52px;
   text-align: center;
   transform: translate(-50%, -50%) rotate(calc(var(--i) * 60deg)) translateY(calc(var(--label-radius) * -1)) rotate(calc(var(--i) * -60deg));
   transform-origin: center;
@@ -1050,11 +1050,24 @@ textarea:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   font-size: 22px;
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
   filter: drop-shadow(0 2px 4px rgba(59, 49, 86, 0.15));
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 12px rgba(59, 49, 86, 0.12), 0 0 0 4px var(--wheel-label-color, #ffffff);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 6px 12px rgba(59, 49, 86, 0.12);
+  overflow: hidden;
+}
+
+.wheel-icon img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 2px rgba(59, 49, 86, 0.2));
 }
 
 .spin-btn {
