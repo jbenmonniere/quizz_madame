@@ -169,6 +169,7 @@
     studentId: ""
   };
   const MIN_ATTEMPTS = 5;
+  const DISPLAY_MIN_ATTEMPTS = 1;
   const AT_RISK_THRESHOLD = 60;
 
   const uid = (prefix = "id") => `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
@@ -2670,12 +2671,6 @@
     return attempts.filter((a) => {
       const time = new Date(a.timestamp).getTime();
       if (time < range.start.getTime() || time > range.end.getTime()) return false;
-      if (filters.scope === "group" && filters.groupId && a.groupId !== filters.groupId) return false;
-      if (filters.scope === "student" && filters.studentId && a.studentId !== filters.studentId) return false;
-      if (filters.subject !== "all" && a.subject !== filters.subject) return false;
-      if (filters.mode !== "all" && a.mode !== filters.mode) return false;
-      const level = Number(a.level) || 0;
-      if (level < filters.levelMin || level > filters.levelMax) return false;
       return true;
     });
   };
@@ -2857,80 +2852,19 @@
 
   const renderStatsFilters = () => {
     const filters = state.statsFilters;
-    const scopeInput = $("#statsScopeSelect");
     const periodInput = $("#statsPeriodSelect");
-    const subjectInput = $("#statsSubjectSelect");
-    const modeInput = $("#statsModeSelect");
-    const groupInput = $("#statsGroupSelect");
-    const studentInput = $("#statsStudentSelect");
-    if (scopeInput) scopeInput.value = filters.scope;
     if (periodInput) periodInput.value = filters.period;
-    if (subjectInput) subjectInput.value = filters.subject;
-    if (modeInput) modeInput.value = filters.mode;
-    if (groupInput) groupInput.value = filters.groupId || "";
-    if (studentInput) studentInput.value = filters.studentId || "";
-    updateSelectOptions("statsScopeSelect", [
-      { value: "class", label: "Classe" },
-      { value: "group", label: "Groupe" },
-      { value: "student", label: "Élève" }
-    ]);
     updateSelectOptions("statsPeriodSelect", [
       { value: "today", label: "Aujourd'hui" },
       { value: "last7", label: "7 derniers jours" },
       { value: "last30", label: "30 derniers jours" },
       { value: "custom", label: "Personnalisé" }
     ]);
-    updateSelectOptions("statsModeSelect", [
-      { value: "all", label: "Tous" },
-      { value: "quiz", label: "Quiz" },
-      { value: "revision", label: "Révision" },
-      { value: "challenge", label: "Défi" }
-    ]);
-    updateSelectOptions("statsSubjectSelect", getSubjectList(), {
-      includeAll: true,
-      allLabel: "Toutes les matières"
-    });
-
-    const groupOptions = (state.classes || []).map((cls) => ({ value: cls.id, label: cls.name }));
-    updateSelectOptions("statsGroupSelect", groupOptions, {
-      includeAll: false,
-      defaultValue: state.activeClass || ""
-    });
-    const studentIds = Array.from(new Set(getAttempts().map((a) => a.studentId || "class")));
-    const studentOptions = studentIds.map((id) => ({ value: id, label: id === "class" ? "Élève (classe)" : id }));
-    updateSelectOptions("statsStudentSelect", studentOptions, {
-      includeAll: false,
-      defaultValue: studentOptions[0]?.value || ""
-    });
-
-    if (filters.scope === "group" && !filters.groupId && groupOptions[0]) {
-      state.statsFilters.groupId = groupOptions[0].value;
-      saveStatsFilters(state.statsFilters);
-    }
-    if (filters.scope === "student" && !filters.studentId && studentOptions[0]) {
-      state.statsFilters.studentId = studentOptions[0].value;
-      saveStatsFilters(state.statsFilters);
-    }
 
     const customRow = $("#statsCustomRow");
     if (customRow) {
       customRow.style.display = filters.period === "custom" ? "grid" : "none";
     }
-    const groupRow = $("#statsGroupRow");
-    if (groupRow) {
-      groupRow.style.display = filters.scope === "group" ? "grid" : "none";
-    }
-    const studentRow = $("#statsStudentRow");
-    if (studentRow) {
-      studentRow.style.display = filters.scope === "student" ? "grid" : "none";
-    }
-
-    const levelMin = $("#statsLevelMin");
-    const levelMax = $("#statsLevelMax");
-    const levelLabel = $("#statsLevelLabel");
-    if (levelMin) levelMin.value = String(filters.levelMin);
-    if (levelMax) levelMax.value = String(filters.levelMax);
-    if (levelLabel) levelLabel.textContent = `Niveaux ${filters.levelMin} - ${filters.levelMax}`;
 
     const startInput = $("#statsCustomStart");
     const endInput = $("#statsCustomEnd");
@@ -3078,7 +3012,7 @@
       svg.appendChild(line);
 
       const value = mode === "weighted" ? item.weightedAccuracy : item.accuracy;
-      const pct = item.attempts < MIN_ATTEMPTS ? 0 : value / 100;
+      const pct = item.attempts ? value / 100 : 0;
       const x = center + radius * pct * Math.cos(angle);
       const y = center + radius * pct * Math.sin(angle);
       points.push({ x, y });
@@ -3096,16 +3030,16 @@
       dot.setAttribute("cx", String(x));
       dot.setAttribute("cy", String(y));
       dot.setAttribute("r", "4");
-      dot.setAttribute("fill", "#ff8fbf");
+      dot.setAttribute("fill", item.attempts < MIN_ATTEMPTS ? "rgba(255, 143, 191, 0.5)" : "#ff8fbf");
       const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-      title.textContent = `${item.subject} – ${Math.round(value)}% (${item.attempts} questions)`;
+      title.textContent = `${item.subject} – ${Math.round(value)}% (${item.attempts} questions)${item.attempts < MIN_ATTEMPTS ? " · peu de données" : ""}`;
       dot.appendChild(title);
       svg.appendChild(dot);
     });
 
     const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
     polygon.setAttribute("points", points.map((p) => `${p.x},${p.y}`).join(" "));
-    polygon.setAttribute("fill", "rgba(255, 143, 191, 0.35)");
+    polygon.setAttribute("fill", "rgba(255, 143, 191, 0.25)");
     polygon.setAttribute("stroke", "#ff8fbf");
     polygon.setAttribute("stroke-width", "2");
     svg.appendChild(polygon);
@@ -3168,19 +3102,19 @@
 
   const renderInsights = (subjectStats, themeStats, questionStats) => {
     const strengths = subjectStats
-      .filter((s) => s.attempts >= MIN_ATTEMPTS)
+      .filter((s) => s.attempts >= DISPLAY_MIN_ATTEMPTS)
       .sort((a, b) => b.accuracy - a.accuracy)
       .slice(0, 3);
     const weaknesses = subjectStats
-      .filter((s) => s.attempts >= MIN_ATTEMPTS)
+      .filter((s) => s.attempts >= DISPLAY_MIN_ATTEMPTS)
       .sort((a, b) => a.accuracy - b.accuracy)
       .slice(0, 3);
     const commonMistakes = themeStats
-      .filter((s) => s.attempts >= MIN_ATTEMPTS)
+      .filter((s) => s.attempts >= DISPLAY_MIN_ATTEMPTS)
       .sort((a, b) => a.accuracy - b.accuracy)
       .slice(0, 3);
     const hardQuestions = questionStats
-      .filter((q) => q.attempts >= MIN_ATTEMPTS)
+      .filter((q) => q.attempts >= DISPLAY_MIN_ATTEMPTS)
       .sort((a, b) => a.accuracy - b.accuracy)
       .slice(0, 5);
 
@@ -3192,10 +3126,23 @@
         : "<li>Aucune donnée</li>";
     };
 
-    renderList("statsStrengthList", strengths, (s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)</li>`);
-    renderList("statsWeakList", weaknesses, (s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)</li>`);
-    renderList("statsCommonMistakes", commonMistakes, (s) => `<li>${s.theme} (${Math.round(s.accuracy)}%)</li>`);
-    renderList("statsHardQuestions", hardQuestions, (q) => `<li>${q.text} (${Math.round(q.accuracy)}%)</li>`);
+    const formatSubject = (s) => {
+      const note = s.attempts < MIN_ATTEMPTS ? " · peu de données" : "";
+      return `<li>${s.subject} (${Math.round(s.accuracy)}%)${note}</li>`;
+    };
+    const formatTheme = (s) => {
+      const note = s.attempts < MIN_ATTEMPTS ? " · peu de données" : "";
+      return `<li>${s.theme} (${Math.round(s.accuracy)}%)${note}</li>`;
+    };
+    const formatQuestion = (q) => {
+      const note = q.attempts < MIN_ATTEMPTS ? " · peu de données" : "";
+      return `<li>${q.text} (${Math.round(q.accuracy)}%)${note}</li>`;
+    };
+
+    renderList("statsStrengthList", strengths, formatSubject);
+    renderList("statsWeakList", weaknesses, formatSubject);
+    renderList("statsCommonMistakes", commonMistakes, formatTheme);
+    renderList("statsHardQuestions", hardQuestions, formatQuestion);
 
     return {
       strengths,
@@ -3236,23 +3183,27 @@
     renderLineChart("statsTimeTrend", buildTimeSeries(attempts, filters, "time"));
 
     const topStrengths = subjectStats
-      .filter((s) => s.attempts >= MIN_ATTEMPTS)
+      .filter((s) => s.attempts >= DISPLAY_MIN_ATTEMPTS)
       .sort((a, b) => b.accuracy - a.accuracy)
       .slice(0, 3);
     const topWeaknesses = subjectStats
-      .filter((s) => s.attempts >= MIN_ATTEMPTS)
+      .filter((s) => s.attempts >= DISPLAY_MIN_ATTEMPTS)
       .sort((a, b) => a.accuracy - b.accuracy)
       .slice(0, 3);
     const strengthEl = $("#statsTopStrengths");
     const weakEl = $("#statsTopWeaknesses");
     if (strengthEl) {
       strengthEl.innerHTML = topStrengths.length
-        ? topStrengths.map((s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)</li>`).join("")
+        ? topStrengths
+            .map((s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)${s.attempts < MIN_ATTEMPTS ? " · peu de données" : ""}</li>`)
+            .join("")
         : "<li>Aucune donnée</li>";
     }
     if (weakEl) {
       weakEl.innerHTML = topWeaknesses.length
-        ? topWeaknesses.map((s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)</li>`).join("")
+        ? topWeaknesses
+            .map((s) => `<li>${s.subject} (${Math.round(s.accuracy)}%)${s.attempts < MIN_ATTEMPTS ? " · peu de données" : ""}</li>`)
+            .join("")
         : "<li>Aucune donnée</li>";
     }
   };

@@ -604,19 +604,8 @@ const APP_HTML = `
     <div class="teacher-section" data-teacher-panel="stats">
       <div class="stats-layout">
         <div class="card stats-filters" id="statsFilters">
-          <h3>Filtres</h3>
+          <h3>Période</h3>
           <div class="stats-filter-grid">
-            <div class="form-row">
-              <label>Portée</label>
-              <div class="select" data-select="statsScopeSelect">
-                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                  <span class="select-value placeholder" data-placeholder="Choisir">Choisir</span>
-                  <span class="select-caret">▾</span>
-                </button>
-                <div class="select-menu" role="listbox"></div>
-                <input type="hidden" id="statsScopeSelect" value="class" />
-              </div>
-            </div>
             <div class="form-row">
               <label>Période</label>
               <div class="select" data-select="statsPeriodSelect">
@@ -626,56 +615,6 @@ const APP_HTML = `
                 </button>
                 <div class="select-menu" role="listbox"></div>
                 <input type="hidden" id="statsPeriodSelect" value="last7" />
-              </div>
-            </div>
-            <div class="form-row">
-              <label>Matière</label>
-              <div class="select" data-select="statsSubjectSelect">
-                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                  <span class="select-value placeholder" data-placeholder="Toutes les matières">Toutes les matières</span>
-                  <span class="select-caret">▾</span>
-                </button>
-                <div class="select-menu" role="listbox"></div>
-                <input type="hidden" id="statsSubjectSelect" value="all" />
-              </div>
-            </div>
-            <div class="form-row">
-              <label>Mode</label>
-              <div class="select" data-select="statsModeSelect">
-                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                  <span class="select-value placeholder" data-placeholder="Tous">Tous</span>
-                  <span class="select-caret">▾</span>
-                </button>
-                <div class="select-menu" role="listbox"></div>
-                <input type="hidden" id="statsModeSelect" value="all" />
-              </div>
-            </div>
-          </div>
-
-          <div class="stats-filter-grid" id="statsGroupRow" style="display:none;">
-            <div class="form-row">
-              <label>Groupe</label>
-              <div class="select" data-select="statsGroupSelect">
-                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                  <span class="select-value placeholder" data-placeholder="Choisir un groupe">Choisir un groupe</span>
-                  <span class="select-caret">▾</span>
-                </button>
-                <div class="select-menu" role="listbox"></div>
-                <input type="hidden" id="statsGroupSelect" value="" />
-              </div>
-            </div>
-          </div>
-
-          <div class="stats-filter-grid" id="statsStudentRow" style="display:none;">
-            <div class="form-row">
-              <label>Élève</label>
-              <div class="select" data-select="statsStudentSelect">
-                <button class="select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
-                  <span class="select-value placeholder" data-placeholder="Choisir un élève">Choisir un élève</span>
-                  <span class="select-caret">▾</span>
-                </button>
-                <div class="select-menu" role="listbox"></div>
-                <input type="hidden" id="statsStudentSelect" value="" />
               </div>
             </div>
           </div>
