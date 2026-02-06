@@ -8,7 +8,9 @@ const APP_HTML = `
 
 <header class="tc-header">
   <button class="tc-brand tc-brand-btn" id="openTeacher" type="button">
-    <div class="tc-logo">QC</div>
+    <div class="tc-logo">
+      <img src="/logo.png" alt="Logo" />
+    </div>
     <div>
       <div class="tc-title" id="appTitle">Quiz de Mme Cryshtale</div>
       <div class="tc-subtitle">5 tours par jour · note sur 5</div>

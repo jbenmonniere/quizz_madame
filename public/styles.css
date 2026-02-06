@@ -126,16 +126,24 @@ h1, h2, h3, h4 {
   border-radius: 18px;
   display: grid;
   place-items: center;
-  background: var(--lavender);
+  background: transparent;
   color: #fff;
   font-family: var(--font-display);
   font-size: 20px;
   box-shadow: 0 10px 0 rgba(203, 188, 255, 0.35);
   transition: transform 0.2s var(--ease-pop);
+  overflow: hidden;
 }
 
 .tc-logo:hover {
   transform: translateY(-2px) rotate(-2deg);
+}
+
+.tc-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .tc-title {
