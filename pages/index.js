@@ -655,6 +655,7 @@ const APP_HTML = `
               <h4>Top 3 à travailler</h4>
               <ul id="statsTopWeaknesses"></ul>
             </div>
+            <div class="stats-summary-tooltip" id="statsSummaryTooltip" aria-hidden="true"></div>
           </div>
         </div>
 

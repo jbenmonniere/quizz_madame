@@ -3230,7 +3230,7 @@
         ? topStrengths
             .map(
               (s) =>
-                `<li>${s.subject} (${Math.round(s.accuracy)}%)${
+                `<li class="summary-item" data-summary-subject="${s.subject}" data-summary-correct="${s.correct}" data-summary-attempts="${s.attempts}" data-summary-accuracy="${Math.round(s.accuracy)}">${s.subject} (${Math.round(s.accuracy)}%)${
                   s.attempts < MIN_ATTEMPTS ? ' <span class="insight-note">• peu de données</span>' : ""
                 }</li>`
             )
@@ -3242,7 +3242,7 @@
         ? topWeaknesses
             .map(
               (s) =>
-                `<li>${s.subject} (${Math.round(s.accuracy)}%)${
+                `<li class="summary-item" data-summary-subject="${s.subject}" data-summary-correct="${s.correct}" data-summary-attempts="${s.attempts}" data-summary-accuracy="${Math.round(s.accuracy)}">${s.subject} (${Math.round(s.accuracy)}%)${
                   s.attempts < MIN_ATTEMPTS ? ' <span class="insight-note">• peu de données</span>' : ""
                 }</li>`
             )
@@ -4648,6 +4648,56 @@
       }
     });
     $("#statsRevisionBtn")?.addEventListener("click", handleStatsRevision);
+
+    const summaryWrap = document.querySelector(".stats-radar-summary");
+    const summaryTooltip = $("#statsSummaryTooltip");
+    const hideSummaryTooltip = () => {
+      if (!summaryTooltip) return;
+      summaryTooltip.classList.remove("active");
+      summaryTooltip.setAttribute("aria-hidden", "true");
+    };
+    const showSummaryTooltip = (event, item) => {
+      if (!summaryTooltip || !summaryWrap) return;
+      const rect = summaryWrap.getBoundingClientRect();
+      const point = event.touches ? event.touches[0] : event;
+      const x = point.clientX - rect.left;
+      const y = point.clientY - rect.top;
+      const subject = item.dataset.summarySubject || "Matière";
+      const correct = item.dataset.summaryCorrect || "0";
+      const attempts = item.dataset.summaryAttempts || "0";
+      const accuracy = item.dataset.summaryAccuracy || "0";
+      summaryTooltip.textContent = `${subject} — ${correct}/${attempts} (${accuracy}%)`;
+      summaryTooltip.style.left = `${x + 12}px`;
+      summaryTooltip.style.top = `${y - 12}px`;
+      summaryTooltip.classList.add("active");
+      summaryTooltip.setAttribute("aria-hidden", "false");
+    };
+    if (summaryWrap) {
+      summaryWrap.addEventListener("mousemove", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const item = target.closest(".summary-item");
+        if (!item) {
+          hideSummaryTooltip();
+          return;
+        }
+        showSummaryTooltip(event, item);
+      });
+      summaryWrap.addEventListener("mouseleave", hideSummaryTooltip);
+      summaryWrap.addEventListener("touchstart", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const item = target.closest(".summary-item");
+        if (item) showSummaryTooltip(event, item);
+      });
+      summaryWrap.addEventListener("touchmove", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const item = target.closest(".summary-item");
+        if (item) showSummaryTooltip(event, item);
+      });
+      summaryWrap.addEventListener("touchend", hideSummaryTooltip);
+    }
 
     $("#levelUpClose")?.addEventListener("click", hideLevelUp);
     $("#levelUpModal")?.addEventListener("click", (event) => {

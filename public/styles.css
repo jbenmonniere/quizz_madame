@@ -1495,6 +1495,7 @@ button:focus-visible {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
+  position: relative;
 }
 
 .stats-radar-summary ul {
@@ -1502,6 +1503,40 @@ button:focus-visible {
   padding-left: 16px;
   color: #3b3156;
   font-size: 13px;
+  display: grid;
+  gap: 6px;
+}
+
+.stats-radar-summary li.summary-item {
+  cursor: pointer;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.stats-radar-summary li.summary-item:hover {
+  transform: translateX(2px);
+  color: #6d3cff;
+}
+
+.stats-summary-tooltip {
+  position: absolute;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 2px solid rgba(201, 188, 255, 0.5);
+  box-shadow: var(--shadow-soft);
+  font-size: 12px;
+  color: #3b3156;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.95);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.stats-summary-tooltip.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .stats-trends {
