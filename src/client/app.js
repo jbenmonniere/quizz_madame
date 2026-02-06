@@ -1887,8 +1887,14 @@
   };
 
   const handleSaveSettings = () => {
-    const questionValue = Number($("#questionTimeInput").value) || DEFAULT_SETTINGS.questionTime;
-    const totalValue = Number($("#totalTimeInput").value) || DEFAULT_SETTINGS.totalTime;
+    const questionInput = $("#questionTimeInput");
+    const totalInput = $("#totalTimeInput");
+    if (!questionInput || !totalInput) {
+      setTeacherMessage("Aucune limite de temps n'est appliquée.");
+      return;
+    }
+    const questionValue = Number(questionInput.value) || DEFAULT_SETTINGS.questionTime;
+    const totalValue = Number(totalInput.value) || DEFAULT_SETTINGS.totalTime;
     const questionTime = Math.min(Math.max(questionValue, 5), 120);
     const totalTime = Math.min(Math.max(totalValue, 30), 900);
     setSettings({ questionTime, totalTime });
@@ -4155,8 +4161,9 @@
 
     if (assignedQuiz) {
       question = question || assignedQuiz.questions[progress.spinsDone % assignedQuiz.questions.length];
-      labelText = `Quiz: ${assignedQuiz.title}`;
-      labelColor = "#ffb6d5";
+      const subjectLabel = resolveQuestionSubject(question);
+      labelText = subjectLabel || category.name;
+      labelColor = category.color;
     } else {
       if (question && !isSubjectMatch(resolveQuestionSubject(question), category.id, categories)) {
         question = null;
@@ -4212,7 +4219,6 @@
 
     $(".question-card")?.classList.add("show");
     $(".wheel-card")?.classList.add("hidden");
-    startQuestionTimer();
   };
 
   const handleAnswer = (index, isTimeout = false) => {
@@ -4410,10 +4416,6 @@
     renderXpPanels(state.sessionXp);
     const spinBtn = $("#spinBtn");
     if (spinBtn) spinBtn.disabled = false;
-    const settings = getSettings();
-    setQuestionPill(settings.questionTime);
-    setTotalPill(settings.totalTime);
-    startGlobalTimer();
   };
 
   const handleDayCta = () => {

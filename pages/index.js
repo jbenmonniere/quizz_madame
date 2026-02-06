@@ -147,8 +147,6 @@ const APP_HTML = `
       <button class="ghost" id="backToCalendar">Calendrier</button>
       <div class="pill" id="roundPill">Ronde 1/5</div>
       <div class="pill" id="scorePill">Score 0/5</div>
-      <div class="pill" id="questionTimerPill">Question: 00:30</div>
-      <div class="pill" id="totalTimerPill">Total: 02:30</div>
     </div>
 
     <div class="game-grid">
@@ -287,18 +285,7 @@ const APP_HTML = `
       <div class="note" id="teacherMessage"></div>
 
       <div class="card teacher-card stats-card">
-        <h3>Parametres & statistiques</h3>
-        <div class="form-row two-cols">
-          <div>
-            <label>Temps par question (sec)</label>
-            <input type="number" id="questionTimeInput" min="5" max="120" value="30" />
-          </div>
-          <div>
-            <label>Temps total (sec)</label>
-            <input type="number" id="totalTimeInput" min="30" max="900" value="150" />
-          </div>
-        </div>
-        <button class="secondary" id="saveSettingsBtn">Enregistrer les temps</button>
+        <h3>Statistiques hebdomadaires</h3>
         <div class="assignment-list" id="weeklyStats"></div>
       </div>
     </div>
