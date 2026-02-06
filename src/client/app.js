@@ -365,6 +365,7 @@
     statsSnapshot: null,
     statsRadarMode: "accuracy",
     statsScheduleContext: null,
+    pendingQuestion: null,
     aiQuestions: [],
     aiBusy: false
   };
@@ -1204,6 +1205,17 @@
     const wheelCategories = state.wheelCategories || [];
     if (!wheelCategories.length) return;
     const segment = 360 / wheelCategories.length;
+    const wheel = $("#wheel");
+    if (wheel) {
+      let size = wheel.clientWidth || 320;
+      if (size < 200) size = 320;
+      const iconSize = 40;
+      const padding = 6;
+      const inner = size * 0.2 + iconSize / 2 + padding;
+      const outer = size / 2 - iconSize / 2 - 12;
+      const labelRadius = inner + (outer - inner) * 0.55;
+      wheel.style.setProperty("--label-radius", `${Math.round(labelRadius)}px`);
+    }
     wheelCategories.forEach((cat, idx) => {
       const label = document.createElement("div");
       label.className = "wheel-label";
@@ -2215,6 +2227,13 @@
       return normalizeSubjectKey(resolved) === normalizeSubjectKey(categoryId);
     }
     return normalizeSubjectKey(questionSubject) === normalizeSubjectKey(categoryId);
+  };
+
+  const getCategoryIndexFromRotation = (rotation, count) => {
+    if (!count) return 0;
+    const segment = 360 / count;
+    const angle = ((360 - (rotation % 360)) + 360) % 360;
+    return Math.floor(((angle + segment / 2) % 360) / segment);
   };
 
   const refreshWheel = () => {
@@ -4001,7 +4020,7 @@
     }
   };
 
-  const pickQuestion = (categoryId) => {
+  const pickQuestion = (categoryId, skipRecord = false) => {
     const progress = getProgress(state.selectedDate);
     if (!progress) return null;
 
@@ -4025,7 +4044,7 @@
       available = withKeys;
     }
     const pickEntry = available[Math.floor(Math.random() * available.length)];
-    if (pickEntry?.key) {
+    if (pickEntry?.key && !skipRecord) {
       progress.used[categoryId] = [...(progress.used[categoryId] || []), pickEntry.key];
       setProgress(state.selectedDate, progress);
     }
@@ -4041,19 +4060,32 @@
     if (!progress) return;
 
     const assignedQuiz = getAssignedQuiz(state.selectedDate);
-    let question = null;
+    let question = state.pendingQuestion;
     let labelText = category.name;
     let labelColor = category.color;
 
     if (assignedQuiz) {
-      question = assignedQuiz.questions[progress.spinsDone % assignedQuiz.questions.length];
+      question = question || assignedQuiz.questions[progress.spinsDone % assignedQuiz.questions.length];
       labelText = `Quiz: ${assignedQuiz.title}`;
       labelColor = "#ffb6d5";
     } else {
-      question = pickQuestion(category.id);
+      if (question && !isSubjectMatch(question.subject || question.category || "", category.id, categories)) {
+        question = null;
+        state.pendingQuestion = null;
+      }
+      question = question || pickQuestion(category.id);
     }
 
     if (!question) return;
+    if (state.pendingQuestion && state.pendingQuestion === question) {
+      const key = question.id || question._id || `${category.id}_${progress.spinsDone}`;
+      const used = new Set(progress.used[category.id] || []);
+      if (!used.has(key)) {
+        progress.used[category.id] = [...used, key];
+        setProgress(state.selectedDate, progress);
+      }
+      state.pendingQuestion = null;
+    }
 
     state.currentCategory = category;
     state.currentQuestion = question;
@@ -4238,9 +4270,10 @@
 
     const assignedQuiz = getAssignedQuiz(state.selectedDate);
     let categoryIndex = 0;
+    let chosenQuestion = null;
     if (assignedQuiz) {
-      const question = assignedQuiz.questions[progress.spinsDone % assignedQuiz.questions.length];
-      const idx = findCategoryIndexBySubject(categories, question?.subject || question?.category || "");
+      chosenQuestion = assignedQuiz.questions[progress.spinsDone % assignedQuiz.questions.length];
+      const idx = findCategoryIndexBySubject(categories, chosenQuestion?.subject || chosenQuestion?.category || "");
       categoryIndex = idx >= 0 ? idx : Math.floor(Math.random() * categories.length);
     } else {
       const counts = buildSubjectCounts(getBank(), categories);
@@ -4252,7 +4285,14 @@
       } else {
         categoryIndex = Math.floor(Math.random() * categories.length);
       }
+      const picked = pickQuestion(categories[categoryIndex]?.id, true);
+      if (picked) {
+        chosenQuestion = picked;
+        const idx = findCategoryIndexBySubject(categories, picked.subject || picked.category || "");
+        if (idx >= 0) categoryIndex = idx;
+      }
     }
+    state.pendingQuestion = chosenQuestion;
     const segment = 360 / categories.length;
     const targetAngle = (360 - categoryIndex * segment) % 360;
     const currentAngle = ((state.rotation % 360) + 360) % 360;
@@ -4266,7 +4306,18 @@
     setTimeout(() => {
       state.spinning = false;
       wheel.classList.remove("is-spinning");
-      showQuestion(categoryIndex);
+      const finalIndex = getCategoryIndexFromRotation(state.rotation, categories.length);
+      const finalCategory = categories[finalIndex];
+      const assigned = getAssignedQuiz(state.selectedDate);
+      if (!assigned && state.pendingQuestion && finalCategory) {
+        const matches = isSubjectMatch(
+          state.pendingQuestion.subject || state.pendingQuestion.category || "",
+          finalCategory.id,
+          categories
+        );
+        if (!matches) state.pendingQuestion = null;
+      }
+      showQuestion(finalIndex);
     }, SPIN_DURATION);
   };
 
