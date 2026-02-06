@@ -1169,6 +1169,34 @@
       .replace(/[^a-z0-9]+/g, " ")
       .trim();
 
+  const SUBJECT_ALIAS_MAP = {
+    math: "Mathématiques",
+    mathematique: "Mathématiques",
+    mathematiques: "Mathématiques",
+    mathematiquees: "Mathématiques",
+    science: "Sciences",
+    sciences: "Sciences",
+    francais: "Français",
+    "culture generale": "Culture générale",
+    "culture general": "Culture générale",
+    ccq: "CCQ (Culture et citoyenneté québécoise)",
+    "culture et citoyennete quebecoise": "CCQ (Culture et citoyenneté québécoise)",
+    "culture et citoyennete quebecoises": "CCQ (Culture et citoyenneté québécoise)"
+  };
+
+  const resolveSubjectName = (value, categories = []) => {
+    const key = normalizeSubjectKey(value);
+    if (!key) return "";
+    const catList = categories.length ? categories : getSubjectList().map((name) => ({ id: name }));
+    const direct = catList.find((cat) => normalizeSubjectKey(cat.id || cat) === key);
+    if (direct) return direct.id || direct;
+    const aliasTarget = SUBJECT_ALIAS_MAP[key];
+    if (!aliasTarget) return "";
+    const aliasKey = normalizeSubjectKey(aliasTarget);
+    const aliasMatch = catList.find((cat) => normalizeSubjectKey(cat.id || cat) === aliasKey);
+    return aliasMatch ? aliasMatch.id || aliasMatch : aliasTarget;
+  };
+
   const buildWheelLabels = () => {
     const labels = $("#wheelLabels");
     if (!labels) return;
@@ -2165,19 +2193,28 @@
   };
 
   const findCategoryIndexBySubject = (categories, subject) => {
-    const targetKey = normalizeSubjectKey(subject);
-    if (!targetKey) return -1;
+    const resolved = resolveSubjectName(subject, categories);
+    if (!resolved) return -1;
+    const targetKey = normalizeSubjectKey(resolved);
     return categories.findIndex((cat) => normalizeSubjectKey(cat.id) === targetKey);
   };
 
-  const buildSubjectCounts = (bank) => {
+  const buildSubjectCounts = (bank, categories) => {
     const counts = new Map();
     bank.forEach((q) => {
-      const key = normalizeSubjectKey(q.subject);
-      if (!key) return;
-      counts.set(key, (counts.get(key) || 0) + 1);
+      const resolved = resolveSubjectName(q.subject, categories);
+      if (!resolved) return;
+      counts.set(resolved, (counts.get(resolved) || 0) + 1);
     });
     return counts;
+  };
+
+  const isSubjectMatch = (questionSubject, categoryId, categories) => {
+    const resolved = resolveSubjectName(questionSubject, categories);
+    if (resolved) {
+      return normalizeSubjectKey(resolved) === normalizeSubjectKey(categoryId);
+    }
+    return normalizeSubjectKey(questionSubject) === normalizeSubjectKey(categoryId);
   };
 
   const refreshWheel = () => {
@@ -3969,8 +4006,8 @@
     if (!progress) return null;
 
     const bank = getBank();
-    const targetKey = normalizeSubjectKey(categoryId);
-    let pool = bank.filter((q) => normalizeSubjectKey(q.subject) === targetKey);
+    const categories = state.wheelCategories || [];
+    let pool = bank.filter((q) => isSubjectMatch(q.subject, categoryId, categories));
     if (!pool.length && !bank.length) {
       pool = Object.values(questionBank).flat();
     }
@@ -4206,9 +4243,9 @@
       const idx = findCategoryIndexBySubject(categories, question?.subject || question?.category || "");
       categoryIndex = idx >= 0 ? idx : Math.floor(Math.random() * categories.length);
     } else {
-      const counts = buildSubjectCounts(getBank());
+      const counts = buildSubjectCounts(getBank(), categories);
       const available = categories
-        .map((cat, idx) => ({ idx, count: counts.get(normalizeSubjectKey(cat.id)) || 0 }))
+        .map((cat, idx) => ({ idx, count: counts.get(cat.id) || 0 }))
         .filter((entry) => entry.count > 0);
       if (available.length) {
         categoryIndex = available[Math.floor(Math.random() * available.length)].idx;

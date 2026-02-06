@@ -989,7 +989,7 @@ textarea:focus {
   border: 10px solid #fdf7ff;
   box-shadow: 0 16px 35px rgba(31, 27, 46, 0.25);
   position: relative;
-  --label-radius: 112px;
+  --label-radius: 100px;
   transform: rotate(var(--spin-rotate, 0deg));
   transition: transform 4.5s cubic-bezier(0.25, 0.9, 0.25, 1);
 }
